@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, X, FileSpreadsheet, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { parseExcelData } from "@/lib/excelParser";
+import { projectService } from "@/lib/projectService";
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -33,18 +35,49 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
 
     try {
-      const res = await fetch("/api/import", {
-        method: "POST",
-        body: formData,
-      });
+      // 方案 B 處理: 嘗試透過 API，若失效則在瀏覽器端直解
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      let success = false;
+      let count = 0;
 
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setSuccessMessage(`成功匯入 ${data.records} 筆專案資料！`);
+      if (USE_API) {
+        try {
+          const res = await fetch("/api/import", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              count = data.records;
+              success = true;
+            }
+          }
+        } catch (apiErr) {
+          // API failed (e.g. GitHub pages static export)
+        }
+      }
+
+      if (!success) {
+        console.log("Fallback to client-side parsing...");
+        const buffer = await file.arrayBuffer();
+        const projects = await parseExcelData(buffer);
+        
+        for (const proj of projects) {
+          await projectService.save(proj);
+        }
+        count = projects.length;
+        success = true;
+      }
+
+      if (success) {
+        setSuccessMessage(`成功匯入 ${count} 筆專案資料！`);
         setStatus('success');
         setTimeout(() => {
           onSuccess();
@@ -53,7 +86,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
           setFile(null);
         }, 1500);
       } else {
-        throw new Error(data.message || "發生未知錯誤");
+        throw new Error("匯入失敗");
       }
     } catch (err: any) {
       setErrorMessage(err.message || "上傳失敗，請檢查檔案格式是否相符。");
@@ -67,20 +100,82 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
+
     try {
+      let downloadUrl = url;
+      if (url.includes('docs.google.com/spreadsheets')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (match && match[1]) {
+            downloadUrl = `https://docs.google.com/spreadsheets/d/${match[1]}/export?format=xlsx`;
+        }
+      }
+
+      if (!USE_API) {
+        // 在前端直接解析 URL：需透過多層 CORS Proxy 繞過瀏覽器跨域限制 (因為 Google export 網址禁止跨域)
+        // 確保此 Google Sheet 必須是「知道連結的使用者皆可檢視」的公開共用狀態
+        let res;
+        let successProxy = null;
+        
+        const proxies = [
+          `https://api.codetabs.com/v1/proxy?quest=${downloadUrl}`,
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(downloadUrl)}`,
+          `https://corsproxy.io/?${encodeURIComponent(downloadUrl)}`
+        ];
+
+        for (const proxy of proxies) {
+          try {
+            const attempt = await fetch(proxy);
+            if (attempt.ok) {
+              res = attempt;
+              successProxy = proxy;
+              break;
+            }
+          } catch (e) {
+            console.warn("Proxy failed:", proxy);
+          }
+        }
+        
+        if (!res || !res.ok) {
+          throw new Error("無法下載該網址內容。請確認是否為 Google Sheet 且共用權限已設為「知道連結的使用者皆可檢視」，或是各大代理伺服器目前皆遭 Google 阻擋。建議您在靜態環境下直接使用手動檔案上傳即可。");
+        }
+
+        const buffer = await res.arrayBuffer();
+        const projects = await parseExcelData(buffer);
+        
+        for (const proj of projects) {
+          await projectService.save(proj);
+        }
+        
+        setSuccessMessage(`成功匯入 ${projects.length} 筆專案資料！`);
+        setStatus('success');
+        setTimeout(() => {
+          onSuccess();
+          onClose();
+          setStatus('idle');
+          setUrl('');
+        }, 2000);
+        return;
+      }
+
+      // 嘗試呼叫方案 A API
       const res = await fetch('/api/import-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
+        // 因靜態頁面無法使用 API，直接報錯提示使用者
+        if (res.status === 404) {
+          throw new Error('在免伺服器靜態部署模式下，無法直接解析 URL。\n請先下載 Excel 檔案 (.xlsx) 後使用「上傳檔案」功能匯入。');
+        }
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Import failed');
       }
 
-      setSuccessMessage(`成功匯入 ${data.records} 筆專案資料！`); // Assuming similar success message structure
+      const data = await res.json();
+      setSuccessMessage(`成功匯入 ${data.records} 筆專案資料！`);
       setStatus('success');
       setTimeout(() => {
         onSuccess();
@@ -89,9 +184,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
         setUrl('');
       }, 2000);
     } catch (err: any) {
-      console.error(err);
       setStatus('error');
-      setErrorMessage(err.message || 'An unexpected error occurred.');
+      setErrorMessage(err.message || '發生未知錯誤');
     }
   };
 

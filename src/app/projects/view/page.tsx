@@ -43,6 +43,12 @@ function ProjectDetailContent() {
     if (!id) return;
     setExporting(true);
     try {
+      const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
+      if (!USE_API) {
+        alert("在免伺服器靜態部署模式下，暫不支援單一專案匯出功能。");
+        setExporting(false);
+        return;
+      }
       const res = await fetch(`/api/projects/${id}/export`);
       if (!res.ok) throw new Error("Export failed");
       const blob = await res.blob();

@@ -41,15 +41,21 @@
 - [x] 18. **混合存儲架構實作 (Hybrid Storage - Option B/A)**：為了支援 **GitHub Pages (靜態部署)**，實作了 `projectService.ts` 中介層。系統現在優先嘗試 API (方案 A)，失敗時自動切換至 `LocalStorage` (方案 B)，確保靜態部署下資料仍可持久化。
 - [x] 19. **通知系統重構 (Notification Relocation)**：應使用者需求將「部門簽核與交接通知」從右側面板移至頂部 Header 紅框位置，並改為水平滾動高亮列，成功釋放側邊空間讓主內容寬度擴展至 `max-w-[98%]`。
 - [x] 20. **自動化部署 (CI/CD)**：建立 `.github/workflows/nextjs.yml` 並配置 `output: 'export'`，支援透過 GitHub Actions 自動部署至 Pages。
+- [x] 21. **靜態路由重構 (Static Route Bypass)**：將 `/projects/[id]` 徹底改為 `/projects/view?id=...` 格式。解決了 GitHub Pages 不支援動態路由的問題，並透過 `useSearchParams` 在客戶端完成資料注入。
+- [x] 22. **API 路由完全隔離 (API Isolation Strategy)**：將 `src/app/api` 移除出 `app` 目錄（更名為 `_api_routes_backup`）。徹底規避了 Next.js 定義的 `export` 模式下禁止 API 路徑的限制，同時保留代碼供未來方案 A 切換。
+- [x] 23. **純前端的 Excel 解析引擎 (Client-side Excel Parser)**：解決了靜態導出環境下無法使用 `/api/import` 導致的 404 與 500 錯誤。將後端的 WBS 解析邏輯無縫移植至 `src/lib/excelParser.ts`，實作了全瀏覽器端的直接匯入。
+- [x] 24. **多層次 CORS 代理備援引擎 (Multi-Proxy Fallback Chain)**：針對 Google Sheets 的嚴格 CORS 跨來源存取限制，實作了包含 `api.codetabs.com`, `api.allorigins.win`, `corsproxy.io` 的自動遞補備援機制，確保在 GitHub Pages 模式下仍能以最快效率直接解析外部網址。
+- [x] 25. **靜態環境環境變數防禦 (Static ENV Guard)**：導入 `USE_API` 檢查，徹底清除任何環境誤觸發生 404 或跳出 Unhandled Rejection 報錯的可能，保持乾淨的主控台。
 
 #### 失敗嘗試與矯正：
 
-- **[2026-03-01] GitHub Actions 部署失敗 (Build Error)**：
-  - **原因**：Next.js 在 `output: 'export'` 模式下不支援動態 API Routes 與未定義路徑的動態路由 (`[id]`)。
-  - **矯正**：
-    1. 實作 `trackService` 等封裝抽象，讓前端邏輯不依賴特定 API。
-    2. 在 `[id]/page.tsx` 加入 `generateStaticParams()` 與 `dynamicParams = true` 以相容靜態生成。
-    3. 將資料庫依賴改為「可選」，確保在無後端環境下仍能透過 LocalStorage 運行。
+- **[2026-03-01] GitHub Actions 部署失敗 (Build Error - Static Export Constraints)**：
+  - **原因**：Next.js 在 `output: 'export'` 模式下有兩大限制：(1) 禁止在 `app` 下存在任何 API Routes；(2) 雖然有 `generateStaticParams`，但在動態路徑下混合 `use client` 會導致編譯器混淆。
+  - **矯正 (外科式處置方案)**：
+    1. **路由降級**：捨棄動態路由 `[id]` 目錄，將專案詳情頁遷移至 `src/app/projects/view/page.tsx`，改採 `?id=xxx` 的查詢參數模式，使頁面路徑回歸純靜態。
+    2. **API 脫鉤**：將整個 `api` 資料夾移出 `app` 目錄存檔，消滅所有 API Endpoint 以滿足靜態導出檢查。
+    3. **客戶端資料獲取**：使用 `useSearchParams` + `Suspense` 確保在 GitHub Pages 載入後，由客戶端 LocalStorage 接手資料渲染。
+  - **結果**：本地 `npm run build` 成功導出，GitHub Actions 正確完成部署。
 
 #### 下一步 (Next Steps)：
 

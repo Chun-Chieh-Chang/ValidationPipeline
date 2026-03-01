@@ -32,6 +32,12 @@ export default function Dashboard() {
   const handleGlobalExport = async () => {
     setExporting(true);
     try {
+      const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
+      if (!USE_API) {
+        alert("在免伺服器靜態部署模式下，暫不支援匯出總表功能。");
+        setExporting(false);
+        return;
+      }
       const res = await fetch('/api/projects/export');
       if (!res.ok) throw new Error("Export failed");
       const blob = await res.blob();
