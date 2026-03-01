@@ -1,5 +1,8 @@
 const nextConfig = {
-    // any next config goes here
+    output: 'export',
+    images: {
+        unoptimized: true,
+    },
 };
 
 export default nextConfig;
