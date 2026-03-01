@@ -1,5 +1,6 @@
 const nextConfig = {
     output: 'export',
+    basePath: '/ValidationPipeline',
     images: {
         unoptimized: true,
     },
