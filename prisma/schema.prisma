@@ -1,0 +1,102 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 根據需求這裡使用 postgresql，但為求本地不依賴可改 sqlite，不過仍遵循 PostgreSQL 設定
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 專案主檔 (Master Data)
+model Project {
+  id          String   @id @default(uuid())
+  project_no  String   @unique // 模具號碼
+  part_no     String   // 品號
+  rev         String   // 工程版次
+  type        String   // 專案類型
+  purpose     String?  // 變更目的
+  priority    Int      @default(3) // 優先度 1-5
+  status      String   @default("IN_PROGRESS") // Enum: 進行中/結案
+  ecr_no      String?  // ECR 編號
+  ecr_date    DateTime?// ECR開立日
+  ecn_no      String?  // ECN 編號
+  ecn_date    DateTime?// ECN開立日
+  cloud_link  String?  // 雲端資料連結
+  start_date  DateTime?// 專案起始日期
+  owner       String   // 發出者
+  import_order Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  phases      ProjectPhase[]
+  tasks       Task[]
+  notifications Notification[]
+
+  @@map("projects")
+}
+
+// 專案狀態列舉 (以字串取代 enum 支援 Sqlite)
+// enum ProjectStatus {
+//   IN_PROGRESS
+//   CLOSED
+// }
+
+// 確效階段管理
+model ProjectPhase {
+  id                String   @id @default(uuid())
+  project_id        String
+  phase_name        String   // PD/FA/OQ/PQ/EC/圖面進版
+  is_required       Boolean  @default(true)
+  cloud_link        String?  // 文件路徑 URL
+  completion_status String @default("PENDING")
+  
+  project           Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, phase_name])
+  @@map("project_phases")
+}
+
+// enum PhaseStatus {
+//   PENDING
+//   IN_PROGRESS
+//   COMPLETED
+//   NA // Not Applicable
+// }
+
+// WBS 任務追蹤
+model Task {
+  id              String   @id @default(uuid())
+  project_id      String
+  wbs_code        String   // 工作序 (如 1.1, 2.1)
+  task_name       String   // 項目名稱
+  dept            String   // 權責部門 (字串儲存，以應付不同Excel寫法)
+  status          String @default("NOT_STARTED")
+  planned_date    DateTime?
+  start_date      DateTime?
+  actual_date     DateTime? // 完成日期
+  deliverable     String?  // 交付
+  progress        String?  // 交件
+  depends_on      String?  // 前置任務 (WBS Code,逗號分隔)
+
+  project         Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+// 系統通知模型 (Notification)
+model Notification {
+  id          String   @id @default(uuid())
+  project_id  String
+  task_id     String?  // 相關聯的任務
+  target_dept String   // 通知目標部門
+  message     String   // 通知內容
+  is_read     Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  project     Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
