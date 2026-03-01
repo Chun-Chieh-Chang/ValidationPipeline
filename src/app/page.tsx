@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ImportModal from "@/components/ImportModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle } from "lucide-react";
+import { projectService } from "@/lib/projectService";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -19,11 +20,8 @@ export default function Dashboard() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/projects");
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setProjects(data);
-      }
+      const data = await projectService.getAll();
+      setProjects(data);
     } catch (e) {
       console.error(e);
     } finally {

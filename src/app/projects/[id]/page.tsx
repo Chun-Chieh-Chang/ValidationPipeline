@@ -3,6 +3,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
+import { projectService } from "@/lib/projectService";
+
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  // 對於 GitHub Pages 靜態導出，我們回傳一個空的清單，
+  // 載入時則由客戶端 localStorage 或 API 接手
+  return [];
+}
 
 export default function ProjectDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -14,8 +23,7 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
 
   const fetchProject = useCallback(async () => {
     try {
-      const res = await fetch(`/api/projects/${params.id}`);
-      const data = await res.json();
+      const data = await projectService.getById(params.id);
       setProject(data);
     } catch (e) {
       console.error(e);
@@ -52,7 +60,7 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   const handleUpdateStatus = async (taskId: string, currentStatus: string) => {
     setUpdating(taskId);
     let nextStatus = "IN_PROGRESS";
-    let actualDate = null;
+    let actualDate: string | null = null;
 
     if (currentStatus === "NOT_STARTED") nextStatus = "IN_PROGRESS";
     if (currentStatus === "IN_PROGRESS") {
@@ -61,12 +69,15 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
     }
 
     try {
-      await fetch(`/api/tasks/${taskId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: nextStatus, actual_date: actualDate }),
-      });
-      await fetchProject();
+      // 構建更新後的 tasks 清單 (方案 B / LocalStorage 相容)
+      const updatedTasks = project.tasks.map((t: any) => 
+        t.id === taskId ? { ...t, status: nextStatus, actual_date: actualDate } : t
+      );
+      
+      const res = await projectService.update(project.id, { tasks: updatedTasks });
+      if (res) {
+        setProject(res);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -77,12 +88,13 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   const handleTogglePhase = async (phaseId: string, currentStatus: string) => {
     const nextStatus = currentStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
     try {
-      await fetch(`/api/projects/${params.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phaseId, phaseStatus: nextStatus }),
-      });
-      await fetchProject();
+      const updatedPhases = project.phases.map((p: any) => 
+        p.id === phaseId ? { ...p, completion_status: nextStatus } : p
+      );
+      const res = await projectService.update(project.id, { phases: updatedPhases });
+      if (res) {
+        setProject(res);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -91,12 +103,10 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   const handleToggleProjectStatus = async () => {
     const nextStatus = project.status === "CLOSED" ? "IN_PROGRESS" : "CLOSED";
     try {
-      await fetch(`/api/projects/${params.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: nextStatus }),
-      });
-      await fetchProject();
+      const res = await projectService.update(project.id, { status: nextStatus });
+      if (res) {
+        setProject(res);
+      }
     } catch (err) {
       console.error(err);
     }

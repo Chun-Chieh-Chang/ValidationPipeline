@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, Loader2, AlertCircle, FileText } from "lucide-react";
+import { projectService } from "@/lib/projectService";
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -36,16 +37,19 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
     setErrorMessage(null);
 
     try {
-      const res = await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || "建立專案失敗");
-      }
+      // 構建初始化專案資料 (為了支援靜態模式 B，我們在客戶端也準備好資料結構)
+      const newProject = {
+        id: crypto.randomUUID(),
+        ...formData,
+        priority: 3,
+        status: "IN_PROGRESS",
+        created_at: new Date().toISOString(),
+        phases: [],
+        tasks: [],
+        notifications: []
+      };
+
+      await projectService.save(newProject as any);
 
       setFormData({
         project_no: "", part_no: "", rev: "", type: "設變", purpose: "", owner: "", ecr_no: ""

@@ -37,23 +37,24 @@
 - [x] 14. **介面原稿忠實度優化 (Layout Fidelity)**：全面還原 Master Sheet 欄位名稱（如「工程圖面版次」、「發出者」、「雲端資料 (連結)」等），移除自行添加的括號說明。
 - [x] 15. **全表格格線系統 (Subtle Grid System)**：在 Dashboard 與 WBS 詳情頁面加入 `border-white/5` 微光格線，並優化欄位分配寬度，確保在「忠於原稿」的基礎上維持極致的高級感。
 - [x] 16. **數據序位保存 (Order Preservation)**：新增 `import_order` 機制，確保首頁表格排序與 Master Sheet 載入順序完全一致。
+- [x] 17. **全介面 14px 規範化 (Font Scale standard)**：移除全專案所有 `text-xs` (12px) 與小型字體，統一提升至 `text-sm` (14px)，解決閱讀疲勞問題。
+- [x] 18. **混合存儲架構實作 (Hybrid Storage - Option B/A)**：為了支援 **GitHub Pages (靜態部署)**，實作了 `projectService.ts` 中介層。系統現在優先嘗試 API (方案 A)，失敗時自動切換至 `LocalStorage` (方案 B)，確保靜態部署下資料仍可持久化。
+- [x] 19. **通知系統重構 (Notification Relocation)**：應使用者需求將「部門簽核與交接通知」從右側面板移至頂部 Header 紅框位置，並改為水平滾動高亮列，成功釋放側邊空間讓主內容寬度擴展至 `max-w-[98%]`。
+- [x] 20. **自動化部署 (CI/CD)**：建立 `.github/workflows/nextjs.yml` 並配置 `output: 'export'`，支援透過 GitHub Actions 自動部署至 Pages。
 
 #### 失敗嘗試與矯正：
 
-- **[2026-03-01] 匯入錯誤 (500 Error)**：初次加入 `cloud_link` 時未同步更新 Prisma Client 指向，導致 Upsert 失敗。已透過 `npx prisma db push` 與重啟服務矯正。
-- **[2026-03-01] 數據對應不符**：因 Excel 合併儲存格轉 JSON 時會產生大量 Null 值，導致後續空白列覆蓋了先前的有效數據。已改用 Map 物件進行 Grouping 彙集，確保單一專案的所有行數數據能正確「疊加」而非「覆蓋」。
-- **[2026-03-01] 匯入錯誤 (500 Error - Unknown argument import_order) - 複發分析與最終解決方案**：
-  - **問題分析**：雖然在 `schema.prisma` 成功定義了欄位，但由於 **Windows 檔案鎖定機制**，Next.js 伺服器在運行中佔用了 Prisma Engine，導致 `npx prisma generate` 無法更新 `node_modules` 中的 Client 代碼。這造成了「代碼已寫入新欄位，但底層 Client 不認識」的不對稱狀態，引發 500 錯誤。
-  - **立即止血措施**：
-    1. 已暫時從 `route.ts` 中移除 `import_order` 的相關調用，將程式碼降級 (Fallback) 到與目前 Client 版本相容的狀態，確保系統可正常連線匯入（但排序暫時失效）。
-    2. 強化 `ecr_no` 與 `ecn_no` 的資料處理，過濾掉 Excel 產生的布林值文字。
-  - **最終矯正操作 (需使用者配合)**：
-    1. **關閉終端機 (Ctrl+C)**：徹底停止 `npm run dev` 伺服器。
-    2. **手動同步**：執行 `npx prisma generate` 指令。
-    3. **檢查成功**：確認無 EPERM 報錯後再重新 `npm run dev`。
-  - **預防措施**：
-    1. 建立「無痛 Schema 更新機制」：未來欄位變更應先在 API 層加入 `(prisma as any).xxx` 的保護，或等確認 Generate 成功後再正式引入型別。
+- **[2026-03-01] GitHub Actions 部署失敗 (Build Error)**：
+  - **原因**：Next.js 在 `output: 'export'` 模式下不支援動態 API Routes 與未定義路徑的動態路由 (`[id]`)。
+  - **矯正**：
+    1. 實作 `trackService` 等封裝抽象，讓前端邏輯不依賴特定 API。
+    2. 在 `[id]/page.tsx` 加入 `generateStaticParams()` 與 `dynamicParams = true` 以相容靜態生成。
+    3. 將資料庫依賴改為「可選」，確保在無後端環境下仍能透過 LocalStorage 運行。
 
+#### 下一步 (Next Steps)：
+
+- [ ] 1. **Vercel 遷移準備**：雖然目前走方案 B，但代碼已保留方案 A 接口。未來若資料量大，可一鍵切換回資料庫模式。
+- [ ] 2. **LocalStorage 匯出功能**：新增功能讓使用者能手動備份 LocalStorage 中的數據為 JSON。
   - **[2026-03-01] 甘特圖數據顯示邏輯不完善分析 (Data Display Logic Failure Analysis)**：
     - **問題現象**：畫出的甘特圖進度條長度與表格日期不對等（如表格顯示 2/12 完成，圖面上卻只有一個點），且「今日標記」位置發生偏移。
     - **深度原因分析**：
