@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
 import { projectService } from "@/lib/projectService";
 
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  // 對於 GitHub Pages 靜態導出，我們回傳一個空的清單，
-  // 載入時則由客戶端 localStorage 或 API 接手
-  return [];
+export default function ProjectDetailContainer() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-white">
+        <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+      </div>
+    }>
+      <ProjectDetailContent />
+    </Suspense>
+  );
 }
 
-export default function ProjectDetail({ params }: { params: { id: string } }) {
+function ProjectDetailContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || "";
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -22,20 +28,22 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   const [viewMode, setViewMode] = useState<'table' | 'gantt'>('table');
 
   const fetchProject = useCallback(async () => {
+    if (!id) return;
     try {
-      const data = await projectService.getById(params.id);
+      const data = await projectService.getById(id);
       setProject(data);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [id]);
 
   const handleExport = async () => {
+    if (!id) return;
     setExporting(true);
     try {
-      const res = await fetch(`/api/projects/${params.id}/export`);
+      const res = await fetch(`/api/projects/${id}/export`);
       if (!res.ok) throw new Error("Export failed");
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
@@ -86,6 +94,7 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   };
 
   const handleTogglePhase = async (phaseId: string, currentStatus: string) => {
+    if (!project) return;
     const nextStatus = currentStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
     try {
       const updatedPhases = project.phases.map((p: any) => 
@@ -101,6 +110,7 @@ export default function ProjectDetail({ params }: { params: { id: string } }) {
   };
 
   const handleToggleProjectStatus = async () => {
+    if (!project) return;
     const nextStatus = project.status === "CLOSED" ? "IN_PROGRESS" : "CLOSED";
     try {
       const res = await projectService.update(project.id, { status: nextStatus });

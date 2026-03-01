@@ -151,7 +151,7 @@ export default function Dashboard() {
             {projects.map((project) => (
               <motion.div
                 key={project.id}
-                onClick={() => router.push(`/projects/${project.id}`)}
+                onClick={() => router.push(`/projects/view?id=${project.id}`)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4, scale: 1.005 }}
@@ -264,7 +264,7 @@ export default function Dashboard() {
                     return (
                       <tr 
                         key={project.id}
-                        onClick={() => router.push(`/projects/${project.id}`)}
+                        onClick={() => router.push(`/projects/view?id=${project.id}`)}
                         className="hover:bg-white/[0.03] cursor-pointer transition-colors group"
                       >
                         <td className="px-4 py-4 text-center border border-white/5">
