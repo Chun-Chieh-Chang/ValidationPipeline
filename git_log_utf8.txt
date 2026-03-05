@@ -1,0 +1,8 @@
+﻿a93037c Fix(static-export): migrate Excel parser to client-side & implement multi-proxy CORS fallback for github pages
+214f632 fix/deploy: final verified conditional basePath for local dev stability
+e2929bb fix/deploy: make basePath conditional for local dev and production build
+c9a1796 fix/deploy: add basePath for GitHub Pages subdirectory deployment
+59ca32c fix/deploy: remove dynamic routes and api folders to satisfy static export requirements for GitHub Pages
+5667fe1 docs/arch: implement mixed storage service for static export compatibility and update dev log
+3318d94 ci: add GitHub Actions workflow for Next.js static export deployment
+dab119c feat: enhance WBS visualization, highlight in-progress tasks, and improve font scale

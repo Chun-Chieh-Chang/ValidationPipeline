@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ImportModal from "@/components/ImportModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
-import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle } from "lucide-react";
+import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2 } from "lucide-react";
 import { projectService } from "@/lib/projectService";
 
 export default function Dashboard() {
@@ -53,6 +53,16 @@ export default function Dashboard() {
       alert("匯出失敗");
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleClearAllData = async () => {
+    if (window.confirm("【危險操作】這將會清空所有專案資料與釋放記憶體。確定要繼續嗎？")) {
+      setLoading(true);
+      await projectService.clearAll();
+      setProjects([]);
+      setLoading(false);
+      alert("資料與記憶體已成功清空！");
     }
   };
 
@@ -107,6 +117,15 @@ export default function Dashboard() {
               </button>
             </div>
 
+            <button 
+              onClick={handleClearAllData}
+              disabled={loading || projects.length === 0}
+              className="px-4 py-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md border border-red-500/20 text-red-400 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
+              title="一鍵清空所有專案與釋放記憶體"
+            >
+              <Trash2 size={16} />
+              清空資料
+            </button>
             <button 
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}

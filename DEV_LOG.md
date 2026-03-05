@@ -46,6 +46,9 @@
 - [x] 23. **純前端的 Excel 解析引擎 (Client-side Excel Parser)**：解決了靜態導出環境下無法使用 `/api/import` 導致的 404 與 500 錯誤。將後端的 WBS 解析邏輯無縫移植至 `src/lib/excelParser.ts`，實作了全瀏覽器端的直接匯入。
 - [x] 24. **多層次 CORS 代理備援引擎 (Multi-Proxy Fallback Chain)**：針對 Google Sheets 的嚴格 CORS 跨來源存取限制，實作了包含 `api.codetabs.com`, `api.allorigins.win`, `corsproxy.io` 的自動遞補備援機制，確保在 GitHub Pages 模式下仍能以最快效率直接解析外部網址。
 - [x] 25. **靜態環境環境變數防禦 (Static ENV Guard)**：導入 `USE_API` 檢查，徹底清除任何環境誤觸發生 404 或跳出 Unhandled Rejection 報錯的可能，保持乾淨的主控台。
+- [x] 26. **進度提示通知功能修復 (Progress Notification Restoration)**：修復了匯入功能中被隱藏的進度提示。在 `ImportModal.tsx` 中新增了 `currentCount` 與 `totalCount` 狀態，並在 `handleUpload` 與 `handleURLImport` 的迴圈中即時更新進度，確保使用者在匯入大量資料時能看到具體的百分比與筆數提示。UI 採用一致的玻璃擬態風格並加入動態進度條。
+- [x] 27. **接手提醒通知系統移植 (Handover Notification Porting)**：將原屬於後端 API 的接手提醒邏輯移植至前端（Option B 下的 `view/page.tsx`）。現在當任務完成時，系統會自動生成下一階段的「準備接手」通知；同時新增 `refreshAutoReminders` 機制，根據 `planned_date` 主動產生 3 天內的「即將到來任務」提醒，大幅強化了跨部門協作效率。
+- [x] 28. **Excel 匯入 Sheet 名稱相容性優化 (Excel Sheet Name Compatibility)**：修復了 Excel 匯入時因工作表名稱非精確 "Master"（如 "Master sheet"）導致失敗的問題。在 `excelParser.ts` 中改用不分大小寫且包含關鍵字的模糊匹配邏輯，並統一錯誤訊息為英文以符合系統情境。
 
 #### 失敗嘗試與矯正：
 
