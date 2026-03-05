@@ -82,16 +82,26 @@ function ProjectDetailContent() {
       const diffTime = plannedDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      // 如果任務在 3 天內預計完成，且尚未針對此任務發過「提前提醒」
-      const alreadyNotified = updatedNotifications.some(n => n.task_id === task.id && n.message.includes('提醒：任務'));
+      // 檢查是否已發送過該任務的提前提醒或是逾期提醒
+      const alreadyNotified = updatedNotifications.some(n => 
+        n.task_id === task.id && (n.message.includes('提醒：任務') || n.message.includes('逾期提醒：任務'))
+      );
       
-      if (diffDays <= reminderWindowDays && diffDays >= 0 && !alreadyNotified) {
+      // 觸發條件：預計 3 天內完成，或是已經逾期 (diffDays < 0)
+      if (diffDays <= reminderWindowDays && !alreadyNotified) {
+        let msg = "";
+        if (diffDays < 0) {
+          msg = `🚨 逾期提醒：任務「${task.task_name}」已逾期 ${Math.abs(diffDays)} 天 (預定 ${plannedDate.toLocaleDateString()})，請 ${task.dept} 盡速推進。`;
+        } else {
+          msg = `提醒：任務「${task.task_name}」預計於 ${plannedDate.toLocaleDateString()} 完成，請 ${task.dept} 相關人員準備接手。`;
+        }
+
         updatedNotifications.push({
           id: "notif_auto_" + Math.random().toString(36).substring(2, 9),
           project_id: currentProject.id,
           task_id: task.id,
           target_dept: task.dept,
-          message: `提醒：任務「${task.task_name}」預計於 ${plannedDate.toLocaleDateString()} 完成，請 ${task.dept} 相關人員準備接手。`,
+          message: msg,
           is_read: false,
           created_at: new Date().toISOString()
         });
