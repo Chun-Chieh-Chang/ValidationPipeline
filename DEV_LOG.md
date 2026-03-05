@@ -49,6 +49,8 @@
 - [x] 26. **進度提示通知功能修復 (Progress Notification Restoration)**：修復了匯入功能中被隱藏的進度提示。在 `ImportModal.tsx` 中新增了 `currentCount` 與 `totalCount` 狀態，並在 `handleUpload` 與 `handleURLImport` 的迴圈中即時更新進度，確保使用者在匯入大量資料時能看到具體的百分比與筆數提示。UI 採用一致的玻璃擬態風格並加入動態進度條。
 - [x] 27. **接手提醒通知系統移植 (Handover Notification Porting)**：將原屬於後端 API 的接手提醒邏輯移植至前端（Option B 下的 `view/page.tsx`）。現在當任務完成時，系統會自動生成下一階段的「準備接手」通知；同時新增 `refreshAutoReminders` 機制，根據 `planned_date` 主動產生 3 天內的「即將到來任務」提醒，大幅強化了跨部門協作效率。
 - [x] 28. **Excel 匯入 Sheet 名稱相容性優化 (Excel Sheet Name Compatibility)**：修復了 Excel 匯入時因工作表名稱非精確 "Master"（如 "Master sheet"）導致失敗的問題。在 `excelParser.ts` 中改用不分大小寫且包含關鍵字的模糊匹配邏輯，並統一錯誤訊息為英文以符合系統情境。
+- [x] 29. **記憶體釋放與一鍵清空機制 (Memory Release & Data Clearance)**：為了應對巨型 Excel 檔對瀏覽器端 `LocalStorage` 的壓力，在 Dashboard 與匯入介面中新增了帶有危險提示的「一鍵清空資料」與「清空欄位」按鈕 (`projectService.clearAll()`)，方便使用者隨時歸零並釋放暫存資源。
+- [x] 30. **接手提醒系統擴增：逾期偵測 (Overdue Notification)**：強化原有的接手提醒系統 (`refreshAutoReminders`)，除了提前 3 天的「準備接手」通知外，當偵測到任務預計日期已超過且尚未標示為完成時（`diffDays < 0`），將會發送更為強烈的「🚨 逾期提醒」以敦促相關部門推進進度。
 
 #### 失敗嘗試與矯正：
 
