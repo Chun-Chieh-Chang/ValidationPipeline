@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, X, FileSpreadsheet, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { UploadCloud, X, FileSpreadsheet, CheckCircle, AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { parseExcelData } from "@/lib/excelParser";
 import { projectService } from "@/lib/projectService";
 
@@ -18,6 +18,23 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [currentCount, setCurrentCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const handleClear = () => {
+    setFile(null);
+    setUrl("");
+    setStatus('idle');
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setCurrentCount(0);
+    setTotalCount(0);
+    // Reset the file input element so the same file could be selected again
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,6 +43,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
       setStatus('idle');
       setErrorMessage(null);
       setSuccessMessage(null);
+      setCurrentCount(0);
+      setTotalCount(0);
     }
   };
 
@@ -34,6 +53,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
     setStatus('uploading');
     setErrorMessage(null);
     setSuccessMessage(null);
+    setCurrentCount(0);
+    setTotalCount(0);
 
     const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
 
@@ -69,8 +90,10 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
         const buffer = await file.arrayBuffer();
         const projects = await parseExcelData(buffer);
         
-        for (const proj of projects) {
-          await projectService.save(proj);
+        setTotalCount(projects.length);
+        for (let i = 0; i < projects.length; i++) {
+          await projectService.save(projects[i]);
+          setCurrentCount(i + 1);
         }
         count = projects.length;
         success = true;
@@ -99,6 +122,8 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
     setStatus('uploading');
     setErrorMessage(null);
     setSuccessMessage(null);
+    setCurrentCount(0);
+    setTotalCount(0);
 
     const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
 
@@ -143,8 +168,10 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
         const buffer = await res.arrayBuffer();
         const projects = await parseExcelData(buffer);
         
-        for (const proj of projects) {
-          await projectService.save(proj);
+        setTotalCount(projects.length);
+        for (let i = 0; i < projects.length; i++) {
+          await projectService.save(projects[i]);
+          setCurrentCount(i + 1);
         }
         
         setSuccessMessage(`成功匯入 ${projects.length} 筆專案資料！`);
@@ -279,6 +306,31 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 />
               </div>
 
+              {status === 'uploading' && totalCount > 0 && (
+                <div className="space-y-3 p-4 bg-sky-500/5 border border-sky-500/20 rounded-xl">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-sky-300 font-medium flex items-center gap-2">
+                       <Loader2 className="w-4 h-4 animate-spin" />
+                       正在同步專案庫...
+                    </span>
+                    <span className="text-sky-400 font-mono font-bold">
+                      {Math.round((currentCount / totalCount) * 100)}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden border border-white/5">
+                    <motion.div 
+                      className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.4)]"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(currentCount / totalCount) * 100}%` }}
+                      transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                    />
+                  </div>
+                  <div className="text-right text-[12px] text-slate-500 font-medium">
+                    已處理 {currentCount} / 共 {totalCount} 筆
+                  </div>
+                </div>
+              )}
+
               {errorMessage && (
                 <div className="flex items-center gap-2 text-red-400 bg-[#7F1D1D] p-3 rounded-lg border border-red-500/50 text-sm">
                   <AlertCircle size={16} />
@@ -293,29 +345,41 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-between items-center pt-4">
                 <button
-                  onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all"
-                >
-                  取消
-                </button>
-                <button
-                  onClick={url ? handleURLImport : handleUpload}
+                  onClick={handleClear}
                   disabled={(!file && !url) || status === 'uploading'}
-                  className="relative px-5 py-2.5 rounded-xl font-medium text-white shadow-lg overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed
-                             bg-gradient-to-t from-sky-600 to-sky-500 border border-sky-400/50 hover:from-sky-500 hover:to-sky-400
-                             active:from-sky-700 active:to-sky-600 disabled:from-slate-700 disabled:to-slate-600 disabled:border-slate-600"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="清空包含巨大檔案的記憶體佔用與網址"
                 >
-                  <div className="flex items-center gap-2">
-                    {status === 'uploading' ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <UploadCloud size={18} />
-                    )}
-                    <span>開始匯入</span>
-                  </div>
+                  <Trash2 size={18} />
+                  <span>清空欄位與記憶體</span>
                 </button>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={onClose}
+                    className="px-5 py-2.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={url ? handleURLImport : handleUpload}
+                    disabled={(!file && !url) || status === 'uploading'}
+                    className="relative px-5 py-2.5 rounded-xl font-medium text-white shadow-lg overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                               bg-gradient-to-t from-sky-600 to-sky-500 border border-sky-400/50 hover:from-sky-500 hover:to-sky-400
+                               active:from-sky-700 active:to-sky-600 disabled:from-slate-700 disabled:to-slate-600 disabled:border-slate-600"
+                  >
+                    <div className="flex items-center gap-2">
+                      {status === 'uploading' ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <UploadCloud size={18} />
+                      )}
+                      <span>開始匯入</span>
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>

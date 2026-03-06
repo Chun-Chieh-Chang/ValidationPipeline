@@ -67,9 +67,67 @@ function ProjectDetailContent() {
     }
   };
 
+  const refreshAutoReminders = useCallback(async (currentProject: any) => {
+    if (!currentProject || !currentProject.tasks) return;
+    
+    let needsUpdate = false;
+    let updatedNotifications = [...(currentProject.notifications || [])];
+    const today = new Date();
+    const reminderWindowDays = 3;
+
+    for (const task of currentProject.tasks) {
+      if (task.status === 'COMPLETED' || !task.planned_date || !task.dept) continue;
+
+      const plannedDate = new Date(task.planned_date);
+      const diffTime = plannedDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // 檢查是否已發送過該任務的提前提醒或是逾期提醒
+      const alreadyNotified = updatedNotifications.some(n => 
+        n.task_id === task.id && (n.message.includes('提醒：任務') || n.message.includes('逾期提醒：任務'))
+      );
+      
+      // 觸發條件：預計 3 天內完成，或是已經逾期 (diffDays < 0)
+      if (diffDays <= reminderWindowDays && !alreadyNotified) {
+        let msg = "";
+        if (diffDays < 0) {
+          msg = `🚨 逾期提醒：任務「${task.task_name}」已逾期 ${Math.abs(diffDays)} 天 (預定 ${plannedDate.toLocaleDateString()})，請 ${task.dept} 盡速推進。`;
+        } else {
+          msg = `提醒：任務「${task.task_name}」預計於 ${plannedDate.toLocaleDateString()} 完成，請 ${task.dept} 相關人員準備接手。`;
+        }
+
+        updatedNotifications.push({
+          id: "notif_auto_" + Math.random().toString(36).substring(2, 9),
+          project_id: currentProject.id,
+          task_id: task.id,
+          target_dept: task.dept,
+          message: msg,
+          is_read: false,
+          created_at: new Date().toISOString()
+        });
+        needsUpdate = true;
+      }
+    }
+
+    if (needsUpdate) {
+      const res = await projectService.update(currentProject.id, { notifications: updatedNotifications });
+      if (res) setProject(res);
+    }
+  }, []);
+
   useEffect(() => {
-    fetchProject();
+    const loadData = async () => {
+      await fetchProject();
+    };
+    loadData();
   }, [fetchProject]);
+
+  // 第二層 Effect 用於處理自動提醒（在 project 載入後執行一次）
+  useEffect(() => {
+    if (project && !loading) {
+      refreshAutoReminders(project);
+    }
+  }, [project, loading, refreshAutoReminders]);
 
   const handleUpdateStatus = async (taskId: string, currentStatus: string) => {
     setUpdating(taskId);
@@ -83,12 +141,68 @@ function ProjectDetailContent() {
     }
 
     try {
+      const currentTask = project.tasks.find((t: any) => t.id === taskId);
+      if (!currentTask) return;
+
       // 構建更新後的 tasks 清單 (方案 B / LocalStorage 相容)
       const updatedTasks = project.tasks.map((t: any) => 
         t.id === taskId ? { ...t, status: nextStatus, actual_date: actualDate } : t
       );
       
-      const res = await projectService.update(project.id, { tasks: updatedTasks });
+      let updatedNotifications = [...(project.notifications || [])];
+
+      // 簽核流程與通知邏輯 (當任務標記為完成)
+      if (nextStatus === 'COMPLETED') {
+        // 1. 找出所有接續此任務的後續任務
+        let nextTasks = updatedTasks.filter((t: any) => t.depends_on && t.depends_on.split(',').map((s: string) => s.trim()).includes(currentTask.wbs_code));
+
+        // 2. 如果沒有設定明確的關聯，則退回預設邏輯：尋找 WBS 清單中的下一個任務
+        if (nextTasks.length === 0) {
+          const sortedTasks = [...updatedTasks].sort((a: any, b: any) => {
+              const aParts = a.wbs_code.split('.').map(Number);
+              const bParts = b.wbs_code.split('.').map(Number);
+              for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+                if ((aParts[i] || 0) !== (bParts[i] || 0)) return (aParts[i] || 0) - (bParts[i] || 0);
+              }
+              return 0;
+          });
+          const idx = sortedTasks.findIndex((t: any) => t.id === taskId);
+          if (idx !== -1 && idx + 1 < sortedTasks.length) {
+            nextTasks = [sortedTasks[idx + 1]];
+          }
+        }
+
+        for (const nextTask of nextTasks) {
+          // 檢查該後續任務是否已準備好發出提醒
+          let readyToNotify = true;
+          if (nextTask.depends_on) {
+            const deps = nextTask.depends_on.split(',').map((s: string) => s.trim());
+            const uncompletedDeps = updatedTasks.filter((t: any) => deps.includes(t.wbs_code) && t.status !== 'COMPLETED');
+            if (uncompletedDeps.length > 0) readyToNotify = false;
+          }
+
+          if (readyToNotify && nextTask.status !== 'COMPLETED') {
+            const plannedDateStr = nextTask.planned_date 
+                ? new Date(nextTask.planned_date).toLocaleDateString() 
+                : '未定';
+            
+            updatedNotifications.push({
+              id: "notif_" + Math.random().toString(36).substring(2, 9),
+              project_id: project.id,
+              task_id: nextTask.id,
+              target_dept: nextTask.dept,
+              message: `前置任務「${currentTask.task_name}」已完成。請準備接手「${nextTask.task_name}」(預計: ${plannedDateStr})。`,
+              is_read: false,
+              created_at: new Date().toISOString()
+            });
+          }
+        }
+      }
+
+      const res = await projectService.update(project.id, { 
+        tasks: updatedTasks,
+        notifications: updatedNotifications
+      });
       if (res) {
         setProject(res);
       }

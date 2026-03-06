@@ -132,5 +132,21 @@ export const projectService = {
       return updated;
     }
     return null;
+  },
+
+  // 一鍵清空所有資料與釋放記憶體
+  async clearAll(): Promise<void> {
+    if (!isClient) return;
+
+    if (USE_API) {
+      try {
+        // 若未來後端支援一鍵清空 API，可在此實作
+        await fetch('/api/projects', { method: 'DELETE' });
+      } catch (e) {
+        // API 失敗仍繼續清理本地
+      }
+    }
+
+    localStorage.removeItem(STORAGE_KEY);
   }
 };
