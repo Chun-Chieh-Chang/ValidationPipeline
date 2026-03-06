@@ -64,23 +64,18 @@ export default function Dashboard() {
     switch (status) {
       case "COMPLETED":
       case "CLOSED":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+        return "bg-[#064E3B] text-emerald-400 border-emerald-500/50";
       case "IN_PROGRESS":
-        return "bg-sky-500/20 text-sky-400 border-sky-500/30";
+        return "bg-[#0C4A6E] text-sky-400 border-sky-500/50";
       case "PENDING":
       case "NOT_STARTED":
       default:
-        return "bg-gray-500/10 text-gray-500 border-slate-700";
+        return "bg-[#1E293B] text-slate-500 border-slate-700";
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 font-sans selection:bg-sky-500/30">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-royal-blue/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 blur-[150px] rounded-full" />
-      </div>
-
+    <div className="min-h-screen bg-[#0F172A] text-slate-100 font-sans selection:bg-sky-900">
       <div className="relative z-10 p-8 max-w-[92%] mx-auto">
         <header className="mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -92,16 +87,16 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex gap-3">
-            <div className="flex bg-slate-800/80 rounded-lg p-1 border border-white/5 mr-2">
+            <div className="flex bg-[#1E293B] rounded-lg p-1 border border-slate-700 mr-2">
               <button 
                 onClick={() => setViewMode('cards')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'cards' ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'cards' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 <LayoutGrid size={18} />
               </button>
               <button 
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 <TableIcon size={18} />
               </button>
@@ -110,21 +105,21 @@ export default function Dashboard() {
             <button 
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
-              className="px-4 py-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-md border border-white/5 text-slate-300 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] border border-slate-700 text-slate-300 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
               匯出總表
             </button>
             <button 
               onClick={() => setCreateModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 backdrop-blur-md border border-emerald-400/30 text-white text-sm font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 border border-emerald-400/50 text-white text-sm font-medium transition-all flex items-center gap-2"
             >
               <Plus size={18} />
               建立新專案
             </button>
             <button 
               onClick={() => setImportModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-md border border-white/5 text-sm font-medium transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),_0_4px_6px_rgba(0,0,0,0.2)]"
+              className="px-6 py-2.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] border border-slate-700 text-sm font-medium transition-all"
             >
               匯入 Master Sheet
             </button>
@@ -149,7 +144,7 @@ export default function Dashboard() {
             載入資料中...
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center text-slate-400 py-24 bg-slate-800/30 rounded-3xl border border-slate-700/50 border-dashed">
+          <div className="text-center text-slate-400 py-24 bg-[#1E293B] rounded-3xl border border-slate-700 border-dashed">
             目前尚無專案資料，請點擊上方按鈕匯入 Excel。
           </div>
         ) : viewMode === 'cards' ? (
@@ -162,7 +157,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4, scale: 1.005 }}
                 transition={{ duration: 0.3 }}
-                className="group relative cursor-pointer bg-slate-800/40 backdrop-blur-[15px] rounded-2xl border border-white/[0.05] p-6 shadow-xl transition-all hover:bg-slate-800/60 hover:shadow-2xl hover:border-white/[0.1]"
+                className="group relative cursor-pointer bg-[#1E293B] rounded-2xl border border-slate-700 p-6 shadow-xl transition-all hover:bg-[#2D3748] hover:shadow-2xl hover:border-slate-600"
               >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                   <div className="flex-1 w-full">
@@ -170,14 +165,14 @@ export default function Dashboard() {
                       <span className="text-xl font-bold text-white tracking-wide">
                         {project.project_no}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-700/50 border border-slate-600/50 text-slate-300">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#334155] border border-slate-600 text-slate-300">
                         Rev. {project.rev}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#1E3A8A] border border-blue-500/50 text-blue-400">
                         {project.type}
                       </span>
                       {project.status === "CLOSED" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                        <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#064E3B] border border-emerald-500/50 text-emerald-400">
                           已結案
                         </span>
                       )}
@@ -198,8 +193,8 @@ export default function Dashboard() {
                             key={phase.id}
                             className={`px-2 py-0.5 rounded text-sm font-bold uppercase transition-all border ${
                               phase.completion_status === 'COMPLETED' 
-                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
-                                : 'bg-slate-700/30 text-slate-500 border-slate-700'
+                                ? 'bg-[#064E3B] text-emerald-400 border-emerald-500/50' 
+                                : 'bg-[#334155] text-slate-500 border-slate-700'
                             }`}
                           >
                             {phase.phase_name}
@@ -226,12 +221,12 @@ export default function Dashboard() {
           </div>
         ) : (
           /* Table View Mode */
-          <div className="bg-slate-800/40 backdrop-blur-[15px] rounded-2xl border border-white/[0.1] shadow-2xl overflow-hidden">
+          <div className="bg-[#1E293B] rounded-2xl border border-slate-700 shadow-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[1400px] border border-white/5">
+              <table className="w-full text-left border-collapse min-w-[1400px] border border-slate-700">
                 <thead>
-                  <tr className="bg-slate-900/60 text-slate-400 text-sm font-bold uppercase tracking-wider">
-                    <th className="px-3 py-3 text-center w-14 border border-white/10" rowSpan={2}>優先</th>
+                  <tr className="bg-[#0F172A] text-slate-400 text-sm font-bold uppercase tracking-wider">
+                    <th className="px-3 py-3 text-center w-14 border border-slate-700" rowSpan={2}>優先</th>
                     <th className="px-4 py-3 w-32 border border-white/10" rowSpan={2}>起始日期</th>
                     <th className="px-4 py-3 w-28 border border-white/10" rowSpan={2}>專案類型</th>
                     <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>模具號碼</th>
@@ -245,7 +240,7 @@ export default function Dashboard() {
                     <th className="px-4 py-3 w-28 border border-white/10" rowSpan={2}>發出者</th>
                     <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>ECN編號</th>
                   </tr>
-                  <tr className="bg-slate-900/40 text-slate-500 text-sm">
+                  <tr className="bg-[#0F172A] text-slate-500 text-sm">
                     <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">PD</th>
                     <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">FA</th>
                     <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">OQ</th>
@@ -271,10 +266,10 @@ export default function Dashboard() {
                       <tr 
                         key={project.id}
                         onClick={() => router.push(`/projects/view?id=${project.id}`)}
-                        className="hover:bg-white/[0.03] cursor-pointer transition-colors group"
+                        className="hover:bg-[#334155] border-b border-slate-700 cursor-pointer transition-colors group"
                       >
-                        <td className="px-4 py-4 text-center border border-white/5">
-                          <span className={`inline-block w-7 h-7 leading-7 rounded-full text-sm font-bold ${project.priority <= 1 ? 'bg-rose-500/20 text-rose-400' : 'bg-slate-700/50 text-slate-400'}`}>
+                        <td className="px-4 py-4 text-center border-r border-slate-700">
+                          <span className={`inline-block w-7 h-7 leading-7 rounded-full text-sm font-bold ${project.priority <= 1 ? 'bg-[#7F1D1D] text-rose-400' : 'bg-[#334155] text-slate-400'}`}>
                             {project.priority || 3}
                           </span>
                         </td>

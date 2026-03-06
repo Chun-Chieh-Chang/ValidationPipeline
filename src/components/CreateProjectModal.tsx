@@ -79,14 +79,14 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[#020617]"
           />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-xl bg-slate-800/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-xl bg-[#1E293B] border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
           >
             <button
               onClick={onClose}
@@ -96,7 +96,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             </button>
 
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-sky-500/20 text-sky-400 rounded-full flex items-center justify-center border border-sky-500/30">
+              <div className="w-12 h-12 bg-[#0C4A6E] text-sky-400 rounded-full flex items-center justify-center border border-sky-500/50">
                 <FileText size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-white">新增確效專案</h2>
@@ -111,7 +111,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="project_no"
                     value={formData.project_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                     placeholder="例如: M284"
                     required
                   />
@@ -123,7 +123,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="part_no"
                     value={formData.part_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                   />
                 </div>
                 <div>
@@ -133,7 +133,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="rev"
                     value={formData.rev}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                   />
                 </div>
                 <div>
@@ -142,7 +142,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                   >
                     <option value="設變">設變</option>
                     <option value="新模">新模</option>
@@ -157,7 +157,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="ecr_no"
                     value={formData.ecr_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                   />
                 </div>
                 <div className="col-span-2">
@@ -167,7 +167,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     name="purpose"
                     value={formData.purpose}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                   />
                 </div>
                 <div className="col-span-2">
@@ -183,7 +183,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
               </div>
 
               {errorMessage && (
-                <div className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20 text-sm mt-4">
+                <div className="flex items-center gap-2 text-red-400 bg-[#7F1D1D] p-3 rounded-lg border border-red-500/50 text-sm mt-4">
                   <AlertCircle size={16} />
                   <span>{errorMessage}</span>
                 </div>

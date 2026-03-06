@@ -200,14 +200,14 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+            className="absolute inset-0 bg-[#020617]"
           />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8"
+            className="relative w-full max-w-lg bg-[#1E293B] border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8"
           >
             <button
               onClick={onClose}
@@ -217,7 +217,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             </button>
 
             <div className="text-center mb-6">
-              <div className="mx-auto w-12 h-12 bg-sky-500/20 text-sky-400 rounded-full flex items-center justify-center mb-4 border border-sky-500/30 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+              <div className="mx-auto w-12 h-12 bg-[#0C4A6E] text-sky-400 rounded-full flex items-center justify-center mb-4 border border-sky-500/50">
                 <FileSpreadsheet size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-white mb-2">匯入 Master Sheet</h2>
@@ -229,7 +229,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             <div className="space-y-4">
               <label
                 htmlFor="file-upload"
-                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-600 bg-slate-800/50 hover:bg-slate-700/50 hover:border-slate-500'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-emerald-500/50 bg-[#064E3B]' : 'border-slate-600 bg-[#0F172A] hover:bg-[#1E293B] hover:border-slate-500'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                   {file ? (
@@ -275,19 +275,19 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     setSuccessMessage(null);
                   }}
                   disabled={status === 'uploading' || file !== null} // Disable URL input if file is present or uploading
-                  className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-sky-500 transition-colors"
+                  className="w-full px-4 py-2 bg-[#0F172A] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-sky-500 transition-colors"
                 />
               </div>
 
               {errorMessage && (
-                <div className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20 text-sm">
+                <div className="flex items-center gap-2 text-red-400 bg-[#7F1D1D] p-3 rounded-lg border border-red-500/50 text-sm">
                   <AlertCircle size={16} />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20 text-sm">
+                <div className="flex items-center gap-2 text-emerald-400 bg-[#064E3B] p-3 rounded-lg border border-emerald-500/50 text-sm">
                   <CheckCircle size={16} />
                   <span>{successMessage}</span>
                 </div>

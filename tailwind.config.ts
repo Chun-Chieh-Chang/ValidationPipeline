@@ -10,8 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         background: "#0F172A", // Slate 900
+        surface: "#1E293B",    // Slate 800
         foreground: "#F1F5F9", // Slate 100
         "royal-blue": "#3B82F6",
+        border: "#334155",     // Slate 700
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
