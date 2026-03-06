@@ -74,39 +74,39 @@ export default function Dashboard() {
     switch (status) {
       case "COMPLETED":
       case "CLOSED":
-        return "bg-[#064E3B] text-emerald-400 border-emerald-500/50";
+        return "bg-brand-primary text-white border-brand-primary";
       case "IN_PROGRESS":
-        return "bg-[#0C4A6E] text-sky-400 border-sky-500/50";
+        return "bg-brand-secondary/20 text-brand-primary border-brand-secondary/40";
       case "PENDING":
       case "NOT_STARTED":
       default:
-        return "bg-[#1E293B] text-slate-500 border-slate-700";
+        return "bg-slate-50 text-slate-400 border-slate-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 font-sans selection:bg-sky-900">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-brand-primary/20">
       <div className="relative z-10 p-8 max-w-[92%] mx-auto">
         <header className="mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-              射出成型確效管理系統
+            <h1 className="text-3xl font-black tracking-tight text-foreground mb-1">
+              Injection <span className="text-brand-primary">Pipeline</span>
             </h1>
-            <p className="text-slate-400">
-              模具變更與確效案件即時追蹤 (Validation Pipeline)
+            <p className="text-slate-500 font-medium">
+              射出成型確效管理系統 (v2.0 - FatPandaVision)
             </p>
           </div>
           <div className="flex gap-3">
-            <div className="flex bg-[#1E293B] rounded-lg p-1 border border-slate-700 mr-2">
+            <div className="flex bg-brand-accent/30 rounded-xl p-1 border border-brand-secondary/20 mr-2">
               <button 
                 onClick={() => setViewMode('cards')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'cards' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`p-1.5 rounded-lg transition-all ${viewMode === 'cards' ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-primary'}`}
               >
                 <LayoutGrid size={18} />
               </button>
               <button 
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-primary'}`}
               >
                 <TableIcon size={18} />
               </button>
@@ -115,7 +115,7 @@ export default function Dashboard() {
             <button 
               onClick={handleClearAllData}
               disabled={loading || projects.length === 0}
-              className="px-4 py-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md border border-red-500/20 text-red-400 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-red-50 text-red-500 border border-red-100 text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50 hover:bg-red-100"
               title="一鍵清空所有專案與釋放記憶體"
             >
               <Trash2 size={16} />
@@ -124,21 +124,21 @@ export default function Dashboard() {
             <button 
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
-              className="px-4 py-2.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] border border-slate-700 text-slate-300 text-sm font-medium transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-brand-accent/20 hover:bg-brand-accent/40 border border-brand-secondary/20 text-brand-primary text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
               匯出總表
             </button>
             <button 
               onClick={() => setCreateModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 border border-emerald-400/50 text-white text-sm font-medium transition-all flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-brand-primary hover:shadow-lg hover:shadow-brand-primary/20 text-white text-sm font-bold transition-all flex items-center gap-2"
             >
               <Plus size={18} />
               建立新專案
             </button>
             <button 
               onClick={() => setImportModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] border border-slate-700 text-sm font-medium transition-all"
+              className="px-6 py-2.5 rounded-lg bg-white border-2 border-brand-accent text-brand-primary hover:bg-brand-accent/10 font-bold text-sm transition-all"
             >
               匯入 Master Sheet
             </button>
@@ -158,12 +158,12 @@ export default function Dashboard() {
         />
 
         {loading ? (
-          <div className="text-center text-slate-400 py-12">
-            <div className="w-8 h-8 border-2 border-slate-600 border-t-sky-500 rounded-full animate-spin mx-auto mb-4" />
+          <div className="text-center py-24 text-slate-500">
+            <div className="w-10 h-10 border-4 border-brand-accent border-t-brand-primary rounded-full animate-spin mx-auto mb-4" />
             載入資料中...
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center text-slate-400 py-24 bg-[#1E293B] rounded-3xl border border-slate-700 border-dashed">
+          <div className="text-center text-slate-400 py-24 bg-white rounded-3xl border-2 border-brand-accent border-dashed max-w-4xl mx-auto shadow-sm">
             目前尚無專案資料，請點擊上方按鈕匯入 Excel。
           </div>
         ) : viewMode === 'cards' ? (
@@ -174,34 +174,39 @@ export default function Dashboard() {
                 onClick={() => router.push(`/projects/view?id=${project.id}`)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -4, scale: 1.005 }}
+                whileHover={{ y: -6, scale: 1.01 }}
                 transition={{ duration: 0.3 }}
-                className="group relative cursor-pointer bg-[#1E293B] rounded-2xl border border-slate-700 p-6 shadow-xl transition-all hover:bg-[#2D3748] hover:shadow-2xl hover:border-slate-600"
+                className="group relative cursor-pointer bg-white rounded-3xl border border-brand-secondary/20 p-8 shadow-xl hover:shadow-2xl hover:border-brand-primary/40 transition-all overflow-hidden"
               >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="flex-1 w-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-xl font-bold text-white tracking-wide">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+                  <div className="flex-1 w-full relative z-10">
+                    <div className="flex items-center gap-3 mb-4 flex-wrap">
+                      <span className="text-2xl font-black text-brand-primary tracking-tight">
                         {project.project_no}
                       </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#334155] border border-slate-600 text-slate-300">
-                        Rev. {project.rev}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#1E3A8A] border border-blue-500/50 text-blue-400">
+                      <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-brand-accent/30 border border-brand-secondary/10 text-brand-primary uppercase">
                         {project.type}
                       </span>
-                      {project.status === "CLOSED" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-[#064E3B] border border-emerald-500/50 text-emerald-400">
-                          已結案
+                      <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-slate-50 border border-slate-200 text-slate-500 uppercase">
+                        Rev. {project.rev}
+                      </span>
+                      {project.status === "CLOSED" ? (
+                        <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-emerald-50 border border-emerald-100 text-emerald-600 uppercase">
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-brand-peach/20 border border-brand-peach/40 text-[#D87D3A] uppercase animate-pulse">
+                          Active
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-slate-400">
-                      <div>品號: {project.part_no}</div>
-                      <div className="w-1 h-1 rounded-full bg-slate-600" />
-                      <div>負責人: {project.owner}</div>
-                      <div className="w-1 h-1 rounded-full bg-slate-600" />
-                      <div>目的: {project.purpose || '無'}</div>
+                    <h3 className="text-2xl font-black text-foreground mb-3 leading-tight group-hover:text-brand-primary transition-colors">
+                      {project.name}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-bold text-slate-500 mb-6">
+                      <div>品號: <span className="text-foreground">{project.part_no}</span></div>
+                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-slate-300" />負責人: <span className="text-foreground">{project.owner}</span></div>
+                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-slate-300" />目的: <span className="text-foreground line-clamp-1">{project.purpose || '無'}</span></div>
                     </div>
 
                     {/* Phase Indicators */}
@@ -223,14 +228,14 @@ export default function Dashboard() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 w-full md:w-auto">
-                    {/* WBS 進度簡易條 (計算已完成 / 總數) */}
-                    <div className="text-right">
-                      <div className="text-sm text-slate-400 mb-1">任務進度</div>
-                      <div className="text-lg font-bold text-slate-200">
-                        {project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0}
-                        <span className="text-slate-500 text-sm mx-1">/</span>
-                        {project.tasks?.length || 0}
+                  <div className="flex flex-col items-end gap-2 w-full md:w-auto relative z-10">
+                    <div className="bg-brand-accent/20 px-6 py-4 rounded-3xl border border-brand-secondary/10 text-center min-w-[140px]">
+                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">任務進度</div>
+                      <div className="text-3xl font-black text-brand-primary leading-none">
+                        {Math.round(((project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0) / (project.tasks?.length || 1)) * 100)}%
+                      </div>
+                      <div className="text-[11px] font-bold text-slate-500 mt-1">
+                        {project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0} / {project.tasks?.length || 0}
                       </div>
                     </div>
                   </div>
@@ -240,32 +245,32 @@ export default function Dashboard() {
           </div>
         ) : (
           /* Table View Mode */
-          <div className="bg-[#1E293B] rounded-2xl border border-slate-700 shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-3xl border border-brand-secondary/20 shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[1400px] border border-slate-700">
+              <table className="w-full text-left border-collapse min-w-[1400px]">
                 <thead>
-                  <tr className="bg-[#0F172A] text-slate-400 text-sm font-bold uppercase tracking-wider">
-                    <th className="px-3 py-3 text-center w-14 border border-slate-700" rowSpan={2}>優先</th>
-                    <th className="px-4 py-3 w-32 border border-white/10" rowSpan={2}>起始日期</th>
-                    <th className="px-4 py-3 w-28 border border-white/10" rowSpan={2}>專案類型</th>
-                    <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>模具號碼</th>
-                    <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>品號</th>
-                    <th className="px-3 py-3 text-center w-24 border border-white/10" rowSpan={2}>工程圖面版次</th>
-                    <th className="px-4 py-3 min-w-[150px] border border-white/10" rowSpan={2}>目的</th>
-                    <th className="px-4 py-2 text-center border border-white/10" colSpan={6}>程序</th>
-                    <th className="px-3 py-3 w-24 text-center border border-white/10" rowSpan={2}>狀態</th>
-                    <th className="px-3 py-3 w-28 text-center border border-white/10" rowSpan={2}>雲端資料 (連結)</th>
-                    <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>ECR編號</th>
-                    <th className="px-4 py-3 w-28 border border-white/10" rowSpan={2}>發出者</th>
-                    <th className="px-4 py-3 w-36 border border-white/10" rowSpan={2}>ECN編號</th>
+                  <tr className="bg-brand-accent/30 text-brand-primary text-xs font-black uppercase tracking-widest">
+                    <th className="px-3 py-5 text-center w-14 border-b border-brand-secondary/10" rowSpan={2}>優先</th>
+                    <th className="px-4 py-5 w-32 border-b border-l border-brand-secondary/10" rowSpan={2}>起始日期</th>
+                    <th className="px-4 py-5 w-28 border-b border-l border-brand-secondary/10" rowSpan={2}>專案類型</th>
+                    <th className="px-4 py-5 w-36 border-b border-l border-brand-secondary/10" rowSpan={2}>模具號碼</th>
+                    <th className="px-4 py-5 w-36 border-b border-l border-brand-secondary/10" rowSpan={2}>品號</th>
+                    <th className="px-3 py-5 text-center w-24 border-b border-l border-brand-secondary/10" rowSpan={2}>工程圖面版次</th>
+                    <th className="px-4 py-5 min-w-[150px] border-b border-l border-brand-secondary/10" rowSpan={2}>目的</th>
+                    <th className="px-4 py-3 text-center border-b border-l border-brand-secondary/10" colSpan={6}>程序燈號 (Phases)</th>
+                    <th className="px-3 py-5 w-24 text-center border-b border-l border-brand-secondary/10" rowSpan={2}>狀態</th>
+                    <th className="px-3 py-5 w-28 text-center border-b border-l border-brand-secondary/10" rowSpan={2}>雲端資料</th>
+                    <th className="px-4 py-5 w-36 border-b border-l border-brand-secondary/10" rowSpan={2}>ECR編號</th>
+                    <th className="px-4 py-5 w-28 border-b border-l border-brand-secondary/10" rowSpan={2}>負責人</th>
+                    <th className="px-4 py-5 w-36 border-b border-l border-brand-secondary/10" rowSpan={2}>ECN編號</th>
                   </tr>
-                  <tr className="bg-[#0F172A] text-slate-500 text-sm">
-                    <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">PD</th>
-                    <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">FA</th>
-                    <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">OQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">PQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border border-white/5 font-semibold">EC</th>
-                    <th className="px-1 py-1 text-center w-16 leading-tight border border-white/5 font-semibold">圖面進版</th>
+                  <tr className="bg-brand-accent/10 text-slate-500 text-[10px] font-black tracking-tighter">
+                    <th className="px-1 py-2 text-center w-12 border-l border-brand-secondary/5">PD</th>
+                    <th className="px-1 py-2 text-center w-12 border-l border-brand-secondary/5">FA</th>
+                    <th className="px-1 py-2 text-center w-12 border-l border-brand-secondary/5">OQ</th>
+                    <th className="px-1 py-2 text-center w-12 border-l border-brand-secondary/5">PQ</th>
+                    <th className="px-1 py-2 text-center w-12 border-l border-brand-secondary/5">EC</th>
+                    <th className="px-1 py-2 text-center w-16 leading-tight border-l border-brand-secondary/5">圖面進版</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
@@ -285,69 +290,69 @@ export default function Dashboard() {
                       <tr 
                         key={project.id}
                         onClick={() => router.push(`/projects/view?id=${project.id}`)}
-                        className="hover:bg-[#334155] border-b border-slate-700 cursor-pointer transition-colors group"
+                        className="hover:bg-brand-accent/5 border-b border-brand-secondary/5 cursor-pointer transition-colors group"
                       >
-                        <td className="px-4 py-4 text-center border-r border-slate-700">
-                          <span className={`inline-block w-7 h-7 leading-7 rounded-full text-sm font-bold ${project.priority <= 1 ? 'bg-[#7F1D1D] text-rose-400' : 'bg-[#334155] text-slate-400'}`}>
+                        <td className="px-4 py-5 text-center border-r border-brand-secondary/5">
+                          <span className={`inline-block w-8 h-8 leading-8 rounded-full text-xs font-black ${project.priority <= 1 ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-400'}`}>
                             {project.priority || 3}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-slate-400 text-sm border border-white/5">
+                        <td className="px-4 py-5 text-slate-500 text-sm font-bold border-l border-brand-secondary/5">
                           {project.start_date ? new Date(project.start_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="px-4 py-4 border border-white/5">
-                          <span className="px-2 py-0.5 rounded-full text-sm bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                        <td className="px-4 py-5 border-l border-brand-secondary/5">
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-black bg-brand-accent/20 text-brand-primary border border-brand-secondary/10 uppercase">
                             {project.type}
                           </span>
                         </td>
-                        <td className="px-4 py-4 font-bold text-white group-hover:text-sky-400 transition-colors border border-white/5">
+                        <td className="px-4 py-5 font-black text-brand-primary group-hover:underline border-l border-brand-secondary/5">
                           {project.project_no}
                         </td>
-                        <td className="px-4 py-4 text-slate-300 border border-white/5">
+                        <td className="px-4 py-5 text-foreground font-black border-l border-brand-secondary/5">
                           {project.part_no}
                         </td>
-                        <td className="px-4 py-4 text-center text-slate-400 border border-white/5">
+                        <td className="px-4 py-5 text-center text-slate-500 font-bold border-l border-brand-secondary/5">
                           {project.rev}
                         </td>
-                        <td className="px-4 py-4 text-slate-400 text-sm truncate max-w-[150px] border border-white/5" title={project.purpose}>
+                        <td className="px-4 py-5 text-slate-500 text-sm font-medium truncate max-w-[150px] border-l border-brand-secondary/5" title={project.purpose}>
                           {project.purpose || "-"}
                         </td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('PD')}</td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('FA')}</td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('OQ')}</td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('PQ')}</td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('EC')}</td>
-                        <td className="px-1 py-4 border border-white/5">{renderCheck('圖面進版')}</td>
-                        <td className="px-4 py-4 text-center border border-white/5">
-                          <div className={`text-sm font-bold ${project.status === 'CLOSED' ? 'text-emerald-400' : 'text-sky-400'}`}>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('PD')}</td>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('FA')}</td>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('OQ')}</td>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('PQ')}</td>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('EC')}</td>
+                        <td className="px-1 py-5 border-l border-brand-secondary/5">{renderCheck('圖面進版')}</td>
+                        <td className="px-4 py-5 text-center border-l border-brand-secondary/5">
+                          <div className={`text-xs font-black px-2 py-1 rounded-lg ${project.status === 'CLOSED' ? 'bg-emerald-50 text-emerald-600' : 'bg-brand-accent/30 text-brand-primary'}`}>
                             {project.status === 'CLOSED' ? '結案' : '進行中'}
                           </div>
                         </td>
-                        <td className="px-4 py-4 text-center border border-white/5">
+                        <td className="px-4 py-5 text-center border-l border-brand-secondary/5">
                           {project.cloud_link ? (
                             <a 
                               href={project.cloud_link} 
                               target="_blank" 
                               rel="noopener noreferrer" 
                               onClick={(e) => e.stopPropagation()}
-                              className="text-sky-400 hover:text-sky-300 transition-colors"
+                              className="text-brand-primary hover:text-brand-primary/70 transition-colors"
                             >
-                              <FileDown size={14} className="mx-auto" />
+                              <FileDown size={18} className="mx-auto" />
                             </a>
-                          ) : <span className="text-slate-700">-</span>}
+                          ) : <span className="text-slate-300">-</span>}
                         </td>
-                        <td className="px-4 py-4 text-slate-400 text-sm border border-white/5">
-                          <div className="font-medium text-slate-200">{project.ecr_no || "-"}</div>
-                          {project.ecr_date && <div className="text-sm opacity-60 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <td className="px-4 py-5 text-slate-500 text-sm border-l border-brand-secondary/5">
+                          <div className="font-black text-brand-primary">{project.ecr_no || "-"}</div>
+                          {project.ecr_date && <div className="text-[11px] font-bold text-slate-400 mt-0.5">
                             {new Date(project.ecr_date).toLocaleDateString()}
                           </div>}
                         </td>
-                        <td className="px-4 py-4 text-slate-300 text-sm border border-white/5">
+                        <td className="px-4 py-5 text-foreground font-bold text-sm border-l border-brand-secondary/5">
                           {project.owner}
                         </td>
-                        <td className="px-4 py-4 text-slate-400 text-sm border border-white/5">
-                          <div className="font-medium text-slate-200">{project.ecn_no || "-"}</div>
-                          {project.ecn_date && <div className="text-sm opacity-60 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <td className="px-4 py-5 text-slate-500 text-sm border-l border-brand-secondary/5">
+                          <div className="font-black text-slate-700">{project.ecn_no || "-"}</div>
+                          {project.ecn_date && <div className="text-[11px] font-bold text-slate-400 mt-0.5">
                             {new Date(project.ecn_date).toLocaleDateString()}
                           </div>}
                         </td>

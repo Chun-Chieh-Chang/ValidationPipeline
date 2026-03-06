@@ -9,11 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0F172A", // Slate 900
-        surface: "#1E293B",    // Slate 800
-        foreground: "#F1F5F9", // Slate 100
-        "royal-blue": "#3B82F6",
-        border: "#334155",     // Slate 700
+        background: "#F8F7FF", // Lilac White
+        surface: "#FFFFFF",    // Pure White for Cards
+        foreground: "#1E1E2E", // Deep Charcoal for crystal clear text
+        "brand-primary": "#8875F5",   // Radiant Purple
+        "brand-secondary": "#B1B0FE", // Soft Lavender
+        "brand-accent": "#FEE9D6",    // Warm Beige
+        "brand-peach": "#FFD6BC",     // Soft Peach
+        border: "#D1D1F5",            // Muted Lavender Border
+        "royal-blue": "#8875F5",      // Alias for compatibility
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

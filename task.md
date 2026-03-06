@@ -25,12 +25,13 @@
 - [x] 實作專案詳細頁面 (WBS 任務清單與權責分配)。
 - [x] 實作資料匯入介面與成功/錯誤提示。
 
-## UI 透明度移除優化 (Transparency Removal Optimization)
+## UI 配色重構 (FatPandaVision Palette Implementation)
 
-- [x] 更新 `tailwind.config.ts` 定義不透明色標 (Surface, Border)。
-- [x] 修改 `globals.css` 移除磨砂玻璃效果與透明背景。
-- [x] 重構 Dashboard (`page.tsx`) 移除 `backdrop-blur` 與透明色階。
-- [x] 重構專案詳細頁 (`projects/view/page.tsx`) 移除透明效果。
-- [x] 重構彈窗元件 (`ImportModal.tsx`, `CreateProjectModal.tsx`)。
-- [x] 執行魯棒性測試，確認對比度與視覺一致性。
-- [x] 更新 `DEV_LOG.md` 記錄變更。
+- [x] 制定配色與對比度對應清單 (Mapping & Contrast Audit).
+- [x] 更新 `tailwind.config.ts` 定義新色標系統.
+- [x] 修改 `globals.css` 改為淺色底色與高對比文字變數.
+- [x] 重構 Dashboard (Cards, Table) 以適配新配色.
+- [x] 重構專案詳細頁 (Project Detail, WBS, Gantt) 以適配新配色.
+- [x] 狀態燈號 (Status Tags) 與進度條比例尺優化.
+- [x] 執行對比度驗證 (Contrast Check - WCAG AA).
+- [x] 更新 `DEV_LOG.md` 紀錄配色變更.

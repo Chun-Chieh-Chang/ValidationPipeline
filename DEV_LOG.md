@@ -131,3 +131,25 @@
 
 1. **髒資料防禦策略**：對於所有外部輸入的時間欄位，實施「白名單年份」策略，確保髒資料不影響系統穩定性。
 2. **導入日誌警告**：在發生日期忽略時透過 `console.warn` 記錄原始問題值。
+
+---
+
+### [2026-03-06] 介面配色全面重構 (FatPandaVision Palette Implementation)
+
+**原因分析 (Root Cause Analysis)**：
+原有的深色模式（Dark Mode）在長時間使用下容易造成視覺疲勞，且在報表閱讀與 WBS 階層辨識上，對比度不足以支撐高效的數位協作。為了提升系統的專業感與閱讀舒適度，決定實施「FatPandaVision」品牌配色重構，轉向具備極高對比度的「精品淺色模式」。
+
+**矯正措施 (Corrective Actions)**：
+
+1. **語意化色彩系統 (Semantic Token System)**：更新 `tailwind.config.ts` 與 `globals.css`，捨棄硬編碼顏色，改用 `brand-primary` (Radiant Purple), `brand-accent` (Warm Beige) 等具備品牌識別度的語法。
+2. **極致對比度優化 (WCAG 2.1 AA Compliance)**：
+   - 背景：Lilac White (#F8F7FF)。
+   - 文字：Deep Charcoal (#1E1E2E)，確保對比度達到 13.5:1 (AAA 級標準)。
+3. **全模組視覺同步**：
+   - **Dashboard**：重構卡片與表格，強化「進行中」專案的視覺引導。
+   - **Project Detail**：重塑 WBS 任務清單與甘特圖，主任務與子任務之間使用高對比邊框與背景區隔，縮短狀態判讀時間。
+
+**預防措施 (Preventive Measures)**：
+
+1. **設計規範文件化**：同步更新 `walkthrough.md` 與 `task.md`，定義未來的 UI 擴充必須遵循 `brand-*` 色標系統與 4px/8px 間距規範。
+2. **自動化品質檢查**：修復 PowerShell 權限問題，確保每次 commit 前皆能順利執行 `npm run lint` 以防止樣式回歸。

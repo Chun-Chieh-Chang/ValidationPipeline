@@ -3,13 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 241, 245, 249;
-  --background-rgb: 15, 23, 42;
+  --foreground-rgb: 30, 30, 46;    /* #1E1E2E Deep Charcoal */
+  --background-rgb: 248, 247, 255;  /* #F8F7FF Lilac White */
+  --accent-rgb: 136, 117, 245;      /* #8875F5 Radiant Purple */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+::selection {
+  background-color: #8875F5;
+  color: #FFFFFF;
 }
 
 @layer utilities {
