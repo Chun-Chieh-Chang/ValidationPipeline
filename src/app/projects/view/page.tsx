@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
 import { projectService } from "@/lib/projectService";
@@ -8,8 +8,8 @@ import { projectService } from "@/lib/projectService";
 export default function ProjectDetailContainer() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+      <div className="min-h-screen bg-background flex items-center justify-center text-foreground">
+        <Loader2 className="w-8 h-8 animate-spin text-pelagic" />
       </div>
     }>
       <ProjectDetailContent />
@@ -243,7 +243,7 @@ function ProjectDetailContent() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-background flex items-center justify-center text-brand-primary font-bold">
+    <div className="min-h-screen bg-background flex items-center justify-center text-abyss font-bold">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin" />
         載入專案資料中...
@@ -332,19 +332,15 @@ function ProjectDetailContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-brand-primary/20">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] right-[-5%] w-[600px] h-[600px] bg-brand-primary/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[10%] left-[-5%] w-[400px] h-[400px] bg-brand-peach/10 blur-[100px] rounded-full" />
-      </div>
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-seafoam overflow-x-hidden no-scrollbar">
 
-      <div className="relative z-10 p-6 md:p-8 max-w-[98%] mx-auto">
+      <div className="relative z-10 p-6 md:p-8 max-w-[98%] mx-auto overflow-y-hidden no-scrollbar">
         
         {/* 主要專案內容 (Expanded to full width) */}
         <div className="w-full">
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-slate-500 hover:text-brand-primary mb-8 font-bold transition-all group/back"
+            className="flex items-center gap-2 text-slate-500 hover:text-abyss mb-8 font-bold transition-all group/back"
           >
             <ArrowLeft size={16} className="group-hover/back:-translate-x-1 transition-transform" /> 
             返回總覽
@@ -357,14 +353,14 @@ function ProjectDetailContent() {
                   {project.project_no}
                 </h1>
                 <div className="flex gap-2">
-                  <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-slate-100 border border-slate-200 text-slate-500 uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 uppercase">
                     Rev. {project.rev}
                   </span>
-                  <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-brand-accent/40 border border-brand-secondary/20 text-brand-primary uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-seafoam border border-reef text-abyss uppercase">
                     {project.type}
                   </span>
                   {project.status === "CLOSED" && (
-                    <span className="px-3 py-1 rounded-xl text-xs font-black tracking-widest bg-emerald-50 border border-emerald-100 text-emerald-600 uppercase">
+                    <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-emerald-100 border border-emerald-300 text-emerald-800 uppercase">
                       Completed
                     </span>
                   )}
@@ -375,7 +371,7 @@ function ProjectDetailContent() {
                 <button 
                   onClick={handleExport}
                   disabled={exporting}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-brand-accent bg-white text-brand-primary hover:bg-brand-accent/20 shadow-sm"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-abyss bg-surface text-abyss hover:opacity-80 shadow-xl"
                 >
                   {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
                   匯出案號報表
@@ -383,10 +379,10 @@ function ProjectDetailContent() {
 
                 <button 
                   onClick={handleToggleProjectStatus}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-black transition-all shadow-sm ${
+                  className={`px-5 py-2.5 rounded-xl text-sm font-black transition-all shadow-xl ${
                     project.status === 'CLOSED'
-                      ? 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                      : 'bg-brand-primary text-white hover:shadow-lg hover:shadow-brand-primary/20'
+                      ? 'bg-surface border-2 border-border text-muted hover:opacity-80'
+                      : 'bg-abyss text-white dark:text-slate-950 hover:opacity-90 border-2 border-abyss'
                   }`}
                 >
                   {project.status === 'CLOSED' ? '重啟案號' : '標記為結案'}
@@ -394,47 +390,47 @@ function ProjectDetailContent() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-slate-500 bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-brand-secondary/10 shadow-sm">
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-foreground bg-surface p-6 rounded-3xl border-2 border-border shadow-xl">
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">品號 (Part No.)</span>
+                <span className="text-sm font-black uppercase tracking-widest text-muted">品號 (Part No.)</span>
                 <span className="text-foreground font-black">{project.part_no}</span>
               </div>
-              <div className="w-px h-8 bg-brand-secondary/10 hidden md:block" />
+              <div className="w-px h-8 bg-border hidden md:block" />
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">負責人 (Owner)</span>
+                <span className="text-sm font-black uppercase tracking-widest text-muted">負責人 (Owner)</span>
                 <span className="text-foreground font-black">{project.owner}</span>
               </div>
-              {project.ecr_no && (
+              {project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true' && (
                 <>
-                  <div className="w-px h-8 bg-brand-secondary/10 hidden md:block" />
+                  <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">ECR 號碼</span>
-                    <span className="text-brand-primary font-black">{project.ecr_no} <span className="text-slate-400 font-bold ml-1 text-xs">({project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '未填'})</span></span>
+                    <span className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">ECR 號碼</span>
+                    <span className="text-abyss font-black">{project.ecr_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
               )}
-              {project.ecn_no && (
+              {project.ecn_no && String(project.ecn_no).toLowerCase() !== 'true' && (
                 <>
-                  <div className="w-px h-8 bg-brand-secondary/10 hidden md:block" />
+                  <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">ECN 號碼</span>
-                    <span className="text-slate-700 font-black">{project.ecn_no} <span className="text-slate-400 font-bold ml-1 text-xs">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
+                    <span className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">ECN 號碼</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-black">{project.ecn_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
               )}
               {project.start_date && (
                 <>
-                  <div className="w-px h-8 bg-brand-secondary/10 hidden md:block" />
+                  <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">起始日期</span>
-                    <span className="text-slate-600 font-bold">{new Date(project.start_date).toLocaleDateString()}</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-foreground opacity-80 decoration-abyss underline underline-offset-4 decoration-2">起始日期</span>
+                    <span className="text-foreground font-black text-lg">{new Date(project.start_date).toLocaleDateString()}</span>
                   </div>
                 </>
               )}
               {project.cloud_link && (
                 <>
-                  <div className="w-px h-8 bg-brand-secondary/10 hidden md:block" />
-                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-brand-accent/40 px-4 py-2 rounded-xl text-brand-primary hover:bg-brand-accent transition-all font-black text-sm">
+                  <div className="w-px h-8 bg-border hidden md:block" />
+                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-seafoam border border-reef px-4 py-2 rounded-xl text-abyss hover:bg-slate-100 transition-all font-black text-sm">
                     <ExternalLink size={16} /> 雲端資料
                   </a>
                 </>
@@ -443,21 +439,21 @@ function ProjectDetailContent() {
 
             {/* 簽核通知列 */}
             {project.notifications && project.notifications.length > 0 && (
-              <div className="mt-8 bg-white border border-brand-secondary/20 rounded-3xl p-5 flex items-center gap-6 overflow-hidden shadow-sm group">
-                <div className="flex items-center gap-2 text-brand-primary flex-shrink-0 font-black text-sm uppercase tracking-widest">
+              <div className="mt-8 bg-surface border-2 border-border rounded-3xl p-5 flex items-center gap-6 overflow-hidden shadow-xl group">
+                <div className="flex items-center gap-2 text-abyss flex-shrink-0 font-black text-sm uppercase tracking-widest">
                   <Bell size={20} className="animate-pulse" />
                   <span>最新通知:</span>
                 </div>
                 <div className="flex-1 flex gap-10 overflow-x-auto no-scrollbar py-1 scroll-smooth">
                   {project.notifications.sort((a:any, b:any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((notif: any) => (
-                    <div key={notif.id} className="flex items-center gap-4 whitespace-nowrap border-r border-brand-secondary/10 pr-10 last:border-0 group/notif">
-                      <span className="px-3 py-1 rounded-xl bg-brand-accent/40 text-xs font-black text-brand-primary border border-brand-secondary/20 uppercase tracking-tighter">
+                    <div key={notif.id} className="flex items-center gap-4 whitespace-nowrap border-r border-border pr-10 last:border-0 group/notif">
+                      <span className="px-3 py-1 rounded-xl bg-seafoam text-sm font-black text-abyss border border-reef uppercase tracking-tighter">
                         {notif.target_dept}
                       </span>
-                      <span className="text-sm text-foreground font-bold group-hover/notif:text-brand-primary transition-colors">
+                      <span className="text-sm text-red-600 dark:text-yellow-400 font-bold group-hover/notif:brightness-110 transition-colors">
                         {notif.message}
                       </span>
-                      <span className="text-xs text-slate-400 font-black">
+                      <span className="text-sm text-foreground font-black">
                         {new Date(notif.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -473,10 +469,10 @@ function ProjectDetailContent() {
                   <button 
                     key={phase.id}
                     onClick={() => handleTogglePhase(phase.id, phase.completion_status)}
-                    className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none group/phase shadow-sm ${
+                    className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none group/phase shadow-xl ${
                       phase.completion_status === 'COMPLETED'
-                        ? 'bg-brand-primary border-brand-primary text-white shadow-brand-primary/20'
-                        : 'bg-white border-brand-secondary/20 text-slate-400 hover:border-brand-primary/40 hover:text-brand-primary'
+                        ? 'bg-abyss border-abyss text-white shadow-abyss/20'
+                        : 'bg-surface border-border text-slate-400 hover:border-pelagic/40 hover:text-abyss'
                     }`}
                   >
                     {phase.completion_status === 'COMPLETED' ? <CheckCircle size={18} /> : <Circle size={18} className="group-hover/phase:scale-110 transition-transform" />}
@@ -487,31 +483,31 @@ function ProjectDetailContent() {
             )}
 
             {project.purpose && (
-              <div className="mt-8 text-foreground bg-brand-accent/10 p-6 rounded-3xl border border-brand-secondary/10 flex flex-col gap-2">
-                <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest">案號目的 (Project Purpose)</span>
+              <div className="mt-8 text-foreground bg-seafoam/20 dark:bg-seafoam/10 p-6 rounded-3xl border-2 border-border flex flex-col gap-2">
+                <span className="text-sm font-black text-abyss uppercase tracking-widest">案號目的 (Project Purpose)</span>
                 <p className="text-lg font-bold leading-relaxed">{project.purpose}</p>
               </div>
             )}
           </header>
 
-          {/* 視圖切換器與 WBS/甘特圖內容 */}
-          <div className="bg-white rounded-3xl border border-brand-secondary/20 p-8 shadow-xl mt-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-brand-secondary/10 pb-6">
+          {/* 視圖切換器與 WBS/甘特圖內容 (Elevated Z-index to prevent tooltip clipping) */}
+          <div className="bg-surface rounded-3xl border-2 border-border shadow-2xl mt-10 p-8 relative z-30">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-border pb-6">
               <div className="flex items-center gap-6">
                 <h2 className="text-2xl font-black text-foreground">
                   {viewMode === 'table' ? '任務清單 (WBS)' : '專案甘特圖 (Gantt)'}
                 </h2>
-                <div className="flex bg-brand-accent/30 rounded-xl p-1 border border-brand-secondary/15">
+                <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-border">
                   <button 
                     onClick={() => setViewMode('table')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'table' ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-400 hover:text-brand-primary'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'table' ? 'bg-surface text-abyss shadow-md' : 'text-slate-400 hover:text-abyss'}`}
                   >
                     <TableIcon size={16} />
                     表格
                   </button>
                   <button 
                     onClick={() => setViewMode('gantt')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'gantt' ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-400 hover:text-brand-primary'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'gantt' ? 'bg-surface text-abyss shadow-md' : 'text-slate-400 hover:text-abyss'}`}
                   >
                     <BarChart2 size={16} />
                     甘特圖
@@ -522,17 +518,17 @@ function ProjectDetailContent() {
             
             {viewMode === 'table' ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[1000px] border border-brand-secondary/10">
+                <table className="w-full text-left border-collapse min-w-[1000px] border border-border">
                 <thead>
-                  <tr className="bg-brand-accent/30 text-brand-primary text-xs font-black uppercase tracking-widest">
-                    <th className="px-4 py-4 w-16 text-center border-b border-brand-secondary/10">工作序</th>
-                    <th className="px-4 py-4 min-w-[180px] border-b border-l border-brand-secondary/10">工作項目</th>
-                    <th className="px-4 py-4 w-40 text-center border-b border-l border-brand-secondary/10">權責</th>
-                    <th className="px-4 py-4 w-32 text-center border-b border-l border-brand-secondary/10">狀態</th>
-                    <th className="px-4 py-4 w-32 text-center border-b border-l border-brand-secondary/10">預計完成日</th>
-                    <th className="px-4 py-4 w-32 text-center border-b border-l border-brand-secondary/10">開始日</th>
-                    <th className="px-4 py-4 w-32 text-center text-brand-primary border-b border-l border-brand-secondary/10">實際完成日</th>
-                    <th className="px-4 py-4 min-w-[150px] border-b border-l border-brand-secondary/10">交付/備註</th>
+                  <tr className="bg-slate-900 text-white text-sm font-black uppercase tracking-[0.1em] shadow-inner">
+                    <th className="px-4 py-5 w-16 text-center border-b border-r border-slate-700">工作序</th>
+                    <th className="px-4 py-5 min-w-[200px] border-b border-r border-slate-700">工作項目</th>
+                    <th className="px-4 py-5 w-44 text-center border-b border-r border-slate-700">權責</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700">狀態</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700 tracking-tighter">預計完成日</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700 tracking-tighter">開始日</th>
+                    <th className="px-4 py-5 w-36 text-center text-sky-400 font-black border-b border-r border-slate-700 tracking-tighter">實際完成日</th>
+                    <th className="px-4 py-5 min-w-[240px] text-sky-400 font-black border-b border-slate-700">交付/備註及鏈結</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
@@ -548,87 +544,88 @@ function ProjectDetailContent() {
                     const isCritical = criticalPathSet.has(task.id);
                     const { blocked, lockedBy } = isTaskBlocked(task);
                     const depth = (task.wbs_code || "").split('.').filter(Boolean).length || 1;
+                    const topLevelIndex = parseInt((task.wbs_code || "1").split('.')[0], 10);
                     const isMainTask = depth === 1;
+                    
+                    const rowBgClass = isMainTask ? `bg-surface border-l-4 border-l-abyss` : `bg-surface border-l-4 border-l-transparent`;
 
                     return (
                       <tr 
                         key={task.id}
-                        className={`transition-colors group border-b border-brand-secondary/5 ${
-                          isMainTask ? 'bg-brand-accent/10 border-l-4 border-l-brand-primary' : 'bg-white border-l-4 border-l-transparent'
-                        } ${
-                          isCompleted ? 'opacity-60 grayscale-[0.3]' : (isCritical ? 'bg-brand-peach/10' : '')
+                        className={`transition-colors group border-b border-border ${rowBgClass} hover:bg-seafoam/10 ${
+                          isCompleted ? 'bg-success/5' : (isCritical ? 'relative after:absolute after:inset-0 after:bg-danger/5 after:pointer-events-none' : '')
                         }`}
                       >
-                        <td className={`px-4 py-5 text-center font-black border-r border-brand-secondary/5 ${isMainTask ? 'text-sm text-brand-primary' : 'text-sm text-slate-400'}`}>
+                        <td className={`px-4 py-5 text-center font-black border-r border-border ${isMainTask ? 'text-sm text-abyss' : 'text-sm text-foreground'}`}>
                           {task.wbs_code}
                         </td>
-                        <td className="px-4 py-5 border-r border-brand-secondary/5">
+                        <td className="px-4 py-5 border-r border-border">
                           <div 
                             className="flex items-center gap-2"
                             style={{ paddingLeft: `${(depth - 1) * 28}px` }}
                           >
                             {!isMainTask && (
-                              <span className="text-slate-300 font-mono text-sm mr-1">└─</span>
+                              <span className="text-muted font-mono text-sm mr-1">└─</span>
                             )}
                             {isCritical && !isCompleted && (
-                              <div className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_rgba(136,117,245,0.6)] animate-pulse flex-shrink-0" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-danger shadow-[0_0_8px_rgba(185,28,28,0.6)] animate-pulse flex-shrink-0" />
                             )}
                             <div className={`
-                              ${isMainTask ? 'text-sm font-black tracking-tight uppercase' : 'text-sm font-bold'} 
-                              ${isCompleted ? 'text-slate-400 line-through' : (isCritical ? 'text-brand-primary' : (isMainTask ? 'text-slate-900' : 'text-slate-600'))}
+                              ${isMainTask ? 'text-[15px] font-black tracking-tighter uppercase' : 'text-sm font-bold'} 
+                              ${isCompleted ? 'text-muted line-through decoration-danger/40' : (isCritical ? 'text-danger' : 'text-foreground')}
                             `}>
                               {task.task_name}
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-brand-secondary/5">
+                        <td className="px-4 py-5 text-center border-r border-border">
                           {!isMainTask && task.dept && (
-                            <span className={`px-3 py-1 rounded-xl transition-all font-black text-xs uppercase tracking-widest ${
+                            <span className={`px-3 py-1.5 rounded-xl transition-all font-black text-sm uppercase tracking-widest ${
                               task.status === 'IN_PROGRESS' 
-                                ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20 scale-110 inline-block' 
-                                : 'bg-slate-100 border border-slate-200 text-slate-500'
+                                ? 'bg-abyss text-white shadow-xl scale-105 inline-block ring-2 ring-primary/20' 
+                                : 'bg-surface border border-border text-muted shadow-sm'
                             }`}>
                               {task.dept}
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-brand-secondary/5">
+                        <td className="px-4 py-5 text-center border-r border-border">
                           {updating === task.id ? (
-                            <Loader2 size={16} className="animate-spin text-brand-primary mx-auto" />
+                            <Loader2 size={16} className="animate-spin text-abyss mx-auto" />
                           ) : (
                             <button
                               onClick={() => handleUpdateStatus(task.id, task.status)}
                               disabled={blocked}
-                              className={`w-full max-w-[100px] py-1.5 rounded-xl text-xs font-black tracking-widest transition-all border-2 ${
+                              className={`w-full max-w-[100px] py-2 rounded-xl text-sm font-black tracking-[0.1em] transition-all border-2 uppercase ${
                                 isCompleted
-                                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                  ? 'bg-success/10 text-success border-success/30 shadow-sm'
                                   : task.status === 'IN_PROGRESS'
-                                  ? 'bg-brand-accent/40 text-brand-primary border-brand-secondary/20 shadow-sm'
+                                  ? 'bg-abyss text-white border-abyss shadow-md'
                                   : blocked 
-                                  ? 'bg-slate-50 text-slate-300 border-slate-100 opacity-50 cursor-not-allowed'
-                                  : 'bg-white text-slate-400 border-slate-200 hover:border-brand-primary/40'
+                                  ? 'bg-surface text-muted/20 border-border/10 cursor-not-allowed'
+                                  : 'bg-surface text-muted border-border hover:border-pelagic hover:text-pelagic'
                               }`}
                               title={blocked ? `等待前置任務: ${lockedBy}` : ''}
                             >
-                              {isCompleted ? 'DONE' : task.status === 'IN_PROGRESS' ? 'RUN' : 'OPEN'}
+                              {isCompleted ? '已完成' : task.status === 'IN_PROGRESS' ? '進行中' : '未開始'}
                             </button>
                           )}
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-brand-secondary/5">
-                          <div className={`text-sm font-bold ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-red-500' : 'text-slate-500'}`}>
+                        <td className="px-4 py-5 text-center border-r border-border font-black">
+                          <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-muted'}`}>
                             {task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}
                           </div>
                         </td>
-                        <td className="px-4 py-5 text-center text-sm font-bold text-slate-400 border-r border-brand-secondary/5">
+                        <td className="px-4 py-5 text-center text-sm font-black tabular-nums tracking-tight text-muted border-r border-border">
                           {task.start_date ? new Date(task.start_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-brand-secondary/5">
-                          <div className={`text-sm font-bold ${isCompleted ? 'text-emerald-600' : 'text-slate-300 italic'}`}>
-                            {task.actual_date ? new Date(task.actual_date).toLocaleDateString() : 'Pending'}
+                        <td className="px-4 py-5 text-center border-r border-border font-black">
+                          <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-foreground' : 'text-muted italic'}`}>
+                            {task.actual_date ? new Date(task.actual_date).toLocaleDateString() : '尚未'}
                           </div>
                         </td>
-                        <td className="px-4 py-5">
-                          <div className="flex flex-col gap-1">
+                        <td className="px-4 py-5 border-r border-border">
+                          <div className="flex flex-col gap-2">
                             {task.deliverable && task.deliverable !== 'null' ? (() => {
                               const [display, url] = task.deliverable.split('||');
                               return url ? (
@@ -636,23 +633,23 @@ function ProjectDetailContent() {
                                   href={url} 
                                   target="_blank" 
                                   rel="noopener noreferrer" 
-                                  className="flex items-center gap-1.5 text-sm text-brand-primary hover:text-brand-primary/70 font-bold transition-colors"
+                                  className="flex items-center gap-2 text-sm text-pelagic hover:text-abyss transition-all font-black underline underline-offset-4 decoration-2"
                                 >
-                                  <ExternalLink size={14} className="text-brand-primary" />
-                                  {display}
+                                  <ExternalLink size={14} className="flex-shrink-0" />
+                                  <span className="truncate max-w-[240px]">{display}</span>
                                 </a>
                               ) : (
-                                <div className="flex items-center gap-1.5 text-sm text-slate-400 font-bold">
+                                <div className="flex items-center gap-2 text-sm text-foreground font-bold">
                                   {display}
                                 </div>
-                              );
+                              )
                             })() : null}
                             {task.progress && task.progress !== 'null' && task.progress !== '0' ? (
-                              <div className="flex items-center gap-1.5 text-xs text-brand-primary/70 ml-1 font-black">
-                                Progress: {task.progress}%
+                              <div className="flex items-center gap-1.5 text-sm text-pelagic ml-1 font-black uppercase tracking-tighter">
+                                進度: {task.progress}%
                               </div>
                             ) : null}
-                            {blocked && <span className="text-[10px] font-black text-red-500 uppercase tracking-tighter mt-1">🔒 LOCKED BY: {lockedBy}</span>}
+                            {blocked && <span className="text-[10px] font-black text-danger uppercase tracking-widest mt-1 bg-danger/10 px-2 py-0.5 rounded-md">🔒 Locked by {lockedBy}</span>}
                           </div>
                         </td>
                       </tr>
@@ -661,17 +658,17 @@ function ProjectDetailContent() {
                 </tbody>
               </table>
               {project.tasks?.length === 0 && (
-                <div className="text-center py-20 bg-slate-50/50 rounded-b-3xl border-t border-brand-secondary/10">
+                <div className="text-center py-20 bg-slate-50 dark:bg-slate-900 rounded-b-3xl border-t border-border">
                   <div className="flex flex-col items-center gap-3">
-                    <FileDown size={40} className="text-slate-200" />
-                    <p className="text-slate-400 font-bold">目前無 WBS 子任務資料</p>
+                    <FileDown size={40} className="text-slate-300 dark:text-slate-600" />
+                    <p className="text-slate-700 dark:text-slate-300 font-bold">目前無 WBS 子任務資料</p>
                   </div>
                 </div>
               )}
               </div>
             ) : (
-              /* Gantt Chart View */
-              <div className="p-4 overflow-x-auto min-h-[500px]">
+              /* Gantt Chart View - Cleaned up horizontal scroll and hidden scrollbar artifact */
+              <div className="p-4 overflow-x-auto min-h-[500px] relative z-10 no-scrollbar">
                 {project.tasks && project.tasks.length > 0 ? (() => {
                   const sortedTasks = [...project.tasks].sort((a, b) => {
                     const aParts = a.wbs_code.split('.').map(Number);
@@ -705,92 +702,128 @@ function ProjectDetailContent() {
 
                   return (
                     <div className="flex flex-col min-w-[1200px] relative">
-                      {/* Gantt Overlay (Timeline Ticks & Today Marker) */}
+                      {/* Gantt Overlay (Today Marker Only) */}
                       <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: '20rem', right: 0 }}>
-                        {/* Grid Ticks */}
-                        {[0, 0.2, 0.4, 0.6, 0.8, 1].map(p => (
-                          <div 
-                            key={p} 
-                            className="absolute top-0 bottom-0 border-l border-brand-secondary/10"
-                            style={{ left: `${p * 100}%` }}
-                          />
-                        ))}
                         {/* Today Marker Line */}
                         {todayPos > 0 && todayPos < 100 && (
                           <div 
-                            className="absolute top-0 bottom-0 w-[3px] bg-brand-primary z-[15] shadow-[0_0_15px_rgba(136,117,245,0.4)]"
+                            className="absolute top-0 bottom-0 w-px bg-red-500 z-[30] shadow-[0_0_10px_rgba(239,68,68,0.5)]"
                             style={{ left: `${todayPos}%` }} 
-                          />
+                          >
+                            <div className="absolute top-0 -translate-x-1/2 bg-red-500 text-white text-[10px] px-1 rounded-b font-bold">今天</div>
+                          </div>
                         )}
                       </div>
 
-                      {/* Timeline Header */}
-                      <div className="flex border-b border-brand-secondary/10 pb-4 mb-8 sticky top-0 bg-white z-20">
-                        <div className="w-80 flex-shrink-0 text-xs font-black text-slate-400 uppercase tracking-widest pl-4">任務 WBS 結構 (Gantt)</div>
-                        <div className="flex-1 relative h-6">
+                      {/* Timeline Header (Z-index 40 - Above normal rows, below hovered rows) */}
+                      <div className="flex sticky top-0 bg-surface z-40 border-b border-border h-14">
+                        <div className="w-80 flex-shrink-0 text-sm font-black text-foreground uppercase tracking-widest pl-4 flex items-center border-r border-border bg-surface">
+                          任務詳情 / WBS
+                        </div>
+                        <div className="flex-1 relative h-full">
+                           {[0, 0.2, 0.4, 0.6, 0.8, 1].map(p => (
+                             <div 
+                               key={`bg-grid-${p}`} 
+                               className="absolute h-full border-l border-border"
+                               style={{ left: `${p * 100}%` }}
+                             />
+                           ))}
                            {[0, 0.2, 0.4, 0.6, 0.8, 1].map(p => (
                              <div 
                                key={p} 
-                               className="absolute text-xs text-slate-500 font-black tabular-nums"
-                               style={{ left: `${p * 100}%`, transform: 'translateX(-50%)' }}
+                               className="absolute h-full flex items-center"
+                               style={{ left: `${p * 100}%` }}
                              >
-                               {new Date(displayMin + totalRange * p).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+                               <span className="ml-2 text-sm text-muted font-black tabular-nums whitespace-nowrap">
+                                 {new Date(displayMin + totalRange * p).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+                               </span>
                              </div>
                            ))}
                         </div>
                       </div>
 
-                      {/* Gantt Rows */}
-                      <div className="space-y-3 pb-20 relative">
+                      {/* Gantt Rows Container (Tooltips now appear below, so we eliminate redundant top padding) */}
+                      <div className="pt-0 pb-40 relative border-x border-b border-border shadow-xl bg-surface">
+
                         {sortedTasks.map(task => {
                           const isCompleted = task.status === "COMPLETED";
                           const isCritical = criticalPathSet.has(task.id);
                           const isMainTask = task.wbs_code.split('.').length === 1;
-                          
+                           
+                          const rowBgClass = isMainTask ? 'bg-surface border-l-4 border-l-abyss/50' : 'bg-surface border-l-4 border-l-transparent';
+                           
                           const tStart = task.start_date ? new Date(task.start_date).getTime() : minD;
                           const planEnd = task.planned_date ? new Date(task.planned_date).getTime() : tStart;
                           const actualEnd = task.actual_date ? new Date(task.actual_date).getTime() : tStart;
                           const tEnd = Math.max(planEnd, actualEnd, tStart + (dayMs / 2));
-                          
+                           
                           const left = ((tStart - displayMin) / totalRange) * 100;
                           const width = Math.max(((tEnd - tStart) / totalRange) * 100, 1.2); 
 
                           return (
-                            <div key={task.id} className={`flex items-center group/gantt hover:bg-brand-accent/10 py-2.5 transition-colors rounded-2xl ${isMainTask ? 'bg-brand-accent/5' : 'bg-white'}`}>
-                              <div className="w-80 flex-shrink-0 flex items-center gap-4 pr-10 overflow-hidden pl-4">
-                                <span className={`${isMainTask ? 'text-sm font-black text-brand-primary' : 'text-sm font-black text-slate-300'} w-12 flex-shrink-0 tabular-nums`}>
+                            <div key={task.id} className={`flex items-stretch group/gantt hover:bg-seafoam/10 transition-all border-b border-border last:border-0 relative z-10 hover:z-[100] ${rowBgClass}`}>
+                              {/* Left Info Column */}
+                              <div className="w-80 flex-shrink-0 flex items-center gap-4 pr-6 overflow-hidden pl-4 border-r border-border py-4 min-h-[56px]">
+                                <span className={`${isMainTask ? 'text-sm font-black text-abyss' : 'text-sm font-bold text-muted'} w-10 flex-shrink-0 tabular-nums`}>
                                   {task.wbs_code}
                                 </span>
-                                <span className={`truncate leading-tight font-black ${isMainTask ? 'text-sm uppercase text-slate-900 tracking-tight' : 'text-sm font-bold text-slate-600'} ${isCritical && !isCompleted ? 'text-brand-primary underline decoration-2 decoration-brand-primary/20 underline-offset-4' : (isCompleted ? 'text-slate-400 line-through decoration-1' : '')}`}>
+                                <span className={`truncate leading-tight font-black ${isMainTask ? 'text-sm uppercase text-foreground' : 'text-sm font-bold text-foreground'} ${isCompleted ? 'opacity-50 line-through' : (isCritical && !isCompleted ? 'text-danger' : '')}`}>
                                   {task.task_name}
                                 </span>
                               </div>
-                              <div className="flex-1 h-8 relative">
-                                  <div 
-                                    className={`absolute h-full rounded-2xl transition-all flex items-center justify-center shadow-lg group/bar cursor-default border-2 ${
-                                      isCompleted 
-                                        ? 'bg-brand-primary border-brand-primary text-white' 
-                                        : task.status === 'IN_PROGRESS'
-                                        ? 'bg-brand-accent border-brand-secondary/20 text-brand-primary'
-                                        : 'bg-slate-50 border-slate-100 text-slate-400'
-                                    } ${isCritical && !isCompleted ? 'shadow-xl shadow-brand-primary/20 animate-pulse' : ''}`}
-                                  style={{ left: `${left}%`, width: `${width}%` }}
-                                >
-                                  {/* Tooltip on Hover */}
-                                  <div className="opacity-0 group-hover/bar:opacity-100 absolute bottom-full mb-4 bg-white border border-brand-secondary/20 text-sm p-4 rounded-2xl shadow-2xl z-50 pointer-events-none whitespace-nowrap transition-all transform translate-y-2 group-hover/bar:translate-y-0">
-                                    <div className="font-black border-b border-brand-secondary/10 mb-3 pb-2 text-foreground text-sm uppercase tracking-tight">{task.task_name}</div>
-                                    <div className="space-y-2">
-                                      <div className="flex justify-between gap-10"><span className="text-slate-400 font-bold">開始:</span> <span className="text-foreground font-black tabular-nums">{new Date(tStart).toLocaleDateString()}</span></div>
-                                      <div className="flex justify-between gap-10"><span className="text-slate-400 font-bold">計畫完成:</span> <span className="text-foreground font-black tabular-nums">{task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}</span></div>
-                                      {task.actual_date && <div className="flex justify-between gap-10 text-emerald-600 font-black"><span>實際完成:</span> <span className="tabular-nums">{new Date(task.actual_date).toLocaleDateString()}</span></div>}
-                                      <div className="flex justify-between gap-10 pt-2 border-t border-brand-secondary/10 font-black text-brand-primary uppercase tracking-widest text-xs"><span>狀態:</span> <span>{isCompleted ? 'Completed' : 'Running'}</span></div>
-                                    </div>
-                                  </div>
 
-                                  {width > 3 && (
-                                    isCompleted ? <CheckCircle size={16} className="text-white drop-shadow-sm" /> :
-                                    isCritical && <Zap size={14} className="text-brand-primary drop-shadow-sm" />
-                                  )}
+                              {/* Right Gantt Area */}
+                              <div className="flex-1 relative flex items-center">
+                                {/* Vertical Grid Lines (Built into row to prevent gaps) */}
+                                <div className="absolute inset-0 pointer-events-none flex z-0">
+                                   {[0.2, 0.4, 0.6, 0.8, 1.0].map(p => (
+                                     <div 
+                                       key={`row-grid-${p}`} 
+                                       className="absolute h-full border-l border-border/40"
+                                       style={{ left: `${p * 100}%` }}
+                                     />
+                                   ))}
+                                </div>
+
+                                {/* Today Marker inside area (Z-index 30) */}
+                                {todayPos > 0 && todayPos < 100 && (
+                                  <div 
+                                    className="absolute top-0 bottom-0 w-px bg-red-500 z-30 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                                    style={{ left: `${todayPos}%` }} 
+                                  />
+                                )}
+
+                                {/* Task Bar (Z-index 30) */}
+                                <div className="w-full h-8 relative z-30 mx-0 px-0">
+                                  <div 
+                                    className={`absolute h-full rounded-md transition-all flex items-center justify-center shadow-lg group/bar cursor-default border-2 ${
+                                      isCompleted 
+                                        ? 'bg-emerald-200 border-emerald-400 text-emerald-900' 
+                                        : task.status === 'IN_PROGRESS'
+                                        ? 'bg-seafoam border-reef text-abyss'
+                                        : 'bg-surface border-border text-muted'
+                                    } ${isCritical && !isCompleted ? 'animate-pulse border-red-500 scale-[1.02] shadow-xl shadow-red-500/30' : ''}`}
+                                    style={{ left: `${left}%`, width: `${width}%` }}
+                                  >
+                                    {/* Tooltip on Hover (Z-index 110, appearing BELOW the bar) */}
+                                    <div className="opacity-0 group-hover/bar:opacity-100 absolute top-full mt-4 left-1/2 -translate-x-1/2 bg-surface border-2 border-border text-sm p-6 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.4)] z-[110] pointer-events-none whitespace-nowrap transition-all transform -translate-y-2 group-hover/bar:translate-y-0 min-w-[320px]">
+                                      <div className="font-black border-b border-slate-100 dark:border-slate-700 mb-5 pb-2 text-abyss dark:text-seafoam text-lg uppercase tracking-tight">{task.task_name}</div>
+                                      <div className="space-y-4">
+                                        <div className="flex justify-between gap-12"><span className="text-muted font-bold">計畫開始:</span> <span className="text-foreground font-black tabular-nums text-base">{new Date(tStart).toLocaleDateString()}</span></div>
+                                        <div className="flex justify-between gap-12"><span className="text-muted font-bold">預計完成:</span> <span className="text-foreground font-black tabular-nums text-base">{task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}</span></div>
+                                        {task.actual_date && <div className="flex justify-between gap-12 text-success font-black text-base"><span>實際完成:</span> <span className="tabular-nums">{new Date(task.actual_date).toLocaleDateString()}</span></div>}
+                                        <div className="flex justify-between gap-12 pt-4 border-t border-slate-100 dark:border-slate-700 font-black text-sm uppercase tracking-[0.2em]">
+                                            <span className="text-muted tracking-widest">當前狀態</span> 
+                                            <span className={isCompleted ? 'text-success bg-success/10 px-3 py-1 rounded-full' : 'text-pelagic bg-pelagic/10 px-3 py-1 rounded-full'}>{isCompleted ? '已完成' : '進行中'}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {width > 3 && (
+                                      isCompleted ? <CheckCircle size={16} className="text-emerald-800" /> :
+                                      isCritical && <Zap size={14} className="text-red-600" />
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -800,8 +833,8 @@ function ProjectDetailContent() {
                     </div>
                   );
                 })() : (
-                  <div className="flex flex-col items-center justify-center py-32 bg-slate-50/50 rounded-3xl border border-brand-secondary/10 gap-4">
-                    <BarChart2 size={48} className="text-slate-200" />
+                  <div className="flex flex-col items-center justify-center py-32 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-border gap-4">
+                    <BarChart2 size={48} className="text-slate-300 dark:text-slate-600" />
                     <p className="text-slate-400 font-bold">尚未載入 WBS 任務資料，無法生成甘特圖</p>
                   </div>
                 )}

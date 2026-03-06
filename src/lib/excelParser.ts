@@ -56,28 +56,51 @@ export async function parseExcelData(buffer: ArrayBuffer): Promise<ProjectData[]
   const getCellValue = (rowIx: number, ...keys: string[]) => {
     const row = masterEntries[rowIx];
     if (!row) return { value: '', url: '' };
+    
+    // First Pass: Exact Match
     for (const key of keys) {
-      const cleanTarget = key.replace(/\s/g, '');
+      const cleanTarget = key.replace(/\s/g, '').toLowerCase();
       const entries = Array.from(headerIndices.entries());
       for (const [idx, headerName] of entries) {
         const realIdx = idx % 1000;
-        if (headerName.includes(cleanTarget) || cleanTarget.includes(headerName)) {
+        const h = headerName.toLowerCase();
+        if (h === cleanTarget) {
           const val = row[realIdx];
           if (val !== undefined && val !== '') {
-            const cellAddress = utils.encode_cell({ r: rowIx, c: realIdx });
-            const cell = masterSheet[cellAddress];
-            let url = '';
-            if (cell?.l?.Target) url = cell.l.Target;
-            else if (cell?.f && cell.f.includes('HYPERLINK')) {
-              const match = cell.f.match(/HYPERLINK\s*\(\s*["']([^"']+)["']/i);
-              if (match && match[1]) url = match[1];
-            }
-            return { value: val.toString(), url };
+            return extractCellVal(val, masterSheet, rowIx, realIdx);
+          }
+        }
+      }
+    }
+
+    // Second Pass: Substring Match
+    for (const key of keys) {
+      const cleanTarget = key.replace(/\s/g, '').toLowerCase();
+      const entries = Array.from(headerIndices.entries());
+      for (const [idx, headerName] of entries) {
+        const realIdx = idx % 1000;
+        const h = headerName.toLowerCase();
+        if (h.includes(cleanTarget) || (cleanTarget.includes(h) && h.length >= 3)) {
+          const val = row[realIdx];
+          if (val !== undefined && val !== '') {
+            return extractCellVal(val, masterSheet, rowIx, realIdx);
           }
         }
       }
     }
     return { value: '', url: '' };
+  };
+
+  const extractCellVal = (val: any, sheet: any, r: number, c: number) => {
+    const cellAddress = utils.encode_cell({ r, c });
+    const cell = sheet[cellAddress];
+    let url = '';
+    if (cell?.l?.Target) url = cell.l.Target;
+    else if (cell?.f && cell.f.includes('HYPERLINK')) {
+      const match = cell.f.match(/HYPERLINK\s*\(\s*["']([^"']+)["']/i);
+      if (match && match[1]) url = match[1];
+    }
+    return { value: val.toString(), url };
   };
 
   const isChecked = (val: any) => {
@@ -155,22 +178,32 @@ export async function parseExcelData(buffer: ArrayBuffer): Promise<ProjectData[]
         const getWbsCellValue = (rowIx: number, ...keys: string[]) => {
           const row = wbsEntries[rowIx];
           if (!row) return { value: '', url: '' };
+          
+          // First Pass: Exact Match
           for (const key of keys) {
-            const cleanTarget = key.replace(/\s/g, '');
+            const cleanTarget = key.replace(/\s/g, '').toLowerCase();
             const entries = Array.from(wbsHeaderIndices.entries());
             for (const [idx, hName] of entries) {
-              if (hName.includes(cleanTarget) || cleanTarget.includes(hName)) {
+              const h = hName.toLowerCase();
+              if (h === cleanTarget) {
                 const val = row[idx];
                 if (val !== undefined && val !== '') {
-                  const addr = utils.encode_cell({ r: rowIx, c: idx });
-                  const cell = wbsSheet[addr];
-                  let url = '';
-                  if (cell?.l?.Target) url = cell.l.Target;
-                  else if (cell?.f && cell.f.includes('HYPERLINK')) {
-                    const match = cell.f.match(/HYPERLINK\s*\(\s*["']([^"']+)["']/i);
-                    if (match && match[1]) url = match[1];
-                  }
-                  return { value: val.toString(), url };
+                  return extractCellVal(val, wbsSheet, rowIx, idx);
+                }
+              }
+            }
+          }
+
+          // Second Pass: Substring Match
+          for (const key of keys) {
+            const cleanTarget = key.replace(/\s/g, '').toLowerCase();
+            const entries = Array.from(wbsHeaderIndices.entries());
+            for (const [idx, hName] of entries) {
+              const h = hName.toLowerCase();
+              if (h.includes(cleanTarget) || (cleanTarget.includes(h) && h.length >= 3)) {
+                const val = row[idx];
+                if (val !== undefined && val !== '') {
+                  return extractCellVal(val, wbsSheet, rowIx, idx);
                 }
               }
             }

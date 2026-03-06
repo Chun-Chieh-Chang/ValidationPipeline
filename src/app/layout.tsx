@@ -18,8 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-TW">
-      <body className={`${inter.className} bg-background text-foreground`}>
+    <html lang="zh-TW" suppressHydrationWarning>
+      <head />
+      <body className={`${inter.className} bg-background text-foreground no-scrollbar transition-colors duration-300`}>
         {children}
       </body>
     </html>

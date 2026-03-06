@@ -227,28 +227,28 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[#020617]"
+            className="absolute inset-0 bg-slate-950/80"
           />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-[#1E293B] border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8"
+            className="relative w-full max-w-lg bg-surface border-2 border-border dark:border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8"
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-abyss dark:hover:text-white transition-colors"
             >
               <X size={20} />
             </button>
 
             <div className="text-center mb-6">
-              <div className="mx-auto w-12 h-12 bg-[#0C4A6E] text-sky-400 rounded-full flex items-center justify-center mb-4 border border-sky-500/50">
+              <div className="mx-auto w-12 h-12 bg-seafoam text-abyss rounded-full flex items-center justify-center mb-4 border border-reef">
                 <FileSpreadsheet size={24} />
               </div>
-              <h2 className="text-2xl font-bold tracking-tight text-white mb-2">匯入 Master Sheet</h2>
-              <p className="text-slate-400 text-sm">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-2">匯入 Master Sheet</h2>
+              <p className="text-slate-700 dark:text-slate-300 text-sm">
                 請上傳「射出成型之製程變更、確效專案之管理.xlsx」，系統將自動同步專案庫。
               </p>
             </div>
@@ -256,7 +256,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             <div className="space-y-4">
               <label
                 htmlFor="file-upload"
-                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-emerald-500/50 bg-[#064E3B]' : 'border-slate-600 bg-[#0F172A] hover:bg-[#1E293B] hover:border-slate-500'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950' : 'border-slate-400 bg-slate-50 hover:bg-slate-100 hover:border-pelagic dark:border-slate-600 dark:bg-slate-900 dark:hover:bg-slate-800'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                   {file ? (
@@ -269,7 +269,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     <>
                       <UploadCloud className="w-8 h-8 text-slate-400 mb-3" />
                       <p className="mb-2 text-sm text-slate-300 font-medium">點擊或拖入檔案</p>
-                      <p className="text-sm text-slate-500">僅支援 .xlsx 格式</p>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">僅支援 .xlsx 格式</p>
                     </>
                   )}
                 </div>
@@ -285,7 +285,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
 
               <div className="flex items-center gap-4 my-4">
                 <div className="flex-1 h-px bg-slate-700" />
-                <span className="text-sm text-slate-500 uppercase font-medium">或使用 URL 匯入</span>
+                <span className="text-sm text-slate-700 dark:text-slate-300 uppercase font-medium">或使用 URL 匯入</span>
                 <div className="flex-1 h-px bg-slate-700" />
               </div>
 
@@ -302,46 +302,46 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     setSuccessMessage(null);
                   }}
                   disabled={status === 'uploading' || file !== null} // Disable URL input if file is present or uploading
-                  className="w-full px-4 py-2 bg-[#0F172A] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-sky-500 transition-colors"
+                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-foreground focus:outline-none focus:border-pelagic transition-colors"
                 />
               </div>
 
               {status === 'uploading' && totalCount > 0 && (
-                <div className="space-y-3 p-4 bg-sky-500/5 border border-sky-500/20 rounded-xl">
+                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-sky-300 font-medium flex items-center gap-2">
+                    <span className="text-pelagic font-bold flex items-center gap-2">
                        <Loader2 className="w-4 h-4 animate-spin" />
                        正在同步專案庫...
                     </span>
-                    <span className="text-sky-400 font-mono font-bold">
+                    <span className="text-abyss font-mono font-bold">
                       {Math.round((currentCount / totalCount) * 100)}%
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-full h-2 bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-300 dark:border-slate-700">
                     <motion.div 
-                      className="h-full bg-gradient-to-r from-sky-600 to-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.4)]"
+                      className="h-full bg-pelagic"
                       initial={{ width: 0 }}
                       animate={{ width: `${(currentCount / totalCount) * 100}%` }}
                       transition={{ type: "spring", bounce: 0, duration: 0.3 }}
                     />
                   </div>
-                  <div className="text-right text-[12px] text-slate-500 font-medium">
+                  <div className="text-right text-sm text-slate-700 dark:text-slate-300 font-medium">
                     已處理 {currentCount} / 共 {totalCount} 筆
                   </div>
                 </div>
               )}
 
               {errorMessage && (
-                <div className="flex items-center gap-2 text-red-400 bg-[#7F1D1D] p-3 rounded-lg border border-red-500/50 text-sm">
+                <div className="flex items-center gap-2 text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 p-3 rounded-lg border border-red-300 dark:border-red-800 text-sm">
                   <AlertCircle size={16} />
-                  <span>{errorMessage}</span>
+                  <span className="font-bold">{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="flex items-center gap-2 text-emerald-400 bg-[#064E3B] p-3 rounded-lg border border-emerald-500/50 text-sm">
+                <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 p-3 rounded-lg border border-emerald-300 dark:border-emerald-800 text-sm">
                   <CheckCircle size={16} />
-                  <span>{successMessage}</span>
+                  <span className="font-bold">{successMessage}</span>
                 </div>
               )}
 
@@ -349,7 +349,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 <button
                   onClick={handleClear}
                   disabled={(!file && !url) || status === 'uploading'}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-red-600 dark:text-red-400 hover:text-white bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 hover:bg-red-600 dark:hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   title="清空包含巨大檔案的記憶體佔用與網址"
                 >
                   <Trash2 size={18} />
@@ -359,16 +359,15 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 <div className="flex gap-3">
                   <button
                     onClick={onClose}
-                    className="px-5 py-2.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all"
+                    className="px-5 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-300 hover:text-abyss dark:hover:text-white bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
                   >
                     取消
                   </button>
                   <button
                     onClick={url ? handleURLImport : handleUpload}
                     disabled={(!file && !url) || status === 'uploading'}
-                    className="relative px-5 py-2.5 rounded-xl font-medium text-white shadow-lg overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed
-                               bg-gradient-to-t from-sky-600 to-sky-500 border border-sky-400/50 hover:from-sky-500 hover:to-sky-400
-                               active:from-sky-700 active:to-sky-600 disabled:from-slate-700 disabled:to-slate-600 disabled:border-slate-600"
+                    className="relative px-5 py-2.5 rounded-xl font-bold text-white shadow-lg overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                               bg-abyss hover:bg-pelagic border-2 border-abyss active:bg-abyss disabled:bg-slate-400 disabled:border-slate-400"
                   >
                     <div className="flex items-center gap-2">
                       {status === 'uploading' ? (

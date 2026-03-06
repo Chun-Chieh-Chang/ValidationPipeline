@@ -3,24 +3,51 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 30, 30, 46;    /* #1E1E2E Deep Charcoal */
-  --background-rgb: 248, 247, 255;  /* #F8F7FF Lilac White */
-  --accent-rgb: 136, 117, 245;      /* #8875F5 Radiant Purple */
+  /* Deep Sea Mode - Primary High-Contrast Theme */
+  --foreground: #ffffff;
+  --text-muted: #cbd5e1; /* Slate 300 for readability */
+  --background: #020617;
+  --surface: #0f172a;
+  --seafoam: #1e293b;
+  --reef: #475569;
+  --pelagic: #38bdf8;
+  --abyss: #60a5fa;
+  --border: #334155;
+  --success: #34d399;
+  --danger: #f87171;
 }
 
+
+
+
+
+
+
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 ::selection {
-  background-color: #8875F5;
-  color: #FFFFFF;
+  background-color: var(--abyss);
+  color: var(--background);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
+

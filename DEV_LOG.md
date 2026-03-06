@@ -1,3 +1,30 @@
+## [2026-03-06] Deep Sea Theme Consolidation & Readability Overhaul
+
+### 背景 (Background)
+
+使用者要求進一步精煉介面，移除所有亮色主題，僅保留具備高對比度的 Deep Sea (深海) 主題。同時要求全站字體大小不得小於 14px，並移除所有交錯背景 (Zebra Striping) 以確保視覺高度一致。
+
+### 核心變更 (Key Changes)
+
+- **主題鎖定**: 更新 `globals.css`，將 Deep Sea 變數移至 `:root`，並移除 `pipeline-light` 與 `github-light` 定義。
+- **組件清理**:
+  - 刪除 `src/components/ThemeToggle.tsx` 元件。
+  - 移除 Dashboard 與 Project View 中的 `ThemeToggle` 引用。
+  - 移除 `layout.tsx` 中的主題初始化腳本，徹底規避亮色主題閃爍。
+- **字體規範化**:
+  - 執行全域掃描，將所有 `text-[10px]` 至 `text-[13px]` 及 `text-xs` (12px) 統一提升至 `text-sm` (14px)。
+  - 特別針對淺灰色日期與標籤進行對比度強化。
+- **佈局優化**: 移除甘特圖與 WBS 表格中的 `groupThemes` 交錯背景邏輯，改為純色深邃背景 (`bg-surface`)。
+
+### 成果 (Outcome)
+
+- [x] 成功鎖定 Deep Sea 單一主題。
+- [x] 全站文字符合 14px 閱讀標準。
+- [x] 介面視覺達成高度統一，移除所有視覺干擾（如交錯行）。
+- [x] 建置測試 (`npm run build`) 成功通過，無型別或 Lint 錯誤。
+
+---
+
 ## [2026-03-06] UI De-transparency Optimization
 
 ### 背景 (Background)
@@ -134,20 +161,23 @@
 
 ---
 
-### [2026-03-06] 介面配色全面重構 (FatPandaVision Palette Implementation)
+### [2026-03-06] 介面配色全面重構 (Teal-Blue Ocean Theme Implementation)
 
 **原因分析 (Root Cause Analysis)**：
-原有的深色模式（Dark Mode）在長時間使用下容易造成視覺疲勞，且在報表閱讀與 WBS 階層辨識上，對比度不足以支撐高效的數位協作。為了提升系統的專業感與閱讀舒適度，決定實施「FatPandaVision」品牌配色重構，轉向具備極高對比度的「精品淺色模式」。
+原有的深色模式與高亮配色在長時間使用下容易造成視覺疲勞，且在報表閱讀與 WBS 階層辨識上，對比度不足以支撐高效的數位協作。再者，介面上充斥玻璃模糊與透明漸層，降低了企業級應用的視覺穩重感。
 
 **矯正措施 (Corrective Actions)**：
 
-1. **語意化色彩系統 (Semantic Token System)**：更新 `tailwind.config.ts` 與 `globals.css`，捨棄硬編碼顏色，改用 `brand-primary` (Radiant Purple), `brand-accent` (Warm Beige) 等具備品牌識別度的語法。
-2. **極致對比度優化 (WCAG 2.1 AA Compliance)**：
-   - 背景：Lilac White (#F8F7FF)。
-   - 文字：Deep Charcoal (#1E1E2E)，確保對比度達到 13.5:1 (AAA 級標準)。
-3. **全模組視覺同步**：
-   - **Dashboard**：重構卡片與表格，強化「進行中」專案的視覺引導。
-   - **Project Detail**：重塑 WBS 任務清單與甘特圖，主任務與子任務之間使用高對比邊框與背景區隔，縮短狀態判讀時間。
+1. **語意化色彩系統 (Semantic Token System)**：更新 `tailwind.config.ts` 與 `globals.css`，捨棄舊版的亮彩顏色，改用深邃穩定的海洋色系：
+   - Seafoam Bloom (`#9FE7E7`), Shallow Reef (`#6ECBD3`), Pelagic Blue (`#289FB7`), Abyss Teal (`#146B8C`), Foam White (`#E8FBFF`), Keel Black (`#0F1A1B`)
+2. **極致對比度與去透明化 (Opaque & High Contrast)**：
+   - 移除所有透明度設定 (`/10`, `/20`, `backdrop-blur`)，以純色取代。
+   - 保證背景與字體顏色嚴格遵守高對比度規範。
+   - 提示或警示部分採用高亮搭配紅色 (`text-red-500`, `bg-red-50` 等) 以強化警告作用。
+3. **全模組視覺與語系同步**：
+   - Dashboard (`page.tsx`) 與 專案列表：重構卡片與表格，移除所有玻璃效果，全面提升介面中文在地化（如"已完成", "進行中"）。
+   - Project Detail (`projects/view/page.tsx`)：重塑 WBS 任務清單與甘特圖，主任務與子任務之間使用高對比邊框與純色背景區隔，強化狀態判讀。
+   - 視窗 (`ImportModal`/`CreateProjectModal`)：修復破版並改用海洋主題色系與純色背景遮罩。
 
 **預防措施 (Preventive Measures)**：
 
