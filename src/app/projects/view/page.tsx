@@ -593,7 +593,7 @@ function ProjectDetailContent() {
                           {updating === task.id ? (
                             <Loader2 size={16} className="animate-spin text-abyss mx-auto" />
                           ) : (
-                            <button
+                              <button
                               onClick={() => handleUpdateStatus(task.id, task.status)}
                               disabled={blocked}
                               className={`w-full max-w-[100px] py-2 rounded-xl text-sm font-black tracking-[0.1em] transition-all border-2 uppercase ${

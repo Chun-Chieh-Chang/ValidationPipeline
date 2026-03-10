@@ -35,3 +35,11 @@
 - [x] 狀態燈號 (Status Tags) 與進度條比例尺優化.
 - [x] 執行對比度驗證 (Contrast Check - WCAG AA).
 - [x] 更新 `DEV_LOG.md` 紀錄配色變更.
+
+## 5. 工作流程分流模擬 (Split-Flow Simulation)
+
+- [x] 分析 Master Sheet vs 獨立專案建立邏輯.
+- [x] 撰寫模擬注入腳本 `simulation_script.js`.
+- [x] 執行模擬跑通 (Mock Execution Walkthrough).
+- [x] 介面全面繁體中文化 (Traditional Chinese Localization).
+- [x] 撰寫分流執行優勢綜合評估報告.

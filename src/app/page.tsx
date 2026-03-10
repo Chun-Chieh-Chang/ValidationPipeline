@@ -98,15 +98,17 @@ export default function Dashboard() {
             <div className="flex bg-slate-100 dark:bg-slate-900 rounded-2xl p-1 border border-border mr-2 shadow-inner">
               <button 
                 onClick={() => setViewMode('cards')}
-                className={`p-1.5 rounded-lg transition-all ${viewMode === 'cards' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
+                className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'cards' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
               >
-                <LayoutGrid size={18} />
+                <LayoutGrid size={16} />
+                <span className="text-[10px] font-black uppercase">卡片視圖</span>
               </button>
               <button 
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
+                className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'table' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
               >
-                <TableIcon size={18} />
+                <TableIcon size={16} />
+                <span className="text-[10px] font-black uppercase">表格清單</span>
               </button>
             </div>
 

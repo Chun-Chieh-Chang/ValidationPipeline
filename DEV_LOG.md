@@ -183,3 +183,35 @@
 
 1. **設計規範文件化**：同步更新 `walkthrough.md` 與 `task.md`，定義未來的 UI 擴充必須遵循 `brand-*` 色標系統與 4px/8px 間距規範。
 2. **自動化品質檢查**：修復 PowerShell 權限問題，確保每次 commit 前皆能順利執行 `npm run lint` 以防止樣式回歸。
+
+---
+
+### [2026-03-10] 系統同步與衝突解決 (System Sync & Conflict Resolution)
+
+**原因分析 (Root Cause Analysis)**：
+執行 `git pull` 時發現遠端倉庫已完成「Teal-Blue Ocean Theme」的主題重構，而本地存有實驗性質的「FatPandaVision」淺色模式修改，導致 `src/app/page.tsx` 與 `src/app/projects/view/page.tsx` 產生衝突。
+
+**矯正措施 (Corrective Actions)**：
+1. **衝突合併 (Conflict Resolution)**：手動合併衝突，決定以遠端（Upstream）的「Teal-Blue Ocean」高對比海洋色系為基礎，並保留本地對「卡片/表格視圖切換器」的 Layout 優化（如 `px-3` 與 `flex` 間距）。
+2. **術語統一 (Terminology Standardization)**：將衝突部分的繁體中文術語統一為遠端版本（如使用「進行中」而非「執行中」），確保全系統語致性。
+3. **環境清理 (Environment Cleanup)**：暫存（Stash）並彈回（Pop）修改後，確認所有衝突點皆已妥善處理並通過編譯檢查。
+
+**預防措施 (Preventive Measures)**：
+1. **頻繁同步計畫**：建議定期執行 `git pull` 以減少大規模 UI 重構時的衝突風險。
+2. **主題分支規範**：未來重大色彩異動應先在獨立 Feature Branch 進行，待確定配色方案後再併入 `main`。
+
+---
+
+### [2026-03-10] 進階模擬執行與邏輯驗證 (Advanced Simulation & Logic Verification)
+
+**執行成果 (Development Scorecard)**：
+1. **進階數據模擬 (Advanced Data Simulation)**：透過 `SIM-2026-ADV` 專案展示了複雜 WBS 任務鏈（4 項任務，包含前置依賴關係）的自動化流動。
+2. **通知引擎測試 (Notification Engine)**：驗證當前置任務（如「試模」）完成時，系統能自動向後續部門（如「品管」）發送訊息。
+3. **UI/UX 深度驗證**：在 **Teal-Blue Ocean Theme** 下，甘特圖 (Gantt) 的狀態標籤（如脈衝動畫與勾選圖示）呈現清晰，高對比配色符合 AAA 閱讀標準。
+
+**矯正措施 (Corrective Actions)**：
+- 針對 `browser_subagent` 在 Console 注入數據的編碼限制，改用暫時性的 `Simulated Seeder` 邏輯確保驗證數據穩定。
+- 優化了 WBS 表格在模擬狀態下的響應式呈現。
+
+---
+
