@@ -702,8 +702,17 @@ function ProjectDetailContent() {
 
                   return (
                     <div className="flex flex-col min-w-[1200px] relative">
-                      {/* Gantt Overlay (Today Marker Only) */}
-                      <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: '20rem', right: 0 }}>
+                      {/* Gantt Overlay (Unified Grid & Today Marker) */}
+                      <div className="absolute top-0 bottom-0 pointer-events-none z-0" style={{ left: '20rem', right: 0 }}>
+                        {/* Unified Background Vertical Grid Lines */}
+                        {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map(p => (
+                          <div 
+                            key={`unified-bg-grid-${p}`} 
+                            className="absolute top-0 bottom-0 border-l border-border/20 z-0"
+                            style={{ left: `${p * 100}%` }}
+                          />
+                        ))}
+
                         {/* Today Marker Line */}
                         {todayPos > 0 && todayPos < 100 && (
                           <div 
@@ -721,13 +730,7 @@ function ProjectDetailContent() {
                           任務詳情 / WBS
                         </div>
                         <div className="flex-1 relative h-full">
-                           {[0, 0.2, 0.4, 0.6, 0.8, 1].map(p => (
-                             <div 
-                               key={`bg-grid-${p}`} 
-                               className="absolute h-full border-l border-border"
-                               style={{ left: `${p * 100}%` }}
-                             />
-                           ))}
+                           {/* Date labels only here, grid lines moved to unified overlay */}
                            {[0, 0.2, 0.4, 0.6, 0.8, 1].map(p => (
                              <div 
                                key={p} 
@@ -774,24 +777,7 @@ function ProjectDetailContent() {
 
                               {/* Right Gantt Area */}
                               <div className="flex-1 relative flex items-center">
-                                {/* Vertical Grid Lines (Built into row to prevent gaps) */}
-                                <div className="absolute inset-0 pointer-events-none flex z-0">
-                                   {[0.2, 0.4, 0.6, 0.8, 1.0].map(p => (
-                                     <div 
-                                       key={`row-grid-${p}`} 
-                                       className="absolute h-full border-l border-border/40"
-                                       style={{ left: `${p * 100}%` }}
-                                     />
-                                   ))}
-                                </div>
-
-                                {/* Today Marker inside area (Z-index 30) */}
-                                {todayPos > 0 && todayPos < 100 && (
-                                  <div 
-                                    className="absolute top-0 bottom-0 w-px bg-red-500 z-30 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
-                                    style={{ left: `${todayPos}%` }} 
-                                  />
-                                )}
+                                {/* Task Bar (Z-index 30) */}
 
                                 {/* Task Bar (Z-index 30) */}
                                 <div className="w-full h-8 relative z-30 mx-0 px-0">
