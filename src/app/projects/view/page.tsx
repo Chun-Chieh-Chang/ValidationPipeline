@@ -402,7 +402,13 @@ function ProjectDetailContent() {
               <div className="w-px h-8 bg-border hidden md:block" />
               <div className="flex flex-col gap-1">
                 <span className="text-sm font-black uppercase tracking-widest text-muted">負責人</span>
-                <span className="text-foreground font-black">{project.owner}</span>
+                <span className={`font-black px-2 py-0.5 rounded transition-all ${
+                  project.status === "IN_PROGRESS"
+                    ? "bg-brand-accent text-white animate-subtle-pulse"
+                    : "text-foreground"
+                }`}>
+                  {project.owner}
+                </span>
               </div>
 
               {project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true' && (
@@ -579,11 +585,12 @@ function ProjectDetailContent() {
                         <td className="px-4 pt-4 pb-2 text-center border-b border-r border-border">
                           <div className="flex flex-col gap-2 items-center justify-center">
                             {!isMainTask && task.dept && (
-                              <span className={`px-3 py-1 rounded transition-all font-black text-xs uppercase tracking-widest border ${
+                              <span className={`px-3 py-1.5 rounded transition-all font-black text-xs uppercase tracking-widest border shadow-sm flex items-center gap-1 ${
                                 task.status === 'IN_PROGRESS' 
-                                  ? 'text-brand-accent border-brand-accent'
+                                  ? 'bg-brand-accent text-white border-brand-accent animate-subtle-pulse'
                                   : 'bg-surface border-border text-muted'
                               }`}>
+                                {task.status === 'IN_PROGRESS' && <Zap size={12} className="fill-white" />}
                                 {task.dept}
                               </span>
                             )}

@@ -258,7 +258,17 @@ export default function Dashboard() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-bold text-muted mb-6">
                       <div>品號: <span className="text-foreground tracking-tight">{project.part_no}</span></div>
-                      <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/40" />負責人: <span className="text-foreground tracking-tight">{project.owner}</span></div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                        負責人: 
+                        <span className={`tracking-tight px-2 py-0.5 rounded transition-all font-black ${
+                          project.status === "IN_PROGRESS" 
+                            ? "bg-brand-accent text-white animate-subtle-pulse" 
+                            : "text-foreground"
+                        }`}>
+                          {project.owner}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/40" />目的: <span className="text-foreground tracking-tight line-clamp-1">{project.purpose || '無'}</span></div>
                     </div>
 
@@ -417,8 +427,14 @@ export default function Dashboard() {
                             {new Date(project.ecr_date).toLocaleDateString()}
                           </div>}
                         </td>
-                        <td className="px-4 py-5 text-foreground font-black text-sm border-b border-r border-border whitespace-nowrap">
-                          {project.owner || "-"}
+                        <td className="px-4 py-5 font-black text-sm border-b border-r border-border whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded transition-all ${
+                            project.status === 'IN_PROGRESS'
+                              ? 'bg-brand-accent text-white animate-subtle-pulse'
+                              : 'text-foreground'
+                          }`}>
+                            {project.owner || "-"}
+                          </span>
                         </td>
                         <td className="px-4 py-5 text-muted text-sm border-b border-border">
                           <div className="font-black text-foreground">{(project.ecn_no && String(project.ecn_no).toLowerCase() !== 'true') ? project.ecn_no : "-"}</div>
