@@ -10,6 +10,7 @@
   --text-secondary: #8A4B2F; /* Adobe Brown - muted text */
   --border-color: #F2C299; /* Dune Peach - soft subtle borders */
   --accent-brand: #C56C39; /* Ember Rock - primary CTA and interactive elements */
+  --accent-brand-foreground: #FFFFFF; /* High contrast text for brand accent */
   --accent-secondary: #E49C69; /* Apricot Dust - secondary highlights */
   --accent-success: #10B981; /* Emerald */
   --accent-warning: #EF4444; /* Red */
@@ -23,6 +24,7 @@
   --text-secondary: #6ECBD3; /* Shallow Reef - muted data/labels */
   --border-color: #2D4C52; /* Adjusted Deep Teal - more visible for subtle grid */
   --accent-brand: #9FE7E7; /* Seafoam Bloom - brand CTA & active elements */
+  --accent-brand-foreground: #0F1A1B; /* Keel Black text for light seafoam background */
   --accent-secondary: #289FB7; /* Pelagic Blue - secondary highlights & hover */
   --accent-success: #34D399; /* Emerald Light */
   --accent-warning: #F87171; /* Red Light */

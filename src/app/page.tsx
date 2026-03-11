@@ -263,7 +263,7 @@ export default function Dashboard() {
                         負責人: 
                         <span className={`tracking-tight px-2 py-0.5 rounded transition-all font-black ${
                           project.status === "IN_PROGRESS" 
-                            ? "bg-brand-accent text-white animate-subtle-pulse" 
+                            ? "bg-brand-accent text-brand-accent-fg animate-subtle-pulse" 
                             : "text-foreground"
                         }`}>
                           {project.owner}
@@ -430,7 +430,7 @@ export default function Dashboard() {
                         <td className="px-4 py-5 font-black text-sm border-b border-r border-border whitespace-nowrap">
                           <span className={`px-2 py-1 rounded transition-all ${
                             project.status === 'IN_PROGRESS'
-                              ? 'bg-brand-accent text-white animate-subtle-pulse'
+                              ? 'bg-brand-accent text-brand-accent-fg animate-subtle-pulse'
                               : 'text-foreground'
                           }`}>
                             {project.owner || "-"}

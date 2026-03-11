@@ -404,7 +404,7 @@ function ProjectDetailContent() {
                 <span className="text-sm font-black uppercase tracking-widest text-muted">負責人</span>
                 <span className={`font-black px-2 py-0.5 rounded transition-all ${
                   project.status === "IN_PROGRESS"
-                    ? "bg-brand-accent text-white animate-subtle-pulse"
+                    ? "bg-brand-accent text-brand-accent-fg animate-subtle-pulse"
                     : "text-foreground"
                 }`}>
                   {project.owner}
@@ -587,10 +587,10 @@ function ProjectDetailContent() {
                             {!isMainTask && task.dept && (
                               <span className={`px-3 py-1.5 rounded transition-all font-black text-xs uppercase tracking-widest border shadow-sm flex items-center gap-1 ${
                                 task.status === 'IN_PROGRESS' 
-                                  ? 'bg-brand-accent text-white border-brand-accent animate-subtle-pulse'
+                                  ? 'bg-brand-accent text-brand-accent-fg border-brand-accent animate-subtle-pulse'
                                   : 'bg-surface border-border text-muted'
                               }`}>
-                                {task.status === 'IN_PROGRESS' && <Zap size={12} className="fill-white" />}
+                                {task.status === 'IN_PROGRESS' && <Zap size={12} className="fill-current" />}
                                 {task.dept}
                               </span>
                             )}

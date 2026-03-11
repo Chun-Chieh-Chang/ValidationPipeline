@@ -22,7 +22,8 @@ const config: Config = {
         // Semantic mappings
         "brand-primary": "var(--text-primary)",   
         "brand-secondary": "var(--accent-secondary)", 
-        "brand-accent": "var(--accent-brand)",    
+        "brand-accent": "var(--accent-brand)",
+        "brand-accent-fg": "var(--accent-brand-foreground)",
         "brand-peach": "#FFD6BC",     
         border: "var(--border-color)",            
         "royal-blue": "var(--accent-brand)",      
