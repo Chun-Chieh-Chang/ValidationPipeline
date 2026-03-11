@@ -509,7 +509,7 @@ function ProjectDetailContent() {
                 <h2 className="text-2xl font-black text-foreground">
                   {viewMode === 'table' ? '任務清單 (WBS)' : '專案甘特圖 (Gantt)'}
                 </h2>
-                <div className="flex bg-neutral-100 dark:bg-neutral-900 rounded-xl p-1 border border-border">
+                <div className="flex bg-background rounded-xl p-1 border border-border">
                   <button 
                     onClick={() => setViewMode('table')}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'table' ? 'bg-surface text-abyss shadow-md' : 'text-neutral-400 hover:text-abyss'}`}

@@ -15,15 +15,15 @@
   --accent-warning: #EF4444; /* Red */
 }
 
-/* Dark Mode Variables (Dune Peach Earthy Tones) */
+/* Dark Mode Variables (Deep Sea) */
 .dark {
-  --bg-base: #201A17; /* Midnight Soil */
-  --bg-surface: #2E231F; /* Slightly elevated from Midnight Soil (mix with Cacao) */
-  --text-primary: #F2C299; /* Dune Peach - soft readable text on dark */
-  --text-secondary: #E49C69; /* Apricot Dust - muted text on dark */
-  --border-color: #5C3B2E; /* Cacao Husk - dark borders */
-  --accent-brand: #C56C39; /* Ember Rock - brand CTA */
-  --accent-secondary: #8A4B2F; /* Adobe Brown */
+  --bg-base: #0F1A1B; /* Keel Black - absolute deepest background */
+  --bg-surface: #162527; /* Elevated Keel Black for cards/tables */
+  --text-primary: #E8FBFF; /* Foam White - highest contrast for readable text */
+  --text-secondary: #6ECBD3; /* Shallow Reef - muted data/labels */
+  --border-color: #146B8C; /* Abyss Teal - structural lines */
+  --accent-brand: #9FE7E7; /* Seafoam Bloom - brand CTA & active elements */
+  --accent-secondary: #289FB7; /* Pelagic Blue - secondary highlights & hover */
   --accent-success: #34D399; /* Emerald Light */
   --accent-warning: #F87171; /* Red Light */
 }

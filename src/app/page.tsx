@@ -168,7 +168,7 @@ export default function Dashboard() {
             <button 
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
-              className="px-4 py-2.5 rounded-lg bg-surface hover:bg-neutral-800 border-2 border-border text-foreground text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground hover:bg-foreground hover:text-background text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
               匯出總表
@@ -233,7 +233,7 @@ export default function Dashboard() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
                   <div className="flex-1 w-full relative z-10">
                     <div className="flex items-center gap-3 mb-4 flex-wrap">
-                      <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-neutral-800 border border-border text-foreground uppercase">
+                      <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-foreground border border-foreground text-background uppercase shadow-sm">
                         {project.type}
                       </span>
                       <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-surface border border-border text-muted uppercase shadow-sm">

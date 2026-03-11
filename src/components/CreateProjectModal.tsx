@@ -96,7 +96,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             </button>
 
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-neutral-800 text-white rounded-full flex items-center justify-center border border-border">
+              <div className="w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center border border-border">
                 <FileText size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground">新增確效專案</h2>
@@ -183,7 +183,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
               </div>
 
               {errorMessage && (
-                <div className="flex items-center gap-2 text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 p-3 rounded-lg border border-red-300 dark:border-red-800 text-sm mt-4">
+                <div className="flex items-center gap-2 text-danger bg-danger/10 p-3 rounded-lg border border-danger/30 text-sm mt-4">
                   <AlertCircle size={16} />
                   <span className="font-bold">{errorMessage}</span>
                 </div>
@@ -193,14 +193,14 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-2.5 rounded-xl font-bold text-neutral-400 hover:text-white bg-transparent border border-border hover:bg-neutral-900 transition-all font-black uppercase tracking-widest text-xs"
+                  className="px-6 py-2.5 rounded-xl text-neutral-400 hover:text-white bg-transparent border border-border hover:bg-neutral-900 transition-all font-black uppercase tracking-widest text-xs"
                 >
                   取消
                 </button>
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="relative px-8 py-2.5 rounded-xl font-bold bg-white text-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest font-black"
+                  className="relative px-8 py-2.5 rounded-xl bg-white text-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest font-black"
                 >
                   <div className="flex items-center gap-2">
                     {status === 'submitting' ? (
