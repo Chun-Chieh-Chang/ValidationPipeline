@@ -237,3 +237,30 @@
 - [x] 成功修復環境依賴與 Lint 錯誤，開發伺服器 (`npm run dev`) 正常運作。
 - [x] **資料清空同步修復 (Data Clearance Sync)**：修正了 `ImportModal` 中「清空欄位與記憶體」按鈕僅清除局部狀態的問題。現在該按鈕會正確呼叫 `projectService.clearAll()` 並驅動 Dashboard 刷新，確保全站資料一致性。
 
+---
+
+## [2026-03-11] Deep Sea UI 網格邏輯與捲軸優化 (Grid & Scrollbar Refinement)
+
+### 背景 (Background)
+
+在 Deep Sea 主題實裝後，發現總表（Dashboard）與專案 WBS 表格的格線邏輯不一致，「直向線條」在暗色模式下幾乎不可見，且橫向滾動條呈現刺眼的預設白色，破壞了沉浸式體驗。同時，部分硬編碼的深色 Badge 在暗黑模式下產生對比度失效的問題。
+
+### 核心變更 (Key Changes)
+
+- **格線邏輯標準化 (Grid Logic Standardization)**:
+  - 徹底移除總表與 WBS 表格中混用的 `divide-y` 與 `border-l`。
+  - 全面實施 **`border-b border-r`** 的完整方格邏輯，確保表格結構穩定且具備 Excel 般的精確度。
+- **邊框對比度校準 (Border Calibration)**:
+  - 將 `--border-color` 從過暗的隱形狀態調優為 **`#2D4C52`**，使其在 Keel Black 背景上呈現出「微妙但清晰」的區隔感。
+- **暗黑模式滾輪實作 (Deep Sea Scrollbar)**:
+  - 在 `globals.css` 中導入自定義捲軸樣式，強制使用 `--border-color` 與 `--accent-secondary` 作為 thumb 顏色，消除白色滾輪的視覺衝突。
+- **語意化對比度修復 (Semantic Contrast Fixes)**:
+  - 搜尋並移除所有硬編碼的 `bg-neutral-800`（如專案類型 Badge、Modal Icon 背景）。
+  - 統一映射至調色盤變數 `bg-foreground` 與 `text-background`，確保其在 Light/Dark Mode 均具備極高的可讀性。
+
+### 成果 (Outcome)
+
+- [x] **總表邏輯回歸**：表格呈現出高精密度的格線系統，符合國際藝術總監設定的平面化美學。
+- [x] **視覺沉浸感提升**：自定義滾輪完美融入深海主題。
+- [x] **全系統語意化**：成功消滅最後一條硬編碼顏色暗雷，系統具備完美的動態切換韌性。
+

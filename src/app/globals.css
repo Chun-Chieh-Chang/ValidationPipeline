@@ -21,7 +21,7 @@
   --bg-surface: #162527; /* Elevated Keel Black for cards/tables */
   --text-primary: #E8FBFF; /* Foam White - highest contrast for readable text */
   --text-secondary: #6ECBD3; /* Shallow Reef - muted data/labels */
-  --border-color: #146B8C; /* Abyss Teal - structural lines */
+  --border-color: #2D4C52; /* Adjusted Deep Teal - more visible for subtle grid */
   --accent-brand: #9FE7E7; /* Seafoam Bloom - brand CTA & active elements */
   --accent-secondary: #289FB7; /* Pelagic Blue - secondary highlights & hover */
   --accent-success: #34D399; /* Emerald Light */
@@ -60,6 +60,31 @@ body {
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Custom Scrollbar for Deep Sea Theme */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 20px;
+    border: none;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-secondary);
   }
   
   @keyframes marquee {

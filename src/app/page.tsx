@@ -319,8 +319,8 @@ export default function Dashboard() {
                     
                     <th className="px-4 py-3 w-28 text-center border-b border-r border-border" rowSpan={2}>狀態</th>
                     <th className="px-4 py-3 w-24 text-center border-b border-r border-border" rowSpan={2}>連結</th>
-                    <th className="px-4 py-3 w-40 border-b border-border whitespace-nowrap" rowSpan={2}>ECR</th>
-                    <th className="px-4 py-3 w-28 border-b border-border whitespace-nowrap" rowSpan={2}>發出人員</th>
+                    <th className="px-4 py-3 w-40 border-b border-r border-border whitespace-nowrap" rowSpan={2}>ECR</th>
+                    <th className="px-4 py-3 w-28 border-b border-r border-border whitespace-nowrap" rowSpan={2}>發出人員</th>
                     <th className="px-4 py-3 w-40 border-b border-border whitespace-nowrap" rowSpan={2}>ECN</th>
                   </tr>
                   <tr className="bg-background/50 text-muted text-xs tracking-widest whitespace-nowrap font-black uppercase">
@@ -333,7 +333,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-border/50">
+                <tbody className="">
                   {projects.map((project) => {
                     const getPhase = (name: string) => project.phases?.find((p: any) => p.phase_name === name);
                     const renderCheck = (name: string) => {
@@ -358,31 +358,31 @@ export default function Dashboard() {
                             {project.priority || 3}
                           </span>
                         </td>
-                        <td className="px-4 py-5 text-muted text-sm font-black border-l border-border">
+                        <td className="px-4 py-5 text-muted text-sm font-black border-b border-r border-border">
                           {project.start_date && !isNaN(new Date(project.start_date).getTime()) ? new Date(project.start_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="px-4 py-5 font-black text-sm tracking-widest text-foreground border-r border-border">
+                        <td className="px-4 py-5 font-black text-sm tracking-widest text-foreground border-b border-r border-border">
                           {project.type}
                         </td>
-                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-r border-border">
+                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-b border-r border-border">
                           {project.project_no}
                         </td>
-                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-r border-border">
+                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-b border-r border-border">
                           {project.part_no}
                         </td>
-                        <td className="px-4 py-5 text-center font-black text-sm text-foreground border-r border-border">
+                        <td className="px-4 py-5 text-center font-black text-sm text-foreground border-b border-r border-border">
                           {project.rev}
                         </td>
-                        <td className="px-4 py-5 text-sm text-muted font-bold leading-relaxed border-r border-border min-w-[200px]">
+                        <td className="px-4 py-5 text-sm text-muted font-bold leading-relaxed border-b border-r border-border min-w-[200px]">
                           {project.purpose || "-"}
                         </td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('PD')}</td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('FA')}</td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('OQ')}</td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('PQ')}</td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('EC')}</td>
-                        <td className="px-1 py-5 border-l border-border">{renderCheck('圖面進版')}</td>
-                        <td className="px-4 py-3 text-center border-b border-l border-border">
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('PD')}</td>
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('FA')}</td>
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('OQ')}</td>
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('PQ')}</td>
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('EC')}</td>
+                        <td className="px-1 py-5 border-b border-r border-border">{renderCheck('圖面進版')}</td>
+                        <td className="px-4 py-3 text-center border-b border-r border-border">
                           <div className={`px-3 py-1 rounded-full text-xs font-black tracking-widest border flex items-center justify-center gap-1.5 w-max mx-auto whitespace-nowrap ${
                   project.status === 'CLOSED' 
                     ? 'text-success border-success' 
@@ -398,7 +398,7 @@ export default function Dashboard() {
                   {project.status === 'CLOSED' ? '已結案' : project.status === 'IN_PROGRESS' ? '進行中' : '尚未開始'}
                 </div>
                         </td>
-                        <td className="px-4 py-5 text-center border-l border-border">
+                        <td className="px-4 py-5 text-center border-b border-r border-border">
                           {project.cloud_link ? (
                             <a 
                               href={project.cloud_link} 
@@ -411,16 +411,16 @@ export default function Dashboard() {
                             </a>
                           ) : <span className="text-slate-300">-</span>}
                         </td>
-                        <td className="px-4 py-5 text-muted text-sm border-l border-border">
+                        <td className="px-4 py-5 text-muted text-sm border-b border-r border-border">
                           <div className="font-black text-foreground">{(project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true') ? project.ecr_no : "-"}</div>
                           {project.ecr_date && !isNaN(new Date(project.ecr_date).getTime()) && String(project.ecr_no).toLowerCase() !== 'true' && <div className="text-sm font-black text-neutral-500 mt-1 tabular-nums">
                             {new Date(project.ecr_date).toLocaleDateString()}
                           </div>}
                         </td>
-                        <td className="px-4 py-5 text-foreground font-black text-sm border-l border-border whitespace-nowrap">
+                        <td className="px-4 py-5 text-foreground font-black text-sm border-b border-r border-border whitespace-nowrap">
                           {project.owner || "-"}
                         </td>
-                        <td className="px-4 py-5 text-muted text-sm border-l border-border">
+                        <td className="px-4 py-5 text-muted text-sm border-b border-border">
                           <div className="font-black text-foreground">{(project.ecn_no && String(project.ecn_no).toLowerCase() !== 'true') ? project.ecn_no : "-"}</div>
                           {project.ecn_date && !isNaN(new Date(project.ecn_date).getTime()) && String(project.ecn_no).toLowerCase() !== 'true' && <div className="text-sm font-black text-neutral-500 mt-1 tabular-nums">
                             {new Date(project.ecn_date).toLocaleDateString()}

@@ -540,7 +540,7 @@ function ProjectDetailContent() {
                     <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">預計完成</th>
                     <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">開始日</th>
                     <th className="px-4 py-5 w-36 text-center font-black border-b border-r border-border tracking-tighter">實際完成</th>
-                    <th className="px-4 py-5 min-w-[240px] font-black border-b border-border">交付/備註及鏈結</th>
+                    <th className="px-4 py-5 min-w-[240px] font-black border-b border-r border-border">交付/備註及鏈結</th>
                   </tr>
 
                 </thead>
@@ -565,18 +565,18 @@ function ProjectDetailContent() {
                     return (
                       <tr 
                         key={task.id} 
-                        className={`transition-colors border-b border-border/50 hover:bg-surface/50 ${isMainTask ? 'bg-background shadow-sm' : ''}`}
+                        className={`transition-colors hover:bg-surface/50 ${isMainTask ? 'bg-background shadow-sm' : ''}`}
                       >
-                        <td className={`px-4 py-5 text-center font-black border-r border-border ${isMainTask ? 'text-sm text-foreground' : 'text-sm text-foreground'}`}>
+                        <td className={`px-4 py-5 text-center font-black border-b border-r border-border ${isMainTask ? 'text-sm text-foreground' : 'text-sm text-foreground'}`}>
                           {task.wbs_code}
                         </td>
-                        <td className={`px-4 py-5 border-r border-border font-bold text-sm ${isMainTask ? 'text-foreground' : 'text-muted'}`}>
+                        <td className={`px-4 py-5 border-b border-r border-border font-bold text-sm ${isMainTask ? 'text-foreground' : 'text-muted'}`}>
                           <div className={`flex items-center gap-3 ${!isMainTask ? 'ml-8' : ''}`}>
                             {!isMainTask && <div className="w-4 h-px bg-border" />}
                             <span className="leading-relaxed">{task.task_name}</span>
                           </div>
                         </td>
-                        <td className="px-4 pt-4 pb-2 text-center border-r border-border">
+                        <td className="px-4 pt-4 pb-2 text-center border-b border-r border-border">
                           <div className="flex flex-col gap-2 items-center justify-center">
                             {!isMainTask && task.dept && (
                               <span className={`px-3 py-1 rounded transition-all font-black text-xs uppercase tracking-widest border ${
@@ -589,7 +589,7 @@ function ProjectDetailContent() {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-border">
+                        <td className="px-4 py-5 text-center border-b border-r border-border">
                           {updating === task.id ? (
                             <Loader2 size={16} className="animate-spin text-abyss mx-auto" />
                           ) : (
@@ -611,20 +611,20 @@ function ProjectDetailContent() {
                             </button>
                           )}
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-border font-black">
+                        <td className="px-4 py-5 text-center border-b border-r border-border font-black">
                           <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-muted'}`}>
                             {task.planned_date && !isNaN(new Date(task.planned_date).getTime()) ? new Date(task.planned_date).toLocaleDateString() : '-'}
                           </div>
                         </td>
-                        <td className="px-4 py-5 text-center text-sm font-black tabular-nums tracking-tight text-muted border-r border-border">
+                        <td className="px-4 py-5 text-center text-sm font-black tabular-nums tracking-tight text-muted border-b border-r border-border">
                           {task.start_date ? new Date(task.start_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-border font-black">
+                        <td className="px-4 py-5 text-center border-b border-r border-border font-black">
                           <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-success' : 'text-muted italic'}`}>
                             {task.actual_date && !isNaN(new Date(task.actual_date).getTime()) ? new Date(task.actual_date).toLocaleDateString() : '尚未'}
                           </div>
                         </td>
-                        <td className="px-4 py-5 border-r border-border">
+                        <td className="px-4 py-5 border-b border-r border-border">
                           <div className="flex flex-col gap-2">
                             {task.deliverable && task.deliverable !== 'null' ? (() => {
                               const [display, url] = task.deliverable.split('||');
