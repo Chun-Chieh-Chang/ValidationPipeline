@@ -354,10 +354,10 @@ function ProjectDetailContent() {
                   {project.project_no}
                 </h1>
                 <div className="flex gap-2">
-                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 uppercase">
                     Rev. {project.rev}
                   </span>
-                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-seafoam border border-reef text-abyss uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-primary/10 border border-primary/30 text-primary uppercase">
                     {project.type}
                   </span>
                   {project.status === "CLOSED" && (
@@ -407,7 +407,7 @@ function ProjectDetailContent() {
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">ECR 號碼</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300">ECR 號碼</span>
                     <span className="text-abyss font-black">{project.ecr_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
@@ -416,8 +416,8 @@ function ProjectDetailContent() {
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">ECN 號碼</span>
-                    <span className="text-slate-800 dark:text-slate-200 font-black">{project.ecn_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
+                    <span className="text-sm font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300">ECN 號碼</span>
+                    <span className="text-neutral-800 dark:text-neutral-200 font-black">{project.ecn_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
               )}
@@ -433,7 +433,7 @@ function ProjectDetailContent() {
               {project.cloud_link && (
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
-                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-seafoam border border-reef px-4 py-2 rounded-xl text-abyss hover:bg-slate-100 transition-all font-black text-sm">
+                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-primary/10 border border-primary/30 px-4 py-2 rounded-xl text-primary hover:bg-neutral-100 transition-all font-black text-sm">
                     <ExternalLink size={16} /> 雲端資料
                   </a>
                 </>
@@ -454,10 +454,10 @@ function ProjectDetailContent() {
                       .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                       .map((notif: any, idx: number) => (
                         <div key={`${notif.id}-${idx}`} className="flex items-center gap-4 whitespace-nowrap border-r border-border pr-10 last:border-0 group/notif">
-                          <span className="px-3 py-1 rounded-xl bg-seafoam text-sm font-black text-abyss border border-reef uppercase tracking-tighter">
+                          <span className="px-3 py-1 rounded-xl bg-primary/10 text-sm font-black text-primary border border-primary/30 uppercase tracking-tighter">
                             {notif.target_dept}
                           </span>
-                          <span className="text-sm text-red-600 dark:text-yellow-400 font-bold group-hover/notif:brightness-110 transition-colors">
+                          <span className="text-sm text-danger font-bold group-hover/notif:brightness-110 transition-colors">
                             {notif.message}
                           </span>
                           <span className="text-sm text-foreground font-black">
@@ -481,7 +481,7 @@ function ProjectDetailContent() {
                     className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none group/phase shadow-xl ${
                       phase.completion_status === 'COMPLETED'
                         ? 'bg-abyss border-abyss text-white shadow-abyss/20'
-                        : 'bg-surface border-border text-slate-400 hover:border-pelagic/40 hover:text-abyss'
+                        : 'bg-surface border-border text-neutral-400 hover:border-primary/40 hover:text-abyss'
                     }`}
                   >
                     {phase.completion_status === 'COMPLETED' ? <CheckCircle size={18} /> : <Circle size={18} className="group-hover/phase:scale-110 transition-transform" />}
@@ -492,7 +492,7 @@ function ProjectDetailContent() {
             )}
 
             {project.purpose && (
-              <div className="mt-8 text-foreground bg-seafoam/20 p-6 rounded-3xl border-2 border-border flex flex-col gap-2">
+              <div className="mt-8 text-foreground bg-primary/20 p-6 rounded-3xl border-2 border-border flex flex-col gap-2">
                 <span className="text-sm font-black text-abyss uppercase tracking-widest">案號目的</span>
                 <p className="text-lg font-bold leading-relaxed">{project.purpose}</p>
               </div>
@@ -507,10 +507,10 @@ function ProjectDetailContent() {
                 <h2 className="text-2xl font-black text-foreground">
                   {viewMode === 'table' ? '任務清單 (WBS)' : '專案甘特圖 (Gantt)'}
                 </h2>
-                <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-border">
+                <div className="flex bg-neutral-100 dark:bg-neutral-900 rounded-xl p-1 border border-border">
                   <button 
                     onClick={() => setViewMode('table')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'table' ? 'bg-surface text-abyss shadow-md' : 'text-slate-400 hover:text-abyss'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black transition-all ${viewMode === 'table' ? 'bg-surface text-abyss shadow-md' : 'text-neutral-400 hover:text-abyss'}`}
                   >
                     <TableIcon size={16} />
                     表格

@@ -159,7 +159,7 @@ export default function Dashboard() {
             <button 
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
-              className="px-4 py-2.5 rounded-lg bg-surface hover:bg-seafoam dark:hover:bg-slate-800 border-2 border-border text-foreground text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg bg-surface hover:bg-neutral-800 border-2 border-border text-foreground text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
               匯出總表
@@ -184,7 +184,7 @@ export default function Dashboard() {
             </button>
             <button 
               onClick={() => setImportModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-surface border-2 border-pelagic text-abyss hover:bg-seafoam font-bold text-sm transition-all"
+              className="px-6 py-2.5 rounded-lg bg-surface border-2 border-foreground text-foreground hover:bg-neutral-800 font-bold text-sm transition-all"
             >
               匯入 Master
             </button>
@@ -231,7 +231,7 @@ export default function Dashboard() {
                       <span className="text-2xl font-black text-abyss tracking-tight">
                         {project.project_no}
                       </span>
-                      <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-seafoam border border-reef text-abyss uppercase">
+                      <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-neutral-800 border border-border text-foreground uppercase">
                         {project.type}
                       </span>
                       <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-surface border border-border text-muted uppercase shadow-sm">
@@ -252,8 +252,8 @@ export default function Dashboard() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-bold text-muted mb-6">
                       <div>品號: <span className="text-foreground tracking-tight">{project.part_no}</span></div>
-                      <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-pelagic/40" />負責人: <span className="text-foreground tracking-tight">{project.owner}</span></div>
-                      <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-pelagic/40" />目的: <span className="text-foreground tracking-tight line-clamp-1">{project.purpose || '無'}</span></div>
+                      <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/40" />負責人: <span className="text-foreground tracking-tight">{project.owner}</span></div>
+                      <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/40" />目的: <span className="text-foreground tracking-tight line-clamp-1">{project.purpose || '無'}</span></div>
                     </div>
 
                     {/* Phase Indicators */}
@@ -311,7 +311,7 @@ export default function Dashboard() {
                     <th className="px-4 py-4 w-28 border-r border-border" rowSpan={2}>人員</th>
                     <th className="px-4 py-4 w-40" rowSpan={2}>ECN</th>
                   </tr>
-                  <tr className="bg-[#1e293b] text-slate-200 text-sm font-black uppercase">
+                  <tr className="bg-[#111111] text-neutral-400 text-sm font-black uppercase">
                     <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">PD</th>
                     <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">FA</th>
                     <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">OQ</th>
@@ -350,7 +350,7 @@ export default function Dashboard() {
                           {project.start_date ? new Date(project.start_date).toLocaleDateString() : '-'}
                         </td>
                         <td className="px-4 py-5 border-l border-border">
-                          <span className="px-3 py-1 rounded-xl text-sm font-black bg-seafoam text-abyss border border-reef uppercase shadow-sm">
+                          <span className="px-3 py-1 rounded-xl text-sm font-black bg-neutral-800 text-foreground border border-border uppercase shadow-sm">
                             {project.type}
                           </span>
                         </td>
@@ -373,7 +373,7 @@ export default function Dashboard() {
                         <td className="px-1 py-5 border-l border-border">{renderCheck('EC')}</td>
                         <td className="px-1 py-5 border-l border-border">{renderCheck('圖面進版')}</td>
                         <td className="px-4 py-5 text-center border-l border-border">
-                          <div className={`text-sm font-black px-3 py-1 rounded-xl border-2 ${project.status === 'CLOSED' ? 'bg-success/10 text-success border-success/30' : 'bg-seafoam text-abyss border-reef'}`}>
+                          <div className={`text-sm font-black px-3 py-1 rounded-xl border-2 ${project.status === 'CLOSED' ? 'bg-white/10 text-white border-white/30' : 'bg-neutral-800 text-foreground border-border'}`}>
                             {project.status === 'CLOSED' ? '結案' : '進行中'}
                           </div>
                         </td>
@@ -391,7 +391,7 @@ export default function Dashboard() {
                           ) : <span className="text-slate-300">-</span>}
                         </td>
                         <td className="px-4 py-5 text-muted text-sm border-l border-border">
-                          <div className="font-black text-pelagic">{(project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true') ? project.ecr_no : "-"}</div>
+                          <div className="font-black text-white">{(project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true') ? project.ecr_no : "-"}</div>
                           {project.ecr_date && String(project.ecr_no).toLowerCase() !== 'true' && <div className="text-sm font-black text-muted mt-1 tabular-nums">
                             {new Date(project.ecr_date).toLocaleDateString()}
                           </div>}

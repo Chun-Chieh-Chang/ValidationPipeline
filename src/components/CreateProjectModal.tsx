@@ -79,7 +79,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80"
+            className="absolute inset-0 bg-black/90"
           />
 
           <motion.div
@@ -90,13 +90,13 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-slate-400 hover:text-abyss dark:hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
             >
               <X size={20} />
             </button>
 
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-seafoam text-abyss rounded-full flex items-center justify-center border border-reef">
+              <div className="w-12 h-12 bg-neutral-800 text-white rounded-full flex items-center justify-center border border-border">
                 <FileText size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground">新增確效專案</h2>
@@ -105,44 +105,44 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-300 mb-1">模具號碼 (必填)</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">模具號碼 (必填)</label>
                   <input
                     type="text"
                     name="project_no"
                     value={formData.project_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                     placeholder="例如: M284"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">品號</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">品號</label>
                   <input
                     type="text"
                     name="part_no"
                     value={formData.part_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">工程版次</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">工程版次</label>
                   <input
                     type="text"
                     name="rev"
                     value={formData.rev}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">專案類型</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">專案類型</label>
                   <select
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold appearance-none"
                   >
                     <option value="設變">設變</option>
                     <option value="新模">新模</option>
@@ -151,33 +151,33 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">ECR 編號</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">ECR 編號</label>
                   <input
                     type="text"
                     name="ecr_no"
                     value={formData.ecr_no}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-300 mb-1">變更目的</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">變更目的</label>
                   <input
                     type="text"
                     name="purpose"
                     value={formData.purpose}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-300 mb-1">發出者 (Owner)</label>
+                  <label className="block text-sm font-black uppercase tracking-widest text-neutral-400 mb-2">發出者 (Owner)</label>
                   <input
                     type="text"
                     name="owner"
                     value={formData.owner}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-pelagic focus:ring-1 focus:ring-pelagic"
+                    className="w-full bg-black border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all font-bold"
                   />
                 </div>
               </div>
@@ -193,15 +193,14 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-300 hover:text-abyss dark:hover:text-white bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                  className="px-6 py-2.5 rounded-xl font-bold text-neutral-400 hover:text-white bg-transparent border border-border hover:bg-neutral-900 transition-all font-black uppercase tracking-widest text-xs"
                 >
                   取消
                 </button>
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="relative px-6 py-2.5 rounded-xl font-bold text-white shadow-lg overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed
-                             bg-abyss hover:bg-pelagic border-2 border-abyss active:bg-abyss"
+                  className="relative px-8 py-2.5 rounded-xl font-bold bg-white text-black shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest font-black"
                 >
                   <div className="flex items-center gap-2">
                     {status === 'submitting' ? (

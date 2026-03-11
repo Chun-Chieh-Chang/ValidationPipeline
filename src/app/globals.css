@@ -3,23 +3,24 @@
 @tailwind utilities;
 
 :root {
-  /* Deep Sea Mode - Primary High-Contrast Theme (Color Master Palette Aligned) */
-  --background: #0F172A; /* Slate 900 */
-  --surface: #1E293B;    /* Slate 800 */
-  --foreground: #F1F5F9; /* Slate 100 */
-  --text-muted: #94A3B8; /* Slate 400 */
-  --primary: #3B82F6;    /* Royal Blue */
-  --accent: #60A5FA;     /* Sky Blue */
+  /* Cinematic Grayscale - High-Contrast Professional Theme */
+  --background: #000000; /* Pure Black */
+  --surface: #111111;    /* Coal Black */
+  --foreground: #FFFFFF; /* Pure White */
+  --text-muted: #888888; /* Professional Gray */
+  --primary: #FFFFFF;    /* White as Primary */
+  --accent: #FFFFFF;     
   
-  /* Semantic Tokens */
-  --seafoam: #1E293B;    /* Same as Surface */
-  --reef: #334155;       /* Slate 700 - used for borders */
-  --pelagic: #38bdf8;    /* Sky 400 */
-  --abyss: #60a5fa;      /* Sky 300 */
-  --border: #334155;     /* Slate 700 */
-  --success: #10B981;    /* Emerald 500 */
-  --danger: #EF4444;     /* Red 500 */
+  /* Semantic Tokens (Re-assigned to Grayscale) */
+  --seafoam: #1a1a1a;    
+  --reef: #222222;       
+  --pelagic: #FFFFFF;    
+  --abyss: #FFFFFF;      
+  --border: #222222;     /* Subtle Gray Borders */
+  --success: #FFFFFF;    /* Clean White for successes in Grayscale */
+  --danger: #FF3333;     /* High Contrast Red for errors/marquee */
 }
+
 
 
 
