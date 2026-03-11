@@ -246,10 +246,11 @@ function ProjectDetailContent() {
     <div className="min-h-screen bg-background flex items-center justify-center text-abyss font-bold">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin" />
-        載入專案資料中...
+        載入專案中...
       </div>
     </div>
   );
+
 
   if (!project) return (
     <div className="min-h-screen bg-background p-8 text-foreground font-bold">
@@ -368,11 +369,12 @@ function ProjectDetailContent() {
               </div>
               
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={handleExport}
-                  disabled={exporting}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-abyss bg-surface text-abyss hover:opacity-80 shadow-xl"
-                >
+                  <button 
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-abyss bg-surface text-abyss hover:opacity-80 shadow-xl"
+                  >
+
                   {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
                   匯出案號報表
                 </button>
@@ -389,17 +391,18 @@ function ProjectDetailContent() {
                 </button>
               </div>
             </div>
-
+            
             <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-foreground bg-surface p-6 rounded-3xl border-2 border-border shadow-xl">
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-black uppercase tracking-widest text-muted">品號 (Part No.)</span>
+                <span className="text-sm font-black uppercase tracking-widest text-muted">品號</span>
                 <span className="text-foreground font-black">{project.part_no}</span>
               </div>
               <div className="w-px h-8 bg-border hidden md:block" />
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-black uppercase tracking-widest text-muted">負責人 (Owner)</span>
+                <span className="text-sm font-black uppercase tracking-widest text-muted">負責人</span>
                 <span className="text-foreground font-black">{project.owner}</span>
               </div>
+
               {project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true' && (
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
@@ -444,21 +447,27 @@ function ProjectDetailContent() {
                   <Bell size={20} className="animate-pulse" />
                   <span>最新通知:</span>
                 </div>
-                <div className="flex-1 flex gap-10 overflow-x-auto no-scrollbar py-1 scroll-smooth">
-                  {project.notifications.sort((a:any, b:any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((notif: any) => (
-                    <div key={notif.id} className="flex items-center gap-4 whitespace-nowrap border-r border-border pr-10 last:border-0 group/notif">
-                      <span className="px-3 py-1 rounded-xl bg-seafoam text-sm font-black text-abyss border border-reef uppercase tracking-tighter">
-                        {notif.target_dept}
-                      </span>
-                      <span className="text-sm text-red-600 dark:text-yellow-400 font-bold group-hover/notif:brightness-110 transition-colors">
-                        {notif.message}
-                      </span>
-                      <span className="text-sm text-foreground font-black">
-                        {new Date(notif.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
+                <div className="flex-1 overflow-hidden">
+                  <div className="animate-marquee flex gap-10">
+                    {/* Render notifications twice for seamless scrolling */}
+                    {[...project.notifications, ...project.notifications]
+                      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                      .map((notif: any, idx: number) => (
+                        <div key={`${notif.id}-${idx}`} className="flex items-center gap-4 whitespace-nowrap border-r border-border pr-10 last:border-0 group/notif">
+                          <span className="px-3 py-1 rounded-xl bg-seafoam text-sm font-black text-abyss border border-reef uppercase tracking-tighter">
+                            {notif.target_dept}
+                          </span>
+                          <span className="text-sm text-red-600 dark:text-yellow-400 font-bold group-hover/notif:brightness-110 transition-colors">
+                            {notif.message}
+                          </span>
+                          <span className="text-sm text-foreground font-black">
+                            {new Date(notif.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
+
               </div>
             )}
             
@@ -483,11 +492,12 @@ function ProjectDetailContent() {
             )}
 
             {project.purpose && (
-              <div className="mt-8 text-foreground bg-seafoam/20 dark:bg-seafoam/10 p-6 rounded-3xl border-2 border-border flex flex-col gap-2">
-                <span className="text-sm font-black text-abyss uppercase tracking-widest">案號目的 (Project Purpose)</span>
+              <div className="mt-8 text-foreground bg-seafoam/20 p-6 rounded-3xl border-2 border-border flex flex-col gap-2">
+                <span className="text-sm font-black text-abyss uppercase tracking-widest">案號目的</span>
                 <p className="text-lg font-bold leading-relaxed">{project.purpose}</p>
               </div>
             )}
+
           </header>
 
           {/* 視圖切換器與 WBS/甘特圖內容 (Elevated Z-index to prevent tooltip clipping) */}
@@ -520,16 +530,17 @@ function ProjectDetailContent() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px] border border-border">
                 <thead>
-                  <tr className="bg-slate-900 text-white text-sm font-black uppercase tracking-[0.1em] shadow-inner">
-                    <th className="px-4 py-5 w-16 text-center border-b border-r border-slate-700">工作序</th>
-                    <th className="px-4 py-5 min-w-[200px] border-b border-r border-slate-700">工作項目</th>
-                    <th className="px-4 py-5 w-44 text-center border-b border-r border-slate-700">權責</th>
-                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700">狀態</th>
-                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700 tracking-tighter">預計完成日</th>
-                    <th className="px-4 py-5 w-36 text-center border-b border-r border-slate-700 tracking-tighter">開始日</th>
-                    <th className="px-4 py-5 w-36 text-center text-sky-400 font-black border-b border-r border-slate-700 tracking-tighter">實際完成日</th>
-                    <th className="px-4 py-5 min-w-[240px] text-sky-400 font-black border-b border-slate-700">交付/備註及鏈結</th>
+                  <tr className="bg-background text-white text-sm font-black uppercase tracking-[0.1em] shadow-inner">
+                    <th className="px-4 py-5 w-16 text-center border-b border-r border-border">工作序</th>
+                    <th className="px-4 py-5 min-w-[200px] border-b border-r border-border">工作項目</th>
+                    <th className="px-4 py-5 w-44 text-center border-b border-r border-border">權責</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-border">狀態</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">預計完成</th>
+                    <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">開始日</th>
+                    <th className="px-4 py-5 w-36 text-center text-pelagic font-black border-b border-r border-border tracking-tighter">實際完成</th>
+                    <th className="px-4 py-5 min-w-[240px] text-pelagic font-black border-b border-border">交付/備註及鏈結</th>
                   </tr>
+
                 </thead>
                 <tbody className="text-sm">
                   {(project.tasks || []).sort((a: any, b: any) => {
@@ -658,13 +669,14 @@ function ProjectDetailContent() {
                 </tbody>
               </table>
               {project.tasks?.length === 0 && (
-                <div className="text-center py-20 bg-slate-50 dark:bg-slate-900 rounded-b-3xl border-t border-border">
+                <div className="text-center py-20 bg-background rounded-b-3xl border-t border-border">
                   <div className="flex flex-col items-center gap-3">
-                    <FileDown size={40} className="text-slate-300 dark:text-slate-600" />
-                    <p className="text-slate-700 dark:text-slate-300 font-bold">目前無 WBS 子任務資料</p>
+                    <FileDown size={40} className="text-muted" />
+                    <p className="text-foreground font-bold">目前無 WBS 子任務資料</p>
                   </div>
                 </div>
               )}
+
               </div>
             ) : (
               /* Gantt Chart View - Cleaned up horizontal scroll and hidden scrollbar artifact */
@@ -793,17 +805,18 @@ function ProjectDetailContent() {
                                   >
                                     {/* Tooltip on Hover (Z-index 110, appearing BELOW the bar) */}
                                     <div className="opacity-0 group-hover/bar:opacity-100 absolute top-full mt-4 left-1/2 -translate-x-1/2 bg-surface border-2 border-border text-sm p-6 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.4)] z-[110] pointer-events-none whitespace-nowrap transition-all transform -translate-y-2 group-hover/bar:translate-y-0 min-w-[320px]">
-                                      <div className="font-black border-b border-slate-100 dark:border-slate-700 mb-5 pb-2 text-abyss dark:text-seafoam text-lg uppercase tracking-tight">{task.task_name}</div>
+                                      <div className="font-black border-b border-border/10 mb-5 pb-2 text-abyss text-lg uppercase tracking-tight">{task.task_name}</div>
                                       <div className="space-y-4">
                                         <div className="flex justify-between gap-12"><span className="text-muted font-bold">計畫開始:</span> <span className="text-foreground font-black tabular-nums text-base">{new Date(tStart).toLocaleDateString()}</span></div>
                                         <div className="flex justify-between gap-12"><span className="text-muted font-bold">預計完成:</span> <span className="text-foreground font-black tabular-nums text-base">{task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}</span></div>
                                         {task.actual_date && <div className="flex justify-between gap-12 text-success font-black text-base"><span>實際完成:</span> <span className="tabular-nums">{new Date(task.actual_date).toLocaleDateString()}</span></div>}
-                                        <div className="flex justify-between gap-12 pt-4 border-t border-slate-100 dark:border-slate-700 font-black text-sm uppercase tracking-[0.2em]">
+                                        <div className="flex justify-between gap-12 pt-4 border-t border-border/10 font-black text-sm uppercase tracking-[0.2em]">
                                             <span className="text-muted tracking-widest">當前狀態</span> 
                                             <span className={isCompleted ? 'text-success bg-success/10 px-3 py-1 rounded-full' : 'text-pelagic bg-pelagic/10 px-3 py-1 rounded-full'}>{isCompleted ? '已完成' : '進行中'}</span>
                                         </div>
                                       </div>
                                     </div>
+
 
                                     {width > 3 && (
                                       isCompleted ? <CheckCircle size={16} className="text-emerald-800" /> :
@@ -819,10 +832,11 @@ function ProjectDetailContent() {
                     </div>
                   );
                 })() : (
-                  <div className="flex flex-col items-center justify-center py-32 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-border gap-4">
-                    <BarChart2 size={48} className="text-slate-300 dark:text-slate-600" />
-                    <p className="text-slate-400 font-bold">尚未載入 WBS 任務資料，無法生成甘特圖</p>
+                  <div className="flex flex-col items-center justify-center py-32 bg-background rounded-3xl border border-border gap-4">
+                    <BarChart2 size={48} className="text-muted" />
+                    <p className="text-muted font-bold">尚未載入 WBS 任務資料，無法生成甘特圖</p>
                   </div>
+
                 )}
               </div>
             )}

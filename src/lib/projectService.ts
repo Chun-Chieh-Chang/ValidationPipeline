@@ -148,5 +148,28 @@ export const projectService = {
     }
 
     localStorage.removeItem(STORAGE_KEY);
+  },
+
+  // 導出所有資料 (JSON 備份)
+  async exportData(): Promise<string> {
+    if (!isClient) return '';
+    const all = await this.getAll();
+    return JSON.stringify(all, null, 2);
+  },
+
+  // 導入所有資料 (JSON 還原)
+  async importData(jsonContent: string): Promise<void> {
+    if (!isClient) return;
+    try {
+      const data = JSON.parse(jsonContent);
+      if (Array.isArray(data)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } else {
+        throw new Error('格式錯誤：應為專案陣列');
+      }
+    } catch (e) {
+      console.error('導入失敗', e);
+      throw e;
+    }
   }
 };

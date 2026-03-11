@@ -3,18 +3,22 @@
 @tailwind utilities;
 
 :root {
-  /* Deep Sea Mode - Primary High-Contrast Theme */
-  --foreground: #ffffff;
-  --text-muted: #cbd5e1; /* Slate 300 for readability */
-  --background: #020617;
-  --surface: #0f172a;
-  --seafoam: #1e293b;
-  --reef: #475569;
-  --pelagic: #38bdf8;
-  --abyss: #60a5fa;
-  --border: #334155;
-  --success: #34d399;
-  --danger: #f87171;
+  /* Deep Sea Mode - Primary High-Contrast Theme (Color Master Palette Aligned) */
+  --background: #0F172A; /* Slate 900 */
+  --surface: #1E293B;    /* Slate 800 */
+  --foreground: #F1F5F9; /* Slate 100 */
+  --text-muted: #94A3B8; /* Slate 400 */
+  --primary: #3B82F6;    /* Royal Blue */
+  --accent: #60A5FA;     /* Sky Blue */
+  
+  /* Semantic Tokens */
+  --seafoam: #1E293B;    /* Same as Surface */
+  --reef: #334155;       /* Slate 700 - used for borders */
+  --pelagic: #38bdf8;    /* Sky 400 */
+  --abyss: #60a5fa;      /* Sky 300 */
+  --border: #334155;     /* Slate 700 */
+  --success: #10B981;    /* Emerald 500 */
+  --danger: #EF4444;     /* Red 500 */
 }
 
 
@@ -49,5 +53,21 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+  
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
 }
+
 

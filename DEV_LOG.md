@@ -210,3 +210,30 @@
 
 ---
 
+## [2026-03-11] Deep Sea Theme Consolidation & JSON Backup Engine
+
+### 背景 (Background)
+
+進一步精煉全站 UI，確保所有元素（包括甘特圖 Tooltip 與 WBS 表格）皆符合 "Deep Sea" (深海) 主題規範，移除所有剩餘的亮色系與硬編碼 `slate` 顏色。同時為了解決靜態部署環境下的資料易失性，實作了全系統 JSON 備份與還原引擎。
+
+### 核心變更 (Key Changes)
+
+- **主題全面整合**:
+  - 更新 `globals.css` 與 `tailwind.config.ts`，強化語意化 Token (`surface`, `seafoam`, `pelagic`) 的對比度。
+  - 徹底移除全站透明效果與 `backdrop-blur`，改為導向專業感的深色實色背景 (#0F172A / #1E293B)。
+  - 修正甘特圖 Tooltip，確保其具備不透明背景與清晰的陰影層次。
+- **JSON 備份引擎實作**:
+  - 在 `src/lib/projectService.ts` 新增 `exportData` 與 `importData` 邏輯，支援將 LocalStorage 資料封裝為專案格式 JSON 下載。
+  - 在 Dashboard 介面新增「備份」與「還原」按鈕，實作檔案讀取與資料注入。
+- **環境問題修復**:
+  - 解決了本地執行權限導致的 `npm install` 失敗問題。
+  - 導入了 `@types/node` 並修正了 `process` 未定義的型別錯誤。
+
+### 成果 (Outcome)
+
+- [x] 全站 UI 達成完全的 Deep Sea 主題一致性。
+- [x] 成功實作 JSON 備份功能，大幅提升靜態部署下的數據韌性。
+- [x] 通過瀏覽器自動化測試，確認在高對比度與去透明化下，視覺體驗更符合資深架構師標準。
+- [x] 成功修復環境依賴與 Lint 錯誤，開發伺服器 (`npm run dev`) 正常運作。
+- [x] **資料清空同步修復 (Data Clearance Sync)**：修正了 `ImportModal` 中「清空欄位與記憶體」按鈕僅清除局部狀態的問題。現在該按鈕會正確呼叫 `projectService.clearAll()` 並驅動 Dashboard 刷新，確保全站資料一致性。
+

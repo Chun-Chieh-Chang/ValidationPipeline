@@ -21,20 +21,28 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
   const [currentCount, setCurrentCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-  const handleClear = () => {
-    setFile(null);
-    setUrl("");
-    setStatus('idle');
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    setCurrentCount(0);
-    setTotalCount(0);
-    // Reset the file input element so the same file could be selected again
-    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+  const handleClear = async () => {
+    if (window.confirm("【危險操作】這將會清空所有專案資料並重設目前欄位。確定要繼續嗎？")) {
+      await projectService.clearAll();
+      setFile(null);
+      setUrl("");
+      setStatus('idle');
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setCurrentCount(0);
+      setTotalCount(0);
+      
+      // Notify dashboard to refresh
+      onSuccess();
+
+      // Reset the file input element so the same file could be selected again
+      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
   };
+
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -227,37 +235,41 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80"
+            className="absolute inset-0 bg-background/80"
           />
+
 
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-surface border-2 border-border dark:border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8"
+            className="relative w-full max-w-lg bg-surface border-2 border-border rounded-2xl shadow-2xl p-6 sm:p-8"
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-slate-400 hover:text-abyss dark:hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-muted hover:text-foreground transition-colors"
             >
               <X size={20} />
             </button>
+
 
             <div className="text-center mb-6">
               <div className="mx-auto w-12 h-12 bg-seafoam text-abyss rounded-full flex items-center justify-center mb-4 border border-reef">
                 <FileSpreadsheet size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-2">匯入 Master Sheet</h2>
-              <p className="text-slate-700 dark:text-slate-300 text-sm">
+              <p className="text-muted text-sm">
                 請上傳「射出成型之製程變更、確效專案之管理.xlsx」，系統將自動同步專案庫。
               </p>
             </div>
 
+
             <div className="space-y-4">
               <label
                 htmlFor="file-upload"
-                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950' : 'border-slate-400 bg-slate-50 hover:bg-slate-100 hover:border-pelagic dark:border-slate-600 dark:bg-slate-900 dark:hover:bg-slate-800'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-success bg-success/10' : 'border-border bg-background hover:bg-surface hover:border-pelagic'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
+
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                   {file ? (
                     <>
@@ -267,10 +279,11 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="w-8 h-8 text-slate-400 mb-3" />
-                      <p className="mb-2 text-sm text-slate-300 font-medium">點擊或拖入檔案</p>
-                      <p className="text-sm text-slate-700 dark:text-slate-300">僅支援 .xlsx 格式</p>
+                      <UploadCloud className="w-8 h-8 text-muted mb-3" />
+                      <p className="mb-2 text-sm text-foreground font-medium">點擊或拖入檔案</p>
+                      <p className="text-sm text-muted">僅支援 .xlsx 格式</p>
                     </>
+
                   )}
                 </div>
                 <input
@@ -284,10 +297,11 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
               </label>
 
               <div className="flex items-center gap-4 my-4">
-                <div className="flex-1 h-px bg-slate-700" />
-                <span className="text-sm text-slate-700 dark:text-slate-300 uppercase font-medium">或使用 URL 匯入</span>
-                <div className="flex-1 h-px bg-slate-700" />
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-sm text-muted uppercase font-medium">或使用 URL 匯入</span>
+                <div className="flex-1 h-px bg-border" />
               </div>
+
 
               <div className="flex flex-col gap-2">
                 <input
@@ -302,34 +316,36 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     setSuccessMessage(null);
                   }}
                   disabled={status === 'uploading' || file !== null} // Disable URL input if file is present or uploading
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-foreground focus:outline-none focus:border-pelagic transition-colors"
+                  className="w-full px-4 py-2 bg-background border-2 border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-pelagic transition-colors placeholder:text-muted/50 shadow-inner"
                 />
+
               </div>
 
               {status === 'uploading' && totalCount > 0 && (
-                <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-800 border border-border rounded-xl">
+                <div className="space-y-3 p-4 bg-background border border-border rounded-xl">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-pelagic font-bold flex items-center gap-2">
                        <Loader2 className="w-4 h-4 animate-spin" />
                        正在同步專案庫...
                     </span>
-                    <span className="text-abyss font-mono font-bold">
+                    <span className="text-foreground font-mono font-bold">
                       {Math.round((currentCount / totalCount) * 100)}%
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-300 dark:border-slate-700">
+                  <div className="w-full h-2 bg-surface rounded-full overflow-hidden border border-border">
                     <motion.div 
-                      className="h-full bg-pelagic"
+                      className="h-full bg-pelagic shadow-[0_0_8px_rgba(56,189,248,0.5)]"
                       initial={{ width: 0 }}
                       animate={{ width: `${(currentCount / totalCount) * 100}%` }}
                       transition={{ type: "spring", bounce: 0, duration: 0.3 }}
                     />
                   </div>
-                  <div className="text-right text-sm text-slate-700 dark:text-slate-300 font-medium">
+                  <div className="text-right text-sm text-muted font-medium">
                     已處理 {currentCount} / 共 {totalCount} 筆
                   </div>
                 </div>
               )}
+
 
               {errorMessage && (
                 <div className="flex items-center gap-2 text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 p-3 rounded-lg border border-red-300 dark:border-red-800 text-sm">
@@ -349,20 +365,22 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 <button
                   onClick={handleClear}
                   disabled={(!file && !url) || status === 'uploading'}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-red-600 dark:text-red-400 hover:text-white bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 hover:bg-red-600 dark:hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-danger bg-danger/10 border border-danger/30 hover:bg-danger hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   title="清空包含巨大檔案的記憶體佔用與網址"
                 >
                   <Trash2 size={18} />
                   <span>清空欄位與記憶體</span>
                 </button>
 
+
                 <div className="flex gap-3">
                   <button
                     onClick={onClose}
-                    className="px-5 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-300 hover:text-abyss dark:hover:text-white bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                    className="px-5 py-2.5 rounded-xl font-bold text-muted hover:text-foreground bg-surface border border-border hover:bg-reef transition-all"
                   >
                     取消
                   </button>
+
                   <button
                     onClick={url ? handleURLImport : handleUpload}
                     disabled={(!file && !url) || status === 'uploading'}

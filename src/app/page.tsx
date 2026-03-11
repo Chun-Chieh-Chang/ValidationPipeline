@@ -78,9 +78,43 @@ export default function Dashboard() {
       case "IN_PROGRESS":
         return "bg-seafoam text-abyss border-reef";
       default:
-        return "bg-slate-100 dark:bg-slate-800 text-muted border-slate-300 dark:border-slate-600";
+        return "bg-surface text-muted border-border";
     }
   };
+
+  const handleExportJSON = async () => {
+    try {
+      const json = await projectService.exportData();
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `VMS_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('備份失敗');
+    }
+  };
+
+  const handleImportJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        await projectService.importData(content);
+        await fetchProjects();
+        alert('還原成功！');
+      } catch (err) {
+        alert('還原失敗，請檢查檔案格式');
+      }
+    };
+    reader.readAsText(file);
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-abyss selection:text-white">
@@ -95,22 +129,23 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-slate-100 dark:bg-slate-900 rounded-2xl p-1 border border-border mr-2 shadow-inner">
+            <div className="flex bg-surface rounded-2xl p-1 border border-border mr-2 shadow-inner">
               <button 
                 onClick={() => setViewMode('cards')}
                 className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'cards' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
               >
                 <LayoutGrid size={16} />
-                <span className="text-[10px] font-black uppercase">卡片視圖</span>
+                <span className="text-sm font-black uppercase">卡片</span>
               </button>
               <button 
                 onClick={() => setViewMode('table')}
                 className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'table' ? 'bg-abyss text-white shadow-sm' : 'text-muted hover:text-abyss'}`}
               >
                 <TableIcon size={16} />
-                <span className="text-[10px] font-black uppercase">表格清單</span>
+                <span className="text-sm font-black uppercase">表格</span>
               </button>
             </div>
+
 
             <button 
               onClick={handleClearAllData}
@@ -130,8 +165,19 @@ export default function Dashboard() {
               匯出總表
             </button>
             <button 
+              onClick={handleExportJSON}
+              className="px-4 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground text-sm font-bold transition-all flex items-center gap-2"
+              title="導出 JSON 備份檔"
+            >
+              備份
+            </button>
+            <label className="px-4 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground text-sm font-bold transition-all flex items-center gap-2 cursor-pointer">
+              還原
+              <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" />
+            </label>
+            <button 
               onClick={() => setCreateModalOpen(true)}
-              className="px-6 py-2.5 rounded-xl bg-abyss text-white dark:text-slate-950 text-sm font-black transition-all flex items-center gap-2 shadow-xl hover:opacity-90 active:scale-95"
+              className="px-6 py-2.5 rounded-xl bg-abyss text-white text-sm font-black transition-all flex items-center gap-2 shadow-xl hover:opacity-90 active:scale-95"
             >
               <Plus size={18} />
               建立新專案
@@ -140,8 +186,9 @@ export default function Dashboard() {
               onClick={() => setImportModalOpen(true)}
               className="px-6 py-2.5 rounded-lg bg-surface border-2 border-pelagic text-abyss hover:bg-seafoam font-bold text-sm transition-all"
             >
-              匯入 Master Sheet
+              匯入 Master
             </button>
+
           </div>
         </header>
 
@@ -249,30 +296,31 @@ export default function Dashboard() {
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse min-w-[1500px] border border-border">
                 <thead>
-                  <tr className="bg-slate-900 text-white text-sm font-black uppercase tracking-[0.1em]">
-                    <th className="px-3 py-4 text-center w-14 border-r border-slate-700" rowSpan={2}>優先</th>
-                    <th className="px-4 py-4 w-32 border-r border-slate-700" rowSpan={2}>起始日期</th>
-                    <th className="px-4 py-4 w-28 border-r border-slate-700" rowSpan={2}>專案類型</th>
-                    <th className="px-4 py-4 w-40 border-r border-slate-700" rowSpan={2}>模具號碼</th>
-                    <th className="px-4 py-4 w-40 border-r border-slate-700" rowSpan={2}>品號</th>
-                    <th className="px-3 py-4 text-center w-24 border-r border-slate-700" rowSpan={2}>版次</th>
-                    <th className="px-4 py-4 min-w-[180px] border-r border-slate-700" rowSpan={2}>目的</th>
-                    <th className="px-4 py-2 text-center border-b border-r border-slate-700" colSpan={6}>程序追蹤</th>
-                    <th className="px-3 py-4 w-24 text-center border-r border-slate-700" rowSpan={2}>狀態</th>
-                    <th className="px-3 py-4 w-28 text-center border-r border-slate-700" rowSpan={2}>連結</th>
-                    <th className="px-4 py-4 w-40 border-r border-slate-700" rowSpan={2}>ECR</th>
-                    <th className="px-4 py-4 w-28 border-r border-slate-700" rowSpan={2}>人員</th>
+                  <tr className="bg-background text-white text-sm font-black uppercase tracking-[0.1em]">
+                    <th className="px-3 py-4 text-center w-14 border-r border-border" rowSpan={2}>優先</th>
+                    <th className="px-4 py-4 w-32 border-r border-border" rowSpan={2}>起始日期</th>
+                    <th className="px-4 py-4 w-28 border-r border-border" rowSpan={2}>專案類型</th>
+                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>模具號碼</th>
+                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>品號</th>
+                    <th className="px-3 py-4 text-center w-24 border-r border-border" rowSpan={2}>版次</th>
+                    <th className="px-4 py-4 min-w-[180px] border-r border-border" rowSpan={2}>目的</th>
+                    <th className="px-4 py-2 text-center border-b border-r border-border" colSpan={6}>程序追蹤</th>
+                    <th className="px-3 py-4 w-24 text-center border-r border-border" rowSpan={2}>狀態</th>
+                    <th className="px-3 py-4 w-28 text-center border-r border-border" rowSpan={2}>連結</th>
+                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>ECR</th>
+                    <th className="px-4 py-4 w-28 border-r border-border" rowSpan={2}>人員</th>
                     <th className="px-4 py-4 w-40" rowSpan={2}>ECN</th>
                   </tr>
-                  <tr className="bg-slate-800 text-slate-200 text-sm font-black uppercase">
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">PD</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">FA</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">OQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">PQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">EC</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-slate-700 font-black">圖進</th>
+                  <tr className="bg-[#1e293b] text-slate-200 text-sm font-black uppercase">
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">PD</th>
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">FA</th>
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">OQ</th>
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">PQ</th>
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">EC</th>
+                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">圖進</th>
                   </tr>
                 </thead>
+
                 <tbody className="text-sm">
                   {projects.map((project) => {
                     const getPhase = (name: string) => project.phases?.find((p: any) => p.phase_name === name);
@@ -290,8 +338,9 @@ export default function Dashboard() {
                       <tr 
                         key={project.id}
                         onClick={() => router.push(`/projects/view?id=${project.id}`)}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group"
+                        className="hover:bg-background cursor-pointer transition-colors group"
                       >
+
                         <td className="px-4 py-5 text-center border-r border-border">
                           <span className={`inline-block w-8 h-8 leading-8 rounded-full text-sm font-black ${project.priority <= 1 ? 'bg-danger/10 text-danger border border-danger/30' : 'bg-surface border border-border text-muted'}`}>
                             {project.priority || 3}
