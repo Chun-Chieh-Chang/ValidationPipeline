@@ -12,11 +12,11 @@
   --accent: #FFFFFF;     
   
   /* Semantic Tokens (Re-assigned to Grayscale) */
-  --seafoam: #1a1a1a;    
-  --reef: #222222;       
+  --seafoam: #111111;    
+  --reef: #1a1a1a;       
   --pelagic: #FFFFFF;    
   --abyss: #FFFFFF;      
-  --border: #222222;     /* Subtle Gray Borders */
+  --border: #333333;     /* Darker, more visible borders in black theme */
   --success: #FFFFFF;    /* Clean White for successes in Grayscale */
   --danger: #FF3333;     /* High Contrast Red for errors/marquee */
 }

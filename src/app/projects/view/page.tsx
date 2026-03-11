@@ -182,7 +182,7 @@ function ProjectDetailContent() {
           }
 
           if (readyToNotify && nextTask.status !== 'COMPLETED') {
-            const plannedDateStr = nextTask.planned_date 
+            const plannedDateStr = nextTask.planned_date && !isNaN(new Date(nextTask.planned_date).getTime())
                 ? new Date(nextTask.planned_date).toLocaleDateString() 
                 : '未定';
             
@@ -372,7 +372,7 @@ function ProjectDetailContent() {
                   <button 
                     onClick={handleExport}
                     disabled={exporting}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-abyss bg-surface text-abyss hover:opacity-80 shadow-xl"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-border bg-white text-black hover:opacity-80 shadow-xl"
                   >
 
                   {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
@@ -383,8 +383,8 @@ function ProjectDetailContent() {
                   onClick={handleToggleProjectStatus}
                   className={`px-5 py-2.5 rounded-xl text-sm font-black transition-all shadow-xl ${
                     project.status === 'CLOSED'
-                      ? 'bg-surface border-2 border-border text-muted hover:opacity-80'
-                      : 'bg-abyss text-white dark:text-slate-950 hover:opacity-90 border-2 border-abyss'
+                      ? 'bg-surface border-2 border-border text-neutral-400 hover:opacity-80'
+                      : 'bg-white text-black hover:opacity-90 border-2 border-white'
                   }`}
                 >
                   {project.status === 'CLOSED' ? '重啟案號' : '標記為結案'}
@@ -461,7 +461,7 @@ function ProjectDetailContent() {
                             {notif.message}
                           </span>
                           <span className="text-sm text-foreground font-black">
-                            {new Date(notif.created_at).toLocaleDateString()}
+                            {(notif.created_at && !isNaN(new Date(notif.created_at).getTime())) ? new Date(notif.created_at).toLocaleDateString() : '-'}
                           </span>
                         </div>
                       ))}
@@ -480,8 +480,8 @@ function ProjectDetailContent() {
                     onClick={() => handleTogglePhase(phase.id, phase.completion_status)}
                     className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none group/phase shadow-xl ${
                       phase.completion_status === 'COMPLETED'
-                        ? 'bg-abyss border-abyss text-white shadow-abyss/20'
-                        : 'bg-surface border-border text-neutral-400 hover:border-primary/40 hover:text-abyss'
+                        ? 'bg-white border-white text-black shadow-white/10'
+                        : 'bg-surface border-border text-neutral-500 hover:border-white/40 hover:text-white'
                     }`}
                   >
                     {phase.completion_status === 'COMPLETED' ? <CheckCircle size={18} /> : <Circle size={18} className="group-hover/phase:scale-110 transition-transform" />}
@@ -530,15 +530,15 @@ function ProjectDetailContent() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px] border border-border">
                 <thead>
-                  <tr className="bg-background text-white text-sm font-black uppercase tracking-[0.1em] shadow-inner">
+                  <tr className="bg-white text-black text-sm font-black uppercase tracking-[0.1em] shadow-inner">
                     <th className="px-4 py-5 w-16 text-center border-b border-r border-border">工作序</th>
                     <th className="px-4 py-5 min-w-[200px] border-b border-r border-border">工作項目</th>
                     <th className="px-4 py-5 w-44 text-center border-b border-r border-border">權責</th>
                     <th className="px-4 py-5 w-36 text-center border-b border-r border-border">狀態</th>
                     <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">預計完成</th>
                     <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">開始日</th>
-                    <th className="px-4 py-5 w-36 text-center text-pelagic font-black border-b border-r border-border tracking-tighter">實際完成</th>
-                    <th className="px-4 py-5 min-w-[240px] text-pelagic font-black border-b border-border">交付/備註及鏈結</th>
+                    <th className="px-4 py-5 w-36 text-center font-black border-b border-r border-border tracking-tighter">實際完成</th>
+                    <th className="px-4 py-5 min-w-[240px] font-black border-b border-border">交付/備註及鏈結</th>
                   </tr>
 
                 </thead>
@@ -593,8 +593,8 @@ function ProjectDetailContent() {
                           {!isMainTask && task.dept && (
                             <span className={`px-3 py-1.5 rounded-xl transition-all font-black text-sm uppercase tracking-widest ${
                               task.status === 'IN_PROGRESS' 
-                                ? 'bg-abyss text-white shadow-xl scale-105 inline-block ring-2 ring-primary/20' 
-                                : 'bg-surface border border-border text-muted shadow-sm'
+                                ? 'bg-white text-black shadow-xl scale-105 inline-block ring-2 ring-white/20' 
+                                : 'bg-surface border border-border text-neutral-500 shadow-sm'
                             }`}>
                               {task.dept}
                             </span>
@@ -609,9 +609,9 @@ function ProjectDetailContent() {
                               disabled={blocked}
                               className={`w-full max-w-[100px] py-2 rounded-xl text-sm font-black tracking-[0.1em] transition-all border-2 uppercase ${
                                 isCompleted
-                                  ? 'bg-success/10 text-success border-success/30 shadow-sm'
-                                  : task.status === 'IN_PROGRESS'
-                                  ? 'bg-abyss text-white border-abyss shadow-md'
+                                  ? 'bg-white text-black border-white shadow-sm'
+                                    : task.status === 'IN_PROGRESS'
+                                    ? 'bg-white text-black border-white shadow-md'
                                   : blocked 
                                   ? 'bg-surface text-muted/20 border-border/10 cursor-not-allowed'
                                   : 'bg-surface text-muted border-border hover:border-pelagic hover:text-pelagic'
@@ -623,16 +623,16 @@ function ProjectDetailContent() {
                           )}
                         </td>
                         <td className="px-4 py-5 text-center border-r border-border font-black">
-                          <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-muted'}`}>
-                            {task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}
+                          <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-neutral-500'}`}>
+                            {task.planned_date && !isNaN(new Date(task.planned_date).getTime()) ? new Date(task.planned_date).toLocaleDateString() : '-'}
                           </div>
                         </td>
                         <td className="px-4 py-5 text-center text-sm font-black tabular-nums tracking-tight text-muted border-r border-border">
                           {task.start_date ? new Date(task.start_date).toLocaleDateString() : '-'}
                         </td>
                         <td className="px-4 py-5 text-center border-r border-border font-black">
-                          <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-foreground' : 'text-muted italic'}`}>
-                            {task.actual_date ? new Date(task.actual_date).toLocaleDateString() : '尚未'}
+                          <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-foreground' : 'text-neutral-500 italic'}`}>
+                            {task.actual_date && !isNaN(new Date(task.actual_date).getTime()) ? new Date(task.actual_date).toLocaleDateString() : '尚未'}
                           </div>
                         </td>
                         <td className="px-4 py-5 border-r border-border">
