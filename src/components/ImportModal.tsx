@@ -223,7 +223,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/95"
+            className="absolute inset-0 bg-background/90"
           />
 
           <motion.div
@@ -234,17 +234,17 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-muted hover:text-foreground transition-colors"
             >
               <X size={20} />
             </button>
 
             <div className="text-center mb-6">
-              <div className="mx-auto w-12 h-12 bg-neutral-800 text-white rounded-full flex items-center justify-center mb-4 border border-border">
+              <div className="mx-auto w-12 h-12 bg-background text-foreground rounded-full flex items-center justify-center mb-4 border border-border">
                 <FileSpreadsheet size={24} />
               </div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-2">匯入 Master Sheet</h2>
-              <p className="text-neutral-500 text-sm">
+              <p className="text-muted text-sm">
                 請上傳「射出成型之製程變更、確效專案之管理.xlsx」，系統將自動同步專案庫。
               </p>
             </div>
@@ -252,20 +252,20 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
             <div className="space-y-4">
               <label
                 htmlFor="file-upload"
-                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-white bg-white/5' : 'border-neutral-800 bg-black hover:bg-neutral-900 hover:border-white'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file ? 'border-brand-accent bg-brand-accent/5' : 'border-border bg-background hover:bg-surface hover:border-brand-accent'} ${status === 'uploading' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                   {file ? (
                     <>
-                      <FileSpreadsheet className="w-8 h-8 text-white mb-3" />
-                      <p className="mb-2 text-sm text-white font-black break-all">{file.name}</p>
-                      <p className="text-sm text-neutral-400">點擊更換檔案</p>
+                      <FileSpreadsheet className="w-8 h-8 text-brand-accent mb-3" />
+                      <p className="mb-2 text-sm text-foreground font-black break-all">{file.name}</p>
+                      <p className="text-sm text-muted">點擊更換檔案</p>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="w-8 h-8 text-neutral-500 mb-3" />
+                      <UploadCloud className="w-8 h-8 text-muted mb-3" />
                       <p className="mb-2 text-sm text-foreground font-medium">點擊或拖入檔案</p>
-                      <p className="text-sm text-neutral-500">僅支援 .xlsx 格式</p>
+                      <p className="text-sm text-muted">僅支援 .xlsx 格式</p>
                     </>
                   )}
                 </div>
@@ -281,7 +281,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
 
               <div className="flex items-center gap-4 my-4">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-sm text-neutral-500 uppercase font-medium">或使用 URL 匯入</span>
+                <span className="text-sm text-muted uppercase font-medium">或使用 URL 匯入</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
@@ -298,14 +298,14 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                     setSuccessMessage(null);
                   }}
                   disabled={status === 'uploading' || file !== null}
-                  className="w-full px-4 py-3 bg-black border-2 border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-white transition-all placeholder:text-neutral-700 font-bold"
+                  className="w-full px-4 py-3 bg-background border-2 border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-brand-accent transition-all placeholder:text-muted/50 font-bold"
                 />
               </div>
 
               {status === 'uploading' && totalCount > 0 && (
-                <div className="space-y-3 p-4 bg-black border border-border rounded-xl">
+                <div className="space-y-3 p-4 bg-background border border-border rounded-xl">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-white font-black flex items-center gap-2 uppercase tracking-widest text-[10px]">
+                    <span className="text-foreground font-black flex items-center gap-2 uppercase tracking-widest text-[10px]">
                        <Loader2 className="w-4 h-4 animate-spin" />
                        正在同步專案庫...
                     </span>
@@ -313,29 +313,29 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                       {Math.round((currentCount / totalCount) * 100)}%
                     </span>
                   </div>
-                  <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden border border-border">
+                  <div className="w-full bg-surface h-2 rounded-full overflow-hidden border border-border">
                     <motion.div 
-                      className="h-full bg-white"
+                      className="h-full bg-brand-accent"
                       initial={{ width: 0 }}
                       animate={{ width: `${(currentCount / totalCount) * 100}%` }}
                       transition={{ type: "spring", bounce: 0, duration: 0.3 }}
                     />
                   </div>
-                  <div className="text-right text-xs text-neutral-500 font-bold">
+                  <div className="text-right text-xs text-muted font-bold">
                     已處理 {currentCount} / 共 {totalCount} 筆
                   </div>
                 </div>
               )}
 
               {errorMessage && (
-                <div className="flex items-center gap-2 text-red-400 bg-red-950/30 p-3 rounded-lg border border-red-900/50 text-sm">
+                <div className="flex items-center gap-2 text-danger bg-danger/10 p-3 rounded-lg border border-danger/30 text-sm">
                   <AlertCircle size={16} />
                   <span className="font-bold">{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="flex items-center gap-2 text-emerald-400 bg-emerald-950/30 p-3 rounded-lg border border-emerald-900/50 text-sm">
+                <div className="flex items-center gap-2 text-success bg-success/10 p-3 rounded-lg border border-success/30 text-sm">
                   <CheckCircle size={16} />
                   <span className="font-bold">{successMessage}</span>
                 </div>
@@ -345,7 +345,7 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 <button
                   onClick={handleClear}
                   disabled={status === 'uploading'}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-red-500 bg-red-500/5 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-danger bg-danger/5 border border-danger/20 hover:bg-danger hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-[10px]"
                 >
                   <Trash2 size={16} />
                   <span>清空欄位</span>
@@ -354,14 +354,14 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalP
                 <div className="flex gap-3">
                   <button 
                     onClick={onClose}
-                    className="px-6 py-2.5 rounded-xl border-2 border-border text-neutral-500 hover:text-white font-black text-sm transition-all"
+                    className="px-6 py-2.5 rounded-xl border-2 border-border text-muted hover:text-foreground hover:bg-background font-black text-sm transition-all"
                   >
                     取消
                   </button>
                   <button 
                     onClick={url ? handleURLImport : handleUpload}
                     disabled={(!file && !url) || status === 'uploading'}
-                    className="px-8 py-2.5 rounded-xl bg-white text-black font-black text-sm transition-all disabled:opacity-30 flex items-center gap-2 shadow-xl hover:opacity-90 active:scale-95"
+                    className="px-8 py-2.5 rounded-xl bg-brand-accent text-background font-black text-sm transition-all disabled:opacity-30 flex items-center gap-2 shadow-xl hover:opacity-90 active:scale-95"
                   >
                     {status === 'uploading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                     開始匯入
