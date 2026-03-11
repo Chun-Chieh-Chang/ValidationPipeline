@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +23,9 @@ export default function RootLayout({
     <html lang="zh-TW" suppressHydrationWarning>
       <head />
       <body className={`${inter.className} bg-background text-foreground no-scrollbar transition-colors duration-300`}>
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

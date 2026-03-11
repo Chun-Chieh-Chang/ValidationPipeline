@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ImportModal from "@/components/ImportModal";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { motion } from "framer-motion";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2 } from "lucide-react";
 import { projectService } from "@/lib/projectService";
@@ -129,19 +130,27 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-surface rounded-2xl p-1 border border-border mr-2 shadow-inner">
-              <button 
-                onClick={() => setViewMode('cards')}
-                className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'cards' ? 'bg-white text-black shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-              >
-                <LayoutGrid size={16} />
-                <span className="text-sm font-black uppercase">卡片</span>
-              </button>
-              <button 
-                onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg transition-all flex items-center gap-2 px-3 ${viewMode === 'table' ? 'bg-white text-black shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-              >
-                <TableIcon size={16} />
+            <ThemeToggle />
+            <div className="flex gap-2 bg-background p-1 rounded-xl shadow-inner border border-border">
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-black transition-all ${
+              viewMode === 'cards' 
+                ? 'bg-surface text-foreground shadow-md border border-border' 
+                : 'text-muted hover:text-foreground'
+            }`}
+          >
+            <LayoutGrid size={16} /> <span className="tracking-widest">卡片</span>
+          </button>
+          <button
+            onClick={() => setViewMode('table')}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-black transition-all ${
+              viewMode === 'table' 
+                ? 'bg-surface text-foreground shadow-md border border-border' 
+                : 'text-muted hover:text-foreground'
+            }`}
+          >
+      <TableIcon size={16} />
                 <span className="text-sm font-black uppercase">表格</span>
               </button>
             </div>
@@ -175,17 +184,11 @@ export default function Dashboard() {
               還原
               <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" />
             </label>
-            <button 
-              onClick={() => setCreateModalOpen(true)}
-              className="px-6 py-2.5 rounded-xl bg-white text-black text-sm font-black transition-all flex items-center gap-2 shadow-xl hover:opacity-90 active:scale-95"
-            >
-              <Plus size={18} />
+            <button onClick={() => setCreateModalOpen(true)} className="px-6 py-2.5 rounded-xl text-sm font-black transition-all bg-brand-accent text-white hover:opacity-90 shadow-lg border border-brand-accent">
+              <Plus size={16} className="inline mr-2" />
               建立新專案
             </button>
-            <button 
-              onClick={() => setImportModalOpen(true)}
-              className="px-6 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground hover:bg-neutral-800 font-bold text-sm transition-all"
-            >
+            <button onClick={() => setImportModalOpen(true)} className="px-6 py-2.5 rounded-xl text-sm font-black transition-all bg-surface text-muted hover:text-foreground border border-border bg-opacity-50 hover:bg-opacity-100 shadow-lg">
               匯入 Master
             </button>
 
@@ -215,7 +218,9 @@ export default function Dashboard() {
           </div>
         ) : viewMode === 'cards' ? (
           <div className="space-y-6">
-            {projects.map((project) => (
+            {projects.map((project) => {
+              const isCompleted = project.status === 'CLOSED'; // Assuming 'CLOSED' means completed for the project card status
+              return (
               <motion.div
                 key={project.id}
                 onClick={() => router.push(`/projects/view?id=${project.id}`)}
@@ -236,11 +241,15 @@ export default function Dashboard() {
                       </span>
                       {project.status === "CLOSED" ? (
                         <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-white text-black border border-white uppercase">
-                          Completed
+                          已結案
+                        </span>
+                      ) : project.status === "IN_PROGRESS" ? (
+                        <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-brand-accent/10 border border-brand-accent/30 text-brand-accent uppercase animate-pulse">
+                          進行中
                         </span>
                       ) : (
-                        <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-danger/10 border border-danger/30 text-danger uppercase animate-pulse">
-                          Active
+                        <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-surface border border-border text-muted uppercase">
+                          尚未開始
                         </span>
                       )}
                     </div>
@@ -256,18 +265,20 @@ export default function Dashboard() {
                     {/* Phase Indicators */}
                     {project.phases && project.phases.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-4">
-                        {project.phases.map((phase: any) => (
+                        {project.phases.map((phase: any) => {
+                          const isCompleted = phase.completion_status === 'COMPLETED';
+                          return (
                           <div 
-                            key={phase.id}
-                            className={`px-3 py-1 rounded-xl text-sm font-black uppercase transition-all border ${
-                              phase.completion_status === 'COMPLETED' 
-                                ? 'bg-white text-black border-white' 
-                                : 'bg-surface text-neutral-500 border-border'
-                            }`}
-                          >
+                        key={phase.id} 
+                        className={`px-3 py-1.5 rounded-lg text-xs font-black tracking-widest text-center border transition-all ${
+                          isCompleted 
+                            ? 'bg-success/10 text-success border-success/30 shadow-sm'
+                            : 'bg-background text-muted border-border'
+                        }`}
+                      >
                             {phase.phase_name}
                           </div>
-                        ))}
+                        );})}
                       </div>
                     )}
                   </div>
@@ -285,40 +296,44 @@ export default function Dashboard() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+            );})}
           </div>
         ) : (
-          /* Table View Mode */
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden">
-            <div className="overflow-x-auto no-scrollbar">
-              <table className="w-full text-left border-collapse min-w-[1500px] border border-border">
+          /* Simple Table View Mode */
+          <div className="bg-surface border border-border mt-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[1200px] bg-surface">
                 <thead>
-                  <tr className="bg-white text-black text-sm font-black uppercase tracking-[0.1em]">
-                    <th className="px-3 py-4 text-center w-14 border-r border-border" rowSpan={2}>優先</th>
-                    <th className="px-4 py-4 w-32 border-r border-border" rowSpan={2}>起始日期</th>
-                    <th className="px-4 py-4 w-28 border-r border-border" rowSpan={2}>專案類型</th>
-                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>模具號碼</th>
-                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>品號</th>
-                    <th className="px-3 py-4 text-center w-24 border-r border-border" rowSpan={2}>版次</th>
-                    <th className="px-4 py-4 min-w-[180px] border-r border-border" rowSpan={2}>目的</th>
-                    <th className="px-4 py-2 text-center border-b border-r border-border" colSpan={6}>程序追蹤</th>
-                    <th className="px-3 py-4 w-24 text-center border-r border-border" rowSpan={2}>狀態</th>
-                    <th className="px-3 py-4 w-28 text-center border-r border-border" rowSpan={2}>連結</th>
-                    <th className="px-4 py-4 w-40 border-r border-border" rowSpan={2}>ECR</th>
-                    <th className="px-4 py-4 w-28 border-r border-border" rowSpan={2}>人員</th>
-                    <th className="px-4 py-4 w-40" rowSpan={2}>ECN</th>
+                  <tr className="bg-background text-foreground text-sm font-black uppercase tracking-[0.1em] whitespace-nowrap">
+                    <th className="px-4 py-3 w-16 text-center border-b border-r border-border" rowSpan={2}>優先度</th>
+                    <th className="px-4 py-3 w-32 text-center border-b border-r border-border" rowSpan={2}>起始日期</th>
+                    <th className="px-4 py-3 w-32 border-b border-r border-border" rowSpan={2}>專案類型</th>
+                    <th className="px-4 py-3 w-40 border-b border-r border-border" rowSpan={2}>模具號碼</th>
+                    <th className="px-4 py-3 w-36 border-b border-r border-border" rowSpan={2}>品號</th>
+                    <th className="px-4 py-3 w-24 text-center border-b border-r border-border" rowSpan={2}>版次</th>
+                    <th className="px-4 py-3 min-w-[180px] border-b border-r border-border" rowSpan={2}>目的</th>
+                    
+                    <th className="px-4 py-2 text-center border-b border-r border-border text-xs font-black tracking-widest text-muted" colSpan={6}>
+                      程序追蹤
+                    </th>
+                    
+                    <th className="px-4 py-3 w-28 text-center border-b border-r border-border" rowSpan={2}>狀態</th>
+                    <th className="px-4 py-3 w-24 text-center border-b border-r border-border" rowSpan={2}>連結</th>
+                    <th className="px-4 py-3 w-40 border-b border-border whitespace-nowrap" rowSpan={2}>ECR</th>
+                    <th className="px-4 py-3 w-28 border-b border-border whitespace-nowrap" rowSpan={2}>發出人員</th>
+                    <th className="px-4 py-3 w-40 border-b border-border whitespace-nowrap" rowSpan={2}>ECN</th>
                   </tr>
-                  <tr className="bg-neutral-100 text-black text-[10px] font-black uppercase">
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">PD</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">FA</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">OQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">PQ</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">EC</th>
-                    <th className="px-1 py-1.5 text-center w-12 border-r border-border font-black">圖進</th>
+                  <tr className="bg-background/50 text-muted text-xs tracking-widest whitespace-nowrap font-black uppercase">
+                    <th className="px-3 py-2 text-center w-12 border-b border-r border-border font-black">PD</th>
+                    <th className="px-3 py-2 text-center w-12 border-b border-r border-border font-black">FA</th>
+                    <th className="px-3 py-2 text-center w-12 border-b border-r border-border font-black">OQ</th>
+                    <th className="px-3 py-2 text-center w-12 border-b border-r border-border font-black">PQ</th>
+                    <th className="px-3 py-2 text-center w-12 border-b border-r border-border font-black">EC</th>
+                    <th className="px-3 py-2 text-center min-w-[64px] border-b border-r border-border font-black">圖面進版</th>
                   </tr>
                 </thead>
 
-                <tbody className="text-sm">
+                <tbody className="divide-y divide-border/50">
                   {projects.map((project) => {
                     const getPhase = (name: string) => project.phases?.find((p: any) => p.phase_name === name);
                     const renderCheck = (name: string) => {
@@ -338,29 +353,27 @@ export default function Dashboard() {
                         className="hover:bg-background cursor-pointer transition-colors group"
                       >
 
-                        <td className="px-4 py-5 text-center border-r border-border">
-                          <span className={`inline-block w-8 h-8 leading-8 rounded-full text-sm font-black ${project.priority <= 1 ? 'bg-danger/10 text-danger border border-danger/30' : 'bg-surface border border-border text-muted'}`}>
+                        <td className="px-4 py-4 text-center border-b border-r border-border">
+                          <span className={`inline-block w-6 h-6 leading-6 rounded-full text-xs font-black ${project.priority <= 1 ? 'border border-danger text-danger' : 'border border-muted text-muted'}`}>
                             {project.priority || 3}
                           </span>
                         </td>
-                        <td className="px-4 py-5 text-neutral-400 text-sm font-black border-l border-border">
+                        <td className="px-4 py-5 text-muted text-sm font-black border-l border-border">
                           {project.start_date && !isNaN(new Date(project.start_date).getTime()) ? new Date(project.start_date).toLocaleDateString() : '-'}
                         </td>
-                        <td className="px-4 py-5 border-l border-border">
-                          <span className="px-3 py-1 rounded-xl text-sm font-black bg-neutral-800 text-foreground border border-border uppercase shadow-sm">
-                            {project.type}
-                          </span>
+                        <td className="px-4 py-5 font-black text-sm tracking-widest text-foreground border-r border-border">
+                          {project.type}
                         </td>
-                        <td className="px-4 py-5 font-black text-abyss group-hover:underline border-l border-border tracking-tight">
+                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-r border-border">
                           {project.project_no}
                         </td>
-                        <td className="px-4 py-5 text-foreground font-black border-l border-border">
+                        <td className="px-4 py-5 font-black text-sm tracking-wider text-foreground border-r border-border">
                           {project.part_no}
                         </td>
-                        <td className="px-4 py-5 text-center text-foreground font-black border-l border-border">
+                        <td className="px-4 py-5 text-center font-black text-sm text-foreground border-r border-border">
                           {project.rev}
                         </td>
-                        <td className="px-4 py-5 text-muted text-sm font-bold truncate max-w-[200px] border-l border-border" title={project.purpose}>
+                        <td className="px-4 py-5 text-sm text-muted font-bold leading-relaxed border-r border-border min-w-[200px]">
                           {project.purpose || "-"}
                         </td>
                         <td className="px-1 py-5 border-l border-border">{renderCheck('PD')}</td>
@@ -369,10 +382,21 @@ export default function Dashboard() {
                         <td className="px-1 py-5 border-l border-border">{renderCheck('PQ')}</td>
                         <td className="px-1 py-5 border-l border-border">{renderCheck('EC')}</td>
                         <td className="px-1 py-5 border-l border-border">{renderCheck('圖面進版')}</td>
-                        <td className="px-4 py-5 text-center border-l border-border">
-                          <div className={`text-sm font-black px-3 py-1 rounded-xl border-2 ${project.status === 'CLOSED' ? 'bg-white text-black border-white' : 'bg-white text-black border-white'}`}>
-                            {project.status === 'CLOSED' ? '結案' : '進行中'}
-                          </div>
+                        <td className="px-4 py-3 text-center border-b border-l border-border">
+                          <div className={`px-3 py-1 rounded-full text-xs font-black tracking-widest border flex items-center justify-center gap-1.5 w-max mx-auto whitespace-nowrap ${
+                  project.status === 'CLOSED' 
+                    ? 'text-success border-success' 
+                    : project.status === 'IN_PROGRESS'
+                    ? 'text-brand-accent border-brand-accent'
+                    : 'text-muted border-border'
+                }`}>
+                  <Circle size={8} className={
+                    project.status === 'CLOSED' ? 'fill-success text-success' :
+                    project.status === 'IN_PROGRESS' ? 'fill-brand-accent text-brand-accent animate-pulse' :
+                    'fill-muted text-muted'
+                  } />
+                  {project.status === 'CLOSED' ? '已結案' : project.status === 'IN_PROGRESS' ? '進行中' : '尚未開始'}
+                </div>
                         </td>
                         <td className="px-4 py-5 text-center border-l border-border">
                           {project.cloud_link ? (
@@ -388,13 +412,13 @@ export default function Dashboard() {
                           ) : <span className="text-slate-300">-</span>}
                         </td>
                         <td className="px-4 py-5 text-muted text-sm border-l border-border">
-                          <div className="font-black text-white">{(project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true') ? project.ecr_no : "-"}</div>
+                          <div className="font-black text-foreground">{(project.ecr_no && String(project.ecr_no).toLowerCase() !== 'true') ? project.ecr_no : "-"}</div>
                           {project.ecr_date && !isNaN(new Date(project.ecr_date).getTime()) && String(project.ecr_no).toLowerCase() !== 'true' && <div className="text-sm font-black text-neutral-500 mt-1 tabular-nums">
                             {new Date(project.ecr_date).toLocaleDateString()}
                           </div>}
                         </td>
-                        <td className="px-4 py-5 text-foreground font-black text-sm border-l border-border">
-                          {project.owner}
+                        <td className="px-4 py-5 text-foreground font-black text-sm border-l border-border whitespace-nowrap">
+                          {project.owner || "-"}
                         </td>
                         <td className="px-4 py-5 text-muted text-sm border-l border-border">
                           <div className="font-black text-foreground">{(project.ecn_no && String(project.ecn_no).toLowerCase() !== 'true') ? project.ecn_no : "-"}</div>

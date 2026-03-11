@@ -86,7 +86,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-xl bg-surface border-2 border-border dark:border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-xl bg-surface border-2 border-border rounded-2xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
           >
             <button
               onClick={onClose}
@@ -189,7 +189,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-slate-300 dark:border-slate-700 mt-6">
+              <div className="flex justify-end gap-3 pt-6 border-t border-border mt-6">
                 <button
                   type="button"
                   onClick={onClose}

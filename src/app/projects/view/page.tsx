@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
 import { projectService } from "@/lib/projectService";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function ProjectDetailContainer() {
   return (
@@ -341,7 +342,7 @@ function ProjectDetailContent() {
         <div className="w-full">
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-slate-500 hover:text-abyss mb-8 font-bold transition-all group/back"
+            className="flex items-center gap-2 text-muted hover:text-foreground mb-8 font-bold transition-all group/back"
           >
             <ArrowLeft size={16} className="group-hover/back:-translate-x-1 transition-transform" /> 
             返回總覽
@@ -354,14 +355,14 @@ function ProjectDetailContent() {
                   {project.project_no}
                 </h1>
                 <div className="flex gap-2">
-                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-surface border border-border text-foreground uppercase shadow-sm">
                     Rev. {project.rev}
                   </span>
-                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-primary/10 border border-primary/30 text-primary uppercase">
+                  <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-brand-secondary/10 border border-brand-secondary/30 text-brand-secondary uppercase shadow-sm">
                     {project.type}
                   </span>
                   {project.status === "CLOSED" && (
-                    <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-emerald-100 border border-emerald-300 text-emerald-800 uppercase">
+                    <span className="px-3 py-1 rounded-xl text-sm font-black tracking-widest bg-success/10 border border-success/30 text-success uppercase shadow-sm">
                       Completed
                     </span>
                   )}
@@ -369,10 +370,11 @@ function ProjectDetailContent() {
               </div>
               
               <div className="flex items-center gap-3">
+                  <ThemeToggle />
                   <button 
                     onClick={handleExport}
                     disabled={exporting}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-border bg-white text-black hover:opacity-80 shadow-xl"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black transition-all border-2 border-border bg-surface text-foreground hover:bg-background shadow-xl"
                   >
 
                   {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
@@ -383,8 +385,8 @@ function ProjectDetailContent() {
                   onClick={handleToggleProjectStatus}
                   className={`px-5 py-2.5 rounded-xl text-sm font-black transition-all shadow-xl ${
                     project.status === 'CLOSED'
-                      ? 'bg-surface border-2 border-border text-neutral-400 hover:opacity-80'
-                      : 'bg-white text-black hover:opacity-90 border-2 border-white'
+                      ? 'bg-background border-2 border-border text-muted hover:text-foreground'
+                      : 'bg-brand-accent text-white hover:opacity-90 border-2 border-brand-accent'
                   }`}
                 >
                   {project.status === 'CLOSED' ? '重啟案號' : '標記為結案'}
@@ -407,8 +409,8 @@ function ProjectDetailContent() {
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300">ECR 號碼</span>
-                    <span className="text-abyss font-black">{project.ecr_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '未填'})</span></span>
+                    <span className="text-sm font-black uppercase tracking-widest text-muted">ECR 號碼</span>
+                    <span className="text-brand-accent font-black">{project.ecr_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
               )}
@@ -416,8 +418,8 @@ function ProjectDetailContent() {
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300">ECN 號碼</span>
-                    <span className="text-neutral-800 dark:text-neutral-200 font-black">{project.ecn_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
+                    <span className="text-sm font-black uppercase tracking-widest text-muted">ECN 號碼</span>
+                    <span className="text-brand-accent font-black">{project.ecn_no} <span className="text-muted font-bold ml-1 text-sm">({project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '未填'})</span></span>
                   </div>
                 </>
               )}
@@ -433,7 +435,7 @@ function ProjectDetailContent() {
               {project.cloud_link && (
                 <>
                   <div className="w-px h-8 bg-border hidden md:block" />
-                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-primary/10 border border-primary/30 px-4 py-2 rounded-xl text-primary hover:bg-neutral-100 transition-all font-black text-sm">
+                  <a href={project.cloud_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-brand-secondary/10 border border-brand-secondary/30 px-4 py-2 rounded-xl text-brand-secondary hover:bg-surface transition-all font-black text-sm">
                     <ExternalLink size={16} /> 雲端資料
                   </a>
                 </>
@@ -443,7 +445,7 @@ function ProjectDetailContent() {
             {/* 簽核通知列 */}
             {project.notifications && project.notifications.length > 0 && (
               <div className="mt-8 bg-surface border-2 border-border rounded-3xl p-5 flex items-center gap-6 overflow-hidden shadow-xl group">
-                <div className="flex items-center gap-2 text-abyss flex-shrink-0 font-black text-sm uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-brand-accent flex-shrink-0 font-black text-sm uppercase tracking-widest">
                   <Bell size={20} className="animate-pulse" />
                   <span>最新通知:</span>
                 </div>
@@ -454,7 +456,7 @@ function ProjectDetailContent() {
                       .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                       .map((notif: any, idx: number) => (
                         <div key={`${notif.id}-${idx}`} className="flex items-center gap-4 whitespace-nowrap border-r border-border pr-10 last:border-0 group/notif">
-                          <span className="px-3 py-1 rounded-xl bg-primary/10 text-sm font-black text-primary border border-primary/30 uppercase tracking-tighter">
+                          <span className="px-3 py-1 rounded-xl bg-brand-secondary/10 text-sm font-black text-brand-secondary border border-brand-secondary/30 uppercase tracking-tighter">
                             {notif.target_dept}
                           </span>
                           <span className="text-sm text-danger font-bold group-hover/notif:brightness-110 transition-colors">
@@ -478,10 +480,10 @@ function ProjectDetailContent() {
                   <button 
                     key={phase.id}
                     onClick={() => handleTogglePhase(phase.id, phase.completion_status)}
-                    className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all cursor-pointer select-none group/phase shadow-xl ${
+                    className={`flex items-center gap-3 px-5 py-2.5 rounded-2xl border transition-all cursor-pointer select-none group/phase shadow-xl ${
                       phase.completion_status === 'COMPLETED'
-                        ? 'bg-white border-white text-black shadow-white/10'
-                        : 'bg-surface border-border text-neutral-500 hover:border-white/40 hover:text-white'
+                        ? 'bg-success/10 border-success/30 text-success shadow-success/10'
+                        : 'bg-background border-border text-muted hover:border-brand-accent/40 hover:text-brand-accent hover:bg-brand-accent/5'
                     }`}
                   >
                     {phase.completion_status === 'COMPLETED' ? <CheckCircle size={18} /> : <Circle size={18} className="group-hover/phase:scale-110 transition-transform" />}
@@ -530,7 +532,7 @@ function ProjectDetailContent() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px] border border-border">
                 <thead>
-                  <tr className="bg-white text-black text-sm font-black uppercase tracking-[0.1em] shadow-inner">
+                  <tr className="bg-surface text-foreground text-sm font-black uppercase tracking-[0.1em]">
                     <th className="px-4 py-5 w-16 text-center border-b border-r border-border">工作序</th>
                     <th className="px-4 py-5 min-w-[200px] border-b border-r border-border">工作項目</th>
                     <th className="px-4 py-5 w-44 text-center border-b border-r border-border">權責</th>
@@ -562,43 +564,30 @@ function ProjectDetailContent() {
 
                     return (
                       <tr 
-                        key={task.id}
-                        className={`transition-colors group border-b border-border ${rowBgClass} hover:bg-seafoam/10 ${
-                          isCompleted ? 'bg-success/5' : (isCritical ? 'relative after:absolute after:inset-0 after:bg-danger/5 after:pointer-events-none' : '')
-                        }`}
+                        key={task.id} 
+                        className={`transition-colors border-b border-border/50 hover:bg-surface/50 ${isMainTask ? 'bg-background shadow-sm' : ''}`}
                       >
-                        <td className={`px-4 py-5 text-center font-black border-r border-border ${isMainTask ? 'text-sm text-abyss' : 'text-sm text-foreground'}`}>
+                        <td className={`px-4 py-5 text-center font-black border-r border-border ${isMainTask ? 'text-sm text-foreground' : 'text-sm text-foreground'}`}>
                           {task.wbs_code}
                         </td>
-                        <td className="px-4 py-5 border-r border-border">
-                          <div 
-                            className="flex items-center gap-2"
-                            style={{ paddingLeft: `${(depth - 1) * 28}px` }}
-                          >
-                            {!isMainTask && (
-                              <span className="text-muted font-mono text-sm mr-1">└─</span>
-                            )}
-                            {isCritical && !isCompleted && (
-                              <div className="w-1.5 h-1.5 rounded-full bg-danger shadow-[0_0_8px_rgba(185,28,28,0.6)] animate-pulse flex-shrink-0" />
-                            )}
-                            <div className={`
-                              ${isMainTask ? 'text-[15px] font-black tracking-tighter uppercase' : 'text-sm font-bold'} 
-                              ${isCompleted ? 'text-muted line-through decoration-danger/40' : (isCritical ? 'text-danger' : 'text-foreground')}
-                            `}>
-                              {task.task_name}
-                            </div>
+                        <td className={`px-4 py-5 border-r border-border font-bold text-sm ${isMainTask ? 'text-foreground' : 'text-muted'}`}>
+                          <div className={`flex items-center gap-3 ${!isMainTask ? 'ml-8' : ''}`}>
+                            {!isMainTask && <div className="w-4 h-px bg-border" />}
+                            <span className="leading-relaxed">{task.task_name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-5 text-center border-r border-border">
-                          {!isMainTask && task.dept && (
-                            <span className={`px-3 py-1.5 rounded-xl transition-all font-black text-sm uppercase tracking-widest ${
-                              task.status === 'IN_PROGRESS' 
-                                ? 'bg-white text-black shadow-xl scale-105 inline-block ring-2 ring-white/20' 
-                                : 'bg-surface border border-border text-neutral-500 shadow-sm'
-                            }`}>
-                              {task.dept}
-                            </span>
-                          )}
+                        <td className="px-4 pt-4 pb-2 text-center border-r border-border">
+                          <div className="flex flex-col gap-2 items-center justify-center">
+                            {!isMainTask && task.dept && (
+                              <span className={`px-3 py-1 rounded transition-all font-black text-xs uppercase tracking-widest border ${
+                                task.status === 'IN_PROGRESS' 
+                                  ? 'text-brand-accent border-brand-accent'
+                                  : 'bg-surface border-border text-muted'
+                              }`}>
+                                {task.dept}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-5 text-center border-r border-border">
                           {updating === task.id ? (
@@ -607,14 +596,14 @@ function ProjectDetailContent() {
                               <button
                               onClick={() => handleUpdateStatus(task.id, task.status)}
                               disabled={blocked}
-                              className={`w-full max-w-[100px] py-2 rounded-xl text-sm font-black tracking-[0.1em] transition-all border-2 uppercase ${
+                              className={`w-full max-w-[100px] py-1 rounded-full text-xs font-black tracking-widest transition-all border uppercase ${
                                 isCompleted
-                                  ? 'bg-white text-black border-white shadow-sm'
+                                  ? 'text-success border-success'
                                     : task.status === 'IN_PROGRESS'
-                                    ? 'bg-white text-black border-white shadow-md'
+                                    ? 'text-brand-accent border-brand-accent'
                                   : blocked 
-                                  ? 'bg-surface text-muted/20 border-border/10 cursor-not-allowed'
-                                  : 'bg-surface text-muted border-border hover:border-pelagic hover:text-pelagic'
+                                  ? 'text-muted/50 border-border/50 cursor-not-allowed'
+                                  : 'text-muted border-border hover:border-brand-accent hover:text-brand-accent'
                               }`}
                               title={blocked ? `等待前置任務: ${lockedBy}` : ''}
                             >
@@ -623,7 +612,7 @@ function ProjectDetailContent() {
                           )}
                         </td>
                         <td className="px-4 py-5 text-center border-r border-border font-black">
-                          <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-neutral-500'}`}>
+                          <div className={`text-sm tabular-nums tracking-tight ${!isCompleted && task.planned_date && new Date(task.planned_date) < new Date() ? 'text-danger' : 'text-muted'}`}>
                             {task.planned_date && !isNaN(new Date(task.planned_date).getTime()) ? new Date(task.planned_date).toLocaleDateString() : '-'}
                           </div>
                         </td>
@@ -631,7 +620,7 @@ function ProjectDetailContent() {
                           {task.start_date ? new Date(task.start_date).toLocaleDateString() : '-'}
                         </td>
                         <td className="px-4 py-5 text-center border-r border-border font-black">
-                          <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-foreground' : 'text-neutral-500 italic'}`}>
+                          <div className={`text-sm tabular-nums tracking-tight ${isCompleted ? 'text-success' : 'text-muted italic'}`}>
                             {task.actual_date && !isNaN(new Date(task.actual_date).getTime()) ? new Date(task.actual_date).toLocaleDateString() : '尚未'}
                           </div>
                         </td>
@@ -644,7 +633,7 @@ function ProjectDetailContent() {
                                   href={url} 
                                   target="_blank" 
                                   rel="noopener noreferrer" 
-                                  className="flex items-center gap-2 text-sm text-pelagic hover:text-abyss transition-all font-black underline underline-offset-4 decoration-2"
+                                  className="flex items-center gap-2 text-sm text-brand-secondary hover:text-brand-primary transition-all font-black underline underline-offset-4 decoration-2"
                                 >
                                   <ExternalLink size={14} className="flex-shrink-0" />
                                   <span className="truncate max-w-[240px]">{display}</span>
@@ -656,7 +645,7 @@ function ProjectDetailContent() {
                               )
                             })() : null}
                             {task.progress && task.progress !== 'null' && task.progress !== '0' ? (
-                              <div className="flex items-center gap-1.5 text-sm text-pelagic ml-1 font-black uppercase tracking-tighter">
+                              <div className="flex items-center gap-1.5 text-sm text-brand-secondary ml-1 font-black uppercase tracking-tighter">
                                 進度: {task.progress}%
                               </div>
                             ) : null}

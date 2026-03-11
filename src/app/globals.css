@@ -3,22 +3,29 @@
 @tailwind utilities;
 
 :root {
-  /* Cinematic Grayscale - High-Contrast Professional Theme */
-  --background: #000000; /* Pure Black */
-  --surface: #111111;    /* Coal Black */
-  --foreground: #FFFFFF; /* Pure White */
-  --text-muted: #888888; /* Professional Gray */
-  --primary: #FFFFFF;    /* White as Primary */
-  --accent: #FFFFFF;     
-  
-  /* Semantic Tokens (Re-assigned to Grayscale) */
-  --seafoam: #111111;    
-  --reef: #1a1a1a;       
-  --pelagic: #FFFFFF;    
-  --abyss: #FFFFFF;      
-  --border: #333333;     /* Darker, more visible borders in black theme */
-  --success: #FFFFFF;    /* Clean White for successes in Grayscale */
-  --danger: #FF3333;     /* High Contrast Red for errors/marquee */
+  /* Color Master Palette - Light Mode (Dune Peach Earthy Tones) */
+  --bg-base: #FDF7F2; /* Very light tinted base for breathing room */
+  --bg-surface: #FFFFFF; /* Pure White surface for cards to pop against base */
+  --text-primary: #201A17; /* Midnight Soil - highest contrast text */
+  --text-secondary: #8A4B2F; /* Adobe Brown - muted text */
+  --border-color: #F2C299; /* Dune Peach - soft subtle borders */
+  --accent-brand: #C56C39; /* Ember Rock - primary CTA and interactive elements */
+  --accent-secondary: #E49C69; /* Apricot Dust - secondary highlights */
+  --accent-success: #10B981; /* Emerald */
+  --accent-warning: #EF4444; /* Red */
+}
+
+/* Dark Mode Variables (Dune Peach Earthy Tones) */
+.dark {
+  --bg-base: #201A17; /* Midnight Soil */
+  --bg-surface: #2E231F; /* Slightly elevated from Midnight Soil (mix with Cacao) */
+  --text-primary: #F2C299; /* Dune Peach - soft readable text on dark */
+  --text-secondary: #E49C69; /* Apricot Dust - muted text on dark */
+  --border-color: #5C3B2E; /* Cacao Husk - dark borders */
+  --accent-brand: #C56C39; /* Ember Rock - brand CTA */
+  --accent-secondary: #8A4B2F; /* Adobe Brown */
+  --accent-success: #34D399; /* Emerald Light */
+  --accent-warning: #F87171; /* Red Light */
 }
 
 
