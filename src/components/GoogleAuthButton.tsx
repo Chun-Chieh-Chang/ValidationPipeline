@@ -52,13 +52,11 @@ export default function GoogleAuthButton() {
   };
 
   const handleLogin = () => {
-    let clientId = runtimeClientId;
+    const clientId = runtimeClientId;
 
     if (!clientId) {
-      clientId = window.prompt("找不到 Google Client ID。請貼上您的 OAuth 2.0 Client ID:");
-      if (!clientId) return;
-      localStorage.setItem('vms_google_client_id', clientId);
-      setRuntimeClientId(clientId);
+      alert("找不到 Google Client ID。請先點擊齒輪圖標進行「連線設定」。");
+      return;
     }
 
     try {
@@ -105,15 +103,6 @@ export default function GoogleAuthButton() {
     }
   };
 
-  const handleResetConfig = () => {
-    if (window.confirm("確定要重設 Google Client ID 設定嗎？")) {
-      localStorage.removeItem('vms_google_client_id');
-      setRuntimeClientId(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || null);
-      handleLogout();
-      alert("設定已重設。");
-    }
-  };
-
   return (
     <div className="flex items-center gap-2">
       {isLoggedIn ? (
@@ -154,29 +143,18 @@ export default function GoogleAuthButton() {
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={handleLogin}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black font-black text-sm hover:bg-neutral-100 transition-all shadow-md border border-neutral-200"
-          >
-            <img 
-              src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
-              width={16} 
-              height={16} 
-              alt="Google" 
-            />
-            {runtimeClientId ? '連接 Google Drive' : '設定 Google 並連接'}
-          </button>
-          {runtimeClientId && (
-            <button 
-              onClick={handleResetConfig}
-              className="p-2 text-muted hover:text-foreground transition-all"
-              title="重設 Google Client ID"
-            >
-              <RefreshCw size={14} />
-            </button>
-          )}
-        </div>
+        <button 
+          onClick={handleLogin}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black font-black text-sm hover:bg-neutral-100 transition-all shadow-md border border-neutral-200"
+        >
+          <img 
+            src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
+            width={16} 
+            height={16} 
+            alt="Google" 
+          />
+          連接 Google Drive
+        </button>
       )}
     </div>
   );

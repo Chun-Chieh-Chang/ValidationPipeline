@@ -9,7 +9,8 @@ import ImportModal from "@/components/ImportModal";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { motion } from "framer-motion";
 import CreateProjectModal from "@/components/CreateProjectModal";
-import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2, Users } from "lucide-react";
+import ConnectionSettingsModal from "@/components/ConnectionSettingsModal";
+import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2, Users, Settings as SettingsIcon } from "lucide-react";
 import { projectService } from "@/lib/projectService";
 
 function DashboardContent() {
@@ -21,6 +22,7 @@ function DashboardContent() {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [isImportModalOpen, setImportModalOpen] = useState(false);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
 
   // 初始化 Shared Mode 參數
   useEffect(() => {
@@ -173,9 +175,9 @@ function DashboardContent() {
               Injection <span className="text-pelagic">Pipeline</span>
             </h1>
             <p className="text-muted font-bold tracking-tight text-sm">
-              射出成型確效管理系統 (v2.2 - Team Collaboration)
+              射出成型確效管理系統 (v2.6 - Auto-Pilot)
             </p>
-            {googleSheetsService.hasTargetSheet && (
+            {googleSheetsService.targetSheet && (
               <div className="mt-1 flex items-center gap-1.5 text-[10px] font-black uppercase text-brand-accent tracking-widest">
                 <Users size={12} />
                 Shared Team Mode
@@ -183,6 +185,13 @@ function DashboardContent() {
             )}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
+            <button 
+              onClick={() => setSettingsModalOpen(true)}
+              className="p-2.5 text-muted hover:text-foreground hover:bg-surface border border-transparent hover:border-border rounded-xl transition-all"
+              title="連線設定"
+            >
+              <SettingsIcon size={20} />
+            </button>
             <GoogleAuthButton />
             <ThemeToggle />
             <div className="flex gap-2 bg-background p-1 rounded-xl shadow-inner border border-border">
@@ -223,10 +232,10 @@ function DashboardContent() {
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
               className="px-4 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground hover:bg-foreground hover:text-background text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
-              title={googleDriveService.isLoggedIn ? "同步至 Google Sheets" : "匯出 Excel (需 API 支援)"}
+              title={googleDriveService.isLoggedIn ? "存檔至 Google Sheets" : "匯出 Excel (需 API 支援)"}
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
-              {googleDriveService.isLoggedIn ? "雲端同步總表" : "匯出總表"}
+              {googleDriveService.isLoggedIn ? "存檔至總表" : "匯出總表"}
             </button>
             <button 
               onClick={handleExportJSON}
@@ -243,9 +252,26 @@ function DashboardContent() {
               <Plus size={16} className="inline mr-2" />
               建立新專案
             </button>
-            <button onClick={() => setImportModalOpen(true)} className="px-6 py-2.5 rounded-xl text-sm font-black transition-all bg-surface text-muted hover:text-foreground border border-border bg-opacity-50 hover:bg-opacity-100 shadow-lg">
-              匯入 Master
-            </button>
+            <div className="flex gap-1">
+              <button 
+                onClick={() => setImportModalOpen(true)} 
+                className="px-6 py-2.5 rounded-l-xl text-sm font-black transition-all bg-surface text-muted hover:text-foreground border border-border bg-opacity-50 hover:bg-opacity-100 shadow-lg"
+              >
+                匯入 Master
+              </button>
+              <button 
+                onClick={() => {
+                  const sheetUrl = googleSheetsService.targetSheet 
+                    ? `https://docs.google.com/spreadsheets/d/${googleSheetsService.targetSheet}/edit`
+                    : "https://docs.google.com/spreadsheets/d/1cj6qJdwtle-YxIhLAB4CjXZC3hnFfk7IE31nEpuRfmI/edit";
+                  window.open(sheetUrl, '_blank');
+                }}
+                className="px-3 py-2.5 rounded-r-xl text-sm font-black transition-all bg-surface text-muted hover:text-foreground border-y border-r border-border bg-opacity-50 hover:bg-opacity-100 shadow-lg"
+                title="在新視窗開啟 Master Sheet"
+              >
+                <TableIcon size={16} />
+              </button>
+            </div>
 
           </div>
         </header>
@@ -260,6 +286,15 @@ function DashboardContent() {
           isOpen={isCreateModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSuccess={() => fetchProjects()}
+        />
+
+        <ConnectionSettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setSettingsModalOpen(false)}
+          onSuccess={() => {
+            // Re-fetch or reload to apply potential new Client ID or paths
+            window.location.reload(); 
+          }}
         />
 
         {loading ? (

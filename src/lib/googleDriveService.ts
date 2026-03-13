@@ -12,7 +12,14 @@ class GoogleDriveService {
   private accessToken: string | null = null;
   private folderName = 'InjectionPipeline_Data';
   private fileName = 'vms_data.json';
+  private defaultFolderId = '1tSwN6S1VvklTGEa1U3MdwDt2xszSZvWl';
   private targetFolderId: string | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.targetFolderId = localStorage.getItem('vms_google_folder_id');
+    }
+  }
 
   setAccessToken(token: string) {
     this.accessToken = token;
@@ -20,6 +27,14 @@ class GoogleDriveService {
 
   setTargetFolderId(id: string | null) {
     this.targetFolderId = id;
+    if (typeof window !== 'undefined') {
+      if (id) localStorage.setItem('vms_google_folder_id', id);
+      else localStorage.removeItem('vms_google_folder_id');
+    }
+  }
+
+  get currentFolderId() {
+    return this.targetFolderId || this.defaultFolderId;
   }
 
   get isLoggedIn() {
@@ -51,9 +66,7 @@ class GoogleDriveService {
 
   async findOrCreateFolder(): Promise<string> {
     // 如果已有指定的 Target Folder ID，直接使用
-    if (this.targetFolderId) {
-      return this.targetFolderId;
-    }
+    return this.currentFolderId;
 
     const q = `name='${this.folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
     const data = await this.fetchDrive(`/files?q=${encodeURIComponent(q)}&fields=files(id, name)`);

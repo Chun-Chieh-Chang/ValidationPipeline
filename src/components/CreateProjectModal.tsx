@@ -106,15 +106,41 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">模具號碼 (必填)</label>
-                  <input
-                    type="text"
-                    name="project_no"
-                    value={formData.project_no}
-                    onChange={handleChange}
-                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all font-bold placeholder:text-muted/50"
-                    placeholder="例如: M284"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="project_no"
+                      value={formData.project_no}
+                      onChange={handleChange}
+                      className="flex-1 bg-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all font-bold placeholder:text-muted/50"
+                      placeholder="例如: M284"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!formData.project_no) return;
+                        const existing = await projectService.findByProjectNo(formData.project_no);
+                        if (existing) {
+                          setFormData({
+                            ...formData,
+                            part_no: existing.part_no || "",
+                            rev: existing.rev || "",
+                            type: existing.type || "設變",
+                            purpose: existing.purpose || "",
+                            owner: existing.owner || "",
+                            ecr_no: existing.ecr_no || ""
+                          });
+                          alert("已從總表數據中載入相關資訊。");
+                        } else {
+                          alert("總表中未找到此模具號碼，您可以手動建立。");
+                        }
+                      }}
+                      className="px-4 py-2.5 bg-surface border border-border rounded-lg text-xs font-black hover:bg-background transition-all whitespace-nowrap"
+                    >
+                      從總表預填
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">品號</label>

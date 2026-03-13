@@ -241,5 +241,13 @@ export const projectService = {
       console.error('Cloud sync failed', e);
       throw e; // 傳播錯誤以便 UI 察覺
     }
+  },
+  
+  /**
+   * 根據模具號碼搜尋現有專案 (用於建立新專案時從 Master 資料預填)
+   */
+  async findByProjectNo(projectNo: string): Promise<ProjectData | null> {
+    const projects = await this.getAll();
+    return projects.find(p => p.project_no?.trim() === projectNo.trim()) || null;
   }
 };

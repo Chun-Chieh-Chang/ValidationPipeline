@@ -1,3 +1,30 @@
+## [2026-03-13] Auto-Pilot & Connection Settings Refinement (v2.6)
+
+### 背景 (Background)
+
+為了進一步簡化團隊使用門檻，使用者希望能達成「登入即用」的自動駕駛體驗。系統需預設好公司共用的 Master Sheet 與雲端資料夾路徑，同時保留「開放編輯」的彈性，讓管理者能在 UI 中直接修改這些連線參數，而無需透過 URL 參數或修改代碼。
+
+### 核心變更 (Key Changes)
+
+- **自動駕駛模式 (Auto-Pilot Flow)**:
+  - 在 `googleDriveService.ts` 與 `googleSheetsService.ts` 中置入系統預設 ID。
+  - 當預設 ID 存在時，匯出與匯入功能將不再彈窗詢問，實現真正的「一鍵同步」。
+- **連線設定中心 (Connection Settings UI)**:
+  - 實作 `ConnectionSettingsModal.tsx`: 整合 Google Client ID、儲存資料夾 ID 與 Master Sheet ID 的統一配置介面。
+  - **持久化覆蓋 (Persistent Overrides)**: 使用者在設定面板中修改的路徑會儲存於 `LocalStorage`，優先級高於系統預設值，解決了「預設路徑需可開放編輯」的需求。
+- **Dashboard UI 優化**:
+  - 新增「連線設定」齒輪按鈕。
+  - 優化「匯入 Master」按鈕組，新增「在新分頁開啟總表」快捷圖標，方便使用者編輯後直接回傳。
+  - 簡化 `GoogleAuthButton`: 移除冗餘的 Reset 邏輯與 Prompt，將配置功能收納至設定中心。
+
+### 成果 (Outcome)
+
+- [x] 達成「登入 Google 帳號後即可直接編輯與同步」的極簡化體驗。
+- [x] 保留了路徑的可自定義性，滿足特殊專案切換不同資料庫的需求。
+- [x] 成功通過建置驗證與靜態部署相容性測試。
+
+---
+
 ## [2026-03-13] Google Auth Client ID Hotfix (v2.3)
 
 ### 背景 (Background)

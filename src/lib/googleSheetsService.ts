@@ -4,7 +4,14 @@ import { ProjectData } from './projectService';
 
 class GoogleSheetsService {
   private accessToken: string | null = null;
+  private defaultSheetId = '1cj6qJdwtle-YxIhLAB4CjXZC3hnFfk7IE31nEpuRfmI';
   private targetSheetId: string | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.targetSheetId = localStorage.getItem('vms_google_sheet_id');
+    }
+  }
 
   setAccessToken(token: string) {
     this.accessToken = token;
@@ -12,14 +19,18 @@ class GoogleSheetsService {
 
   setTargetSheetId(id: string | null) {
     this.targetSheetId = id;
-  }
-
-  get hasTargetSheet() {
-    return !!this.targetSheetId;
+    if (typeof window !== 'undefined') {
+      if (id) localStorage.setItem('vms_google_sheet_id', id);
+      else localStorage.removeItem('vms_google_sheet_id');
+    }
   }
 
   get targetSheet() {
-    return this.targetSheetId;
+    return this.targetSheetId || this.defaultSheetId;
+  }
+
+  get hasTargetSheet() {
+    return !!this.targetSheetId || !!this.defaultSheetId; // Always true if default exists
   }
 
   private async fetchSheets(spreadsheetId: string, endpoint: string, options: RequestInit = {}) {
