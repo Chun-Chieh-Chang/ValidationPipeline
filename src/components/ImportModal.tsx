@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UploadCloud, X, FileSpreadsheet, CheckCircle, AlertCircle, Loader2, Trash2, Upload } from "lucide-react";
 import { parseExcelData } from "@/lib/excelParser";
 import { projectService } from "@/lib/projectService";
+import { googleSheetsService } from "@/lib/googleSheetsService";
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -14,7 +15,11 @@ interface ImportModalProps {
 
 export default function ImportModal({ isOpen, onClose, onSuccess }: ImportModalProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [url, setUrl] = useState<string>("https://docs.google.com/spreadsheets/d/1cj6qJdwtle-YxIhLAB4CjXZC3hnFfk7IE31nEpuRfmI/edit?usp=drive_link");
+  const initialUrl = googleSheetsService.targetSheet 
+    ? `https://docs.google.com/spreadsheets/d/${googleSheetsService.targetSheet}/edit`
+    : "https://docs.google.com/spreadsheets/d/1cj6qJdwtle-YxIhLAB4CjXZC3hnFfk7IE31nEpuRfmI/edit?usp=drive_link";
+    
+  const [url, setUrl] = useState<string>(initialUrl);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
