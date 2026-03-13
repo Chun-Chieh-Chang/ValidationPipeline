@@ -65,5 +65,16 @@
 3.  重新點擊 **「連接 Google Drive」**，並在視窗中**務必勾選**「查看、編輯、建立及刪除您在 Google 雲端硬碟中的所有檔案」。
 4.  點擊「繼續」後即可正常存取分享資料夾。
 
+---
+
+### 發生「Cross-Origin-Opener-Policy」或「Popup window closed」錯誤
+這通常是由於瀏覽器的安全設定（如：無痕模式、廣告攔截器）阻止了 Google 登入視窗與主網頁之間的通訊。
+
+**解決方法**：
+1.  **關閉廣告攔截器**：請暫時關閉 AdBlock、uBlock Origin 等擴充功能。
+2.  **避免使用無痕模式 (Incognito)**：無痕模式通常會封鎖第三方 Cookie，導致登入失敗。
+3.  **更換瀏覽器**：建議使用標準版的 Google Chrome 或 Microsoft Edge 進行嘗試。
+4.  **手動勾選隱私設定**：如果您使用 Brave 瀏覽器，請關閉該網頁的「Brave Shields (獅子圖示)」。
+
 ### 發生「403: access_denied」
 代表登入的帳號未被列入「測試使用者」名單。請回到第二階段新增名單。

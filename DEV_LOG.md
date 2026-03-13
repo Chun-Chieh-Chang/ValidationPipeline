@@ -19,6 +19,26 @@
 
 ---
 
+## [2026-03-13] Google Auth 彈窗攔截診斷與 COOP 優化 (v3.0)
+
+### 背景 (Background)
+
+使用者反映在登入時遇到 `Popup window closed` 以及 `Cross-Origin-Opener-Policy` 錯誤。這通常是因為瀏覽器安全性設定（如廣告攔截器或無痕模式）封鎖了 Google 驗證視窗與主程式的通訊。
+
+### 核心變更 (Key Changes)
+
+- **自動診斷優化**:
+  - `GoogleAuthButton.tsx`: 在 `error_callback` 中新增 `popup_closed` 專屬處理邏輯。當彈窗被攔截或非手動關閉時，主動提示使用者檢查「廣告攔截器」與「無痕模式」。
+- **文檔指引強化**:
+  - `Google/google_setup_guide.md`: 新增「COOP 與彈窗錯誤」專章，提供針對 Chrome、Edge 與 Brave 瀏覽器的排除建議。
+
+### 成果 (Outcome)
+
+- [x] 提供更友善的錯誤引導，減少使用者因瀏覽器環境設定導致的連線挫折。
+- [x] 完成 v3.0 代碼打包並推送至 GitHub。
+
+---
+
 ## [2026-03-13] Google Drive 存取範圍升級與 403 熱修復 (v2.9)
 
 ### 背景 (Background)

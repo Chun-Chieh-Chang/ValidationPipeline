@@ -77,6 +77,8 @@ export default function GoogleAuthButton() {
           console.error('Google Auth Error:', err);
           if (err.type === 'access_denied') {
             alert('登入被拒絕。請確保已將您的帳號加入測試使用者名單。');
+          } else if (err.type === 'popup_closed') {
+            alert('登入視窗已被關閉。如果您沒有手動關閉視窗，這可能是因為瀏覽器外掛（如 AdBlock）攔截了彈窗，或是您正在使用無痕分頁。請關閉攔截器後重試。');
           } else {
             alert(`驗證失敗: ${err.message || '未知錯誤'}。如果是權限不足(403)，請嘗試先「登出」後再重新連接。`);
           }
