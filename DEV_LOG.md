@@ -19,6 +19,27 @@
 
 ---
 
+## [2026-03-13] 個人存檔資料夾功能與資料夾 403 修復 (v3.3)
+
+### 背景 (Background)
+
+使用者反映在同步至他人分享的資料夾時出現 `403 Forbidden (Insufficient permissions for the specified parent)`。這是因為預設資料夾對使用者只有「檢視」權限，無法寫入新的同步 JSON。
+
+### 核心變更 (Key Changes)
+
+- **資料夾建立功能**:
+  - `googleDriveService.ts`: 新增 `createFolder()` 方法。
+  - `ConnectionSettingsModal.tsx`: 為「專案儲存資料夾 ID」新增「建立我的存檔資料夾」按鈕。點擊後會在使用者根目錄建立專屬資料夾並自動綁定。
+- **文檔指引優化**:
+  - `Google/google_setup_guide.md`: 新增專章說明資料夾權限與 Sheet 權限的差異，並指引如何建立個人存檔路徑。
+
+### 成果 (Outcome)
+
+- [x] 提供解決方案讓使用者即便在唯讀共享環境下也能擁有自己的同步存檔空間。
+- [x] 完成 v3.3 打包與推送。
+
+---
+
 ## [2026-03-13] Google Auth 初始化穩定性優化 (v3.1)
 
 ### 背景 (Background)

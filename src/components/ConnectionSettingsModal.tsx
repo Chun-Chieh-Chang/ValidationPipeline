@@ -19,6 +19,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
   const [sheetId, setSheetId] = useState("");
   const [isSaved, setIsSaved] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,6 +56,30 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
       alert(`備份失敗：${e.message || '請確認您是否有該檔案的讀取權限'}`);
     } finally {
       setIsCopying(false);
+    }
+  };
+
+  const handleCreateFolder = async () => {
+    if (!googleDriveService.isLoggedIn) {
+      alert("請先連接 Google 帳號後再執行此操作。");
+      return;
+    }
+
+    if (!window.confirm("系統將會在您的雲端硬碟建立一個專屬資料夾「InjectionPipeline_Data」，並自動將同步路徑切換至該處。確定執行？")) {
+      return;
+    }
+
+    setIsCreatingFolder(true);
+    try {
+      const folderId = await googleDriveService.createFolder();
+      setFolderId(folderId);
+      googleDriveService.setTargetFolderId(folderId);
+      alert("資料夾建立成功！同步路徑已更新。");
+    } catch (e: any) {
+      console.error('Folder creation failed', e);
+      alert(`建立失敗：${e.message || '請確認網路連線或授權狀態'}`);
+    } finally {
+      setIsCreatingFolder(false);
     }
   };
 
@@ -143,11 +168,20 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               </p>
             </div>
 
-            {/* Cloud Folder ID */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs font-black text-foreground uppercase tracking-wider">
-                <Database size={14} className="text-brand-accent" />
-                專案儲存資料夾 ID
+              <label className="flex items-center justify-between text-xs font-black text-foreground uppercase tracking-wider">
+                <span className="flex items-center gap-2">
+                  <Database size={14} className="text-brand-accent" />
+                  專案儲存資料夾 ID
+                </span>
+                <button
+                  onClick={handleCreateFolder}
+                  disabled={isCreatingFolder}
+                  className="text-[10px] flex items-center gap-1 text-seafoam hover:text-emerald-400 transition-colors bg-seafoam/10 px-2 py-0.5 rounded-md border border-seafoam/20"
+                >
+                  {isCreatingFolder ? <RefreshCw size={10} className="animate-spin" /> : <Database size={10} />}
+                  {isCreatingFolder ? '建立中...' : '建立我的存檔資料夾'}
+                </button>
               </label>
               <input
                 type="text"

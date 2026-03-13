@@ -57,6 +57,15 @@
 
 ## 故障排除 (Troubleshooting)
 
+### 發生「403: Forbidden - Insufficient permissions for the specified parent」
+**原因**：目前的「專案儲存資料夾」權限為他人所有，且您只有讀取權，無法在裡面建立新的同步檔案 (`vms_data.json`)。
+**解決方法**：
+1.  進入「連線設定」齒輪圖標。
+2.  在「專案儲存資料夾 ID」右側點擊 **「建立我的存檔資料夾」**。
+3.  系統會自動在您的雲端建立資料夾並切換 ID，之後即可正常同步。
+
+---
+
 ### 發生「403: Forbidden - Insufficient Scopes」
 **原因**：目前的 `drive.file` 權限不足以讀取同仁分享給您的「現有資料夾」。
 **解決方法**：

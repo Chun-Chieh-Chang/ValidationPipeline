@@ -150,6 +150,22 @@ class GoogleDriveService {
 
     return data.id;
   }
+
+  /**
+   * 建立新資料夾
+   */
+  async createFolder(name: string = this.folderName): Promise<string> {
+    const folder = await this.fetchDrive('/files', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        mimeType: 'application/vnd.google-apps.folder',
+      }),
+    });
+
+    return folder.id;
+  }
 }
 
 export const googleDriveService = new GoogleDriveService();
