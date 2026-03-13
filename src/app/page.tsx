@@ -136,16 +136,29 @@ function DashboardContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     
+    setLoading(true);
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
         const content = event.target?.result as string;
         await projectService.importData(content);
         await fetchProjects();
-        alert('還原成功！');
-      } catch (err) {
-        alert('還原失敗，請檢查檔案格式');
+        alert('還原成功！雲端資料已同步更新。');
+      } catch (err: any) {
+        console.error('Restore Error:', err);
+        const msg = err.name === 'QuotaExceededError' 
+          ? '還原失敗：資源空間不足 (LocalStorage 已滿)。請先嘗試清空部分資料。'
+          : `還原失敗：${err.message || '檔案格式錯誤'}`;
+        alert(msg);
+      } finally {
+        setLoading(false);
+        // 清空 input 讓同一個檔案可以再次選擇
+        e.target.value = '';
       }
+    };
+    reader.onerror = () => {
+      alert('檔案讀取失敗');
+      setLoading(false);
     };
     reader.readAsText(file);
   };

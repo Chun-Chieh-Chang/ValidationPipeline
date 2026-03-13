@@ -175,10 +175,14 @@ export const projectService = {
     try {
       const data = JSON.parse(jsonContent);
       if (Array.isArray(data)) {
+        // 如果是方案 A (API 模式)，也需要同步到 API (目前僅 LocalStorage)
+        // 這裡我們維持 LocalStorage 為主，但強迫同步到雲端
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        // 如果已登錄 Google Drive，則同步
+        
+        // 如果已登錄 Google Drive，則強制覆蓋雲端 (因為還原是最高優先級的操作)
         if (googleDriveService.isLoggedIn) {
-          this.syncWithCloud();
+          console.log('JSON 還原成功，正在同步至雲端...');
+          await this.syncWithCloud(true); // 強制推送
         }
       } else {
         throw new Error('格式錯誤：應為專案陣列');
@@ -191,34 +195,51 @@ export const projectService = {
 
   /**
    * 與 Google Drive 同步雲端資料
+   * @param forcePush 是否強制以本地覆蓋雲端 (通常用於還原操作)
    */
-  async syncWithCloud(): Promise<void> {
+  async syncWithCloud(forcePush: boolean = false): Promise<void> {
     if (!googleDriveService.isLoggedIn) return;
 
     try {
       const folderId = await googleDriveService.findOrCreateFolder();
       const fileId = await googleDriveService.findOrCreateFile(folderId);
       
-      // 獲取本地資料
+      // 獲取本地與雲端資料
       const localData = await this.getAll();
-      
-      // 獲取雲端資料
       const cloudContent = await googleDriveService.getFileContent(fileId);
       
-      // 這裡採用簡單的「合併」策略：如果有雲端資料且本地資料為空，則拉取雲端；否則以本地為準推送到雲端
-      // 更複雜的 Merge 邏輯可在此擴充
-      if (!localData || localData.length === 0) {
-        if (cloudContent && Array.isArray(cloudContent)) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudContent));
-          return;
-        }
+      // 策略：
+      // 1. 如果是強制推送(還原)，則直接上傳
+      // 2. 如果本地為空且雲端有資料，拉取雲端
+      // 3. 否則本地為準推送到雲端
+      if (forcePush) {
+        await googleDriveService.saveFileContent(fileId, localData);
+        console.log('Force push completed after restore');
+        return;
       }
 
-      // 將本地資料推送到雲端
+      const hasLocal = localData && localData.length > 0;
+      const hasCloud = cloudContent && Array.isArray(cloudContent) && cloudContent.length > 0;
+
+      if (!hasLocal && hasCloud) {
+        console.log('本地資料為空，正在從雲端拉取資料...');
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudContent));
+        // 注意：這裡不呼叫 fetchProjects，需要調用端處理 UI 刷新
+        return;
+      }
+
+      // 如果兩邊都有資料，或者只有本地有資料，通常以本地為準
+      // 為了防止誤刪雲端資料，若本地筆數顯著少於雲端，暫不自動覆蓋 (除非 forcePush)
+      if (hasLocal && hasCloud && localData.length < cloudContent.length / 2) {
+         console.warn('本地資料明顯少於雲端，防止誤報，跳過自動同步。請使用「還原」功能手動處理。');
+         return;
+      }
+
       await googleDriveService.saveFileContent(fileId, localData);
-      console.log('Cloud sync completed');
+      console.log('Cloud sync completed (Local -> Cloud)');
     } catch (e) {
       console.error('Cloud sync failed', e);
+      throw e; // 傳播錯誤以便 UI 察覺
     }
   }
 };
