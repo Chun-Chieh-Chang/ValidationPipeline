@@ -135,6 +135,21 @@ class GoogleDriveService {
       throw new Error(`Failed to save to Drive: ${error.error?.message || res.statusText}`);
     }
   }
+
+  /**
+   * 複製檔案 (用於另存新檔/建立備份)
+   */
+  async copyFile(fileId: string, newName: string): Promise<string> {
+    const data = await this.fetchDrive(`/files/${fileId}/copy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: newName,
+      }),
+    });
+
+    return data.id;
+  }
 }
 
 export const googleDriveService = new GoogleDriveService();

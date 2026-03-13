@@ -1,3 +1,49 @@
+## [2026-03-13] Remote Sync & Update (v2.7)
+
+### 背景 (Background)
+
+執行例行性遠端同步，將本地環境更新至最新版本 (`a9a82fe`)。
+
+### 核心變更 (Key Changes)
+
+- **遠端同步 (GitHub Sync)**:
+  - 成功執行 `git pull`，包含 `googleSheetsService.ts` 與 `googleDriveService.ts` 等核心服務的更新。
+  - 解決了 `DEV_LOG.md` 的合併衝突。
+- **環境狀態**:
+  - 本地倉庫現已與 `origin/main` 保持一致。
+
+### 成果 (Outcome)
+
+- [x] 成功套用 6 個遠端 Commit。
+- [x] 解決檔案衝突，確保開發日誌完整性。
+
+---
+
+## [2026-03-13] Google API 權限修復與「另存副本」功能實作 (v2.8)
+
+### 背景 (Background)
+
+使用者在同步 Google Sheets 時遇到 `403 Forbidden (Insufficient Scopes)` 錯誤，且因 Master Sheet 權限屬於他人，導致無法直接寫入。需要一種機制讓使用者能快速建立自己的存檔副本。
+
+### 核心變更 (Key Changes)
+
+- **權限引導優化**:
+  - `GoogleAuthButton.tsx`: 新增 `prompt: 'consent'` 參數，強制 Google 彈出授權視窗，確保使用者能看到並手動勾選新權限。
+  - 優化錯誤提示，引導使用者處理 403 範圍不足的問題。
+- **「另存個人副本」功能實作**:
+  - `googleDriveService.ts`: 新增 `copyFile` 服務，支援跨帳號複製試算表。
+  - `ConnectionSettingsModal.tsx`: 為 Master Sheet ID 加入「另存我的副本」按鈕，實作一鍵備份並自動切換同步路徑。
+- **文件更新**: 
+  - 更新 `google_setup_guide.md`，加入針對 `403 Forbidden` 與 `access_denied` 的詳細故障排除步驟。
+
+### 成果 (Outcome)
+
+- [x] 解決了 Google Sheets API 權限範圍不足導致的同步失敗問題。
+- [x] 提供「另存副本」解決方案，讓無原始檔案編輯權的使用者也能擁有自己的雲端資料庫。
+- [x] 通過本地 Build 驗證，功能與 UI 完全相容。
+
+---
+
 ## [2026-03-13] Auto-Pilot & Connection Settings Refinement (v2.6)
 
 ### 背景 (Background)
@@ -384,4 +430,3 @@
   - 為了解決深色模式下 Seafoam 背景搭配白色文字對比度不足（僅約 1.4:1）的問題，新增了語意化變數 `--accent-brand-foreground`。
   - 在深色模式下，自動將高亮標籤文字切換為深色 (#0F1A1B)，顯著提升可讀性，符合 Color Master Palette 的嚴格對比度規範。
 
----

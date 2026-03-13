@@ -75,10 +75,15 @@ export default function GoogleAuthButton() {
         },
         error_callback: (err: any) => {
           console.error('Google Auth Error:', err);
-          alert(`驗證失敗: ${err.message || '未知錯誤'}`);
+          if (err.type === 'access_denied') {
+            alert('登入被拒絕。請確保已將您的帳號加入測試使用者名單。');
+          } else {
+            alert(`驗證失敗: ${err.message || '未知錯誤'}。如果是權限不足(403)，請嘗試先「登出」後再重新連接。`);
+          }
         }
       });
-      client.requestAccessToken();
+      // 強制彈出授權視窗，確保使用者看到新權限的勾選框
+      client.requestAccessToken({ prompt: 'consent' });
     } catch (err) {
       console.error('Failed to initialize Google Auth:', err);
       alert('初始化 Google 驗證失敗。請確認您的 Client ID 是否正確，且已將此網址加入授權來源。');

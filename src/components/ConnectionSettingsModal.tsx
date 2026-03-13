@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Settings, Database, FileSpreadsheet, Key, Save, RefreshCw, AlertCircle, Info } from "lucide-react";
+import { X, Settings, Database, FileSpreadsheet, Key, Save, RefreshCw, AlertCircle, Info, Copy } from "lucide-react";
 import { googleDriveService } from "@/lib/googleDriveService";
 import { googleSheetsService } from "@/lib/googleSheetsService";
 
@@ -18,6 +18,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
   const [folderId, setFolderId] = useState("");
   const [sheetId, setSheetId] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -28,6 +29,34 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
       setIsSaved(false);
     }
   }, [isOpen]);
+
+  const handleCreateBackup = async () => {
+    if (!googleDriveService.isLoggedIn) {
+      alert("請先連接 Google 帳號後再執行此操作。");
+      return;
+    }
+
+    const currentId = sheetId || googleSheetsService.targetSheet;
+    if (!currentId) return;
+
+    if (!window.confirm("系統將會為目前指定的 Master Sheet 建立一份副本存入您的雲端硬碟，並自動切換為該連結。確定執行？")) {
+      return;
+    }
+
+    setIsCopying(true);
+    try {
+      const newName = `Validation_Master_Backup_${new Date().toLocaleDateString().replace(/\//g, '-')}`;
+      const newId = await googleDriveService.copyFile(currentId, newName);
+      setSheetId(newId);
+      googleSheetsService.setTargetSheetId(newId);
+      alert(`備份成功！新檔案名稱為: ${newName}`);
+    } catch (e: any) {
+      console.error('Copy failed', e);
+      alert(`備份失敗：${e.message || '請確認您是否有該檔案的讀取權限'}`);
+    } finally {
+      setIsCopying(false);
+    }
+  };
 
   const handleSave = () => {
     // 1. Client ID
@@ -131,9 +160,19 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
 
             {/* Master Sheet ID */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs font-black text-foreground uppercase tracking-wider">
-                <FileSpreadsheet size={14} className="text-brand-accent" />
-                Master Sheet ID
+              <label className="flex items-center justify-between text-xs font-black text-foreground uppercase tracking-wider">
+                <span className="flex items-center gap-2">
+                  <FileSpreadsheet size={14} className="text-brand-accent" />
+                  Master Sheet ID
+                </span>
+                <button
+                  onClick={handleCreateBackup}
+                  disabled={isCopying}
+                  className="text-[10px] flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-0.5 rounded-md border border-pelagic/20"
+                >
+                  {isCopying ? <RefreshCw size={10} className="animate-spin" /> : <Copy size={10} />}
+                  {isCopying ? '備份中...' : '另存我的副本'}
+                </button>
               </label>
               <input
                 type="text"
