@@ -1,0 +1,127 @@
+// src/lib/googleDriveService.ts
+
+const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+export interface GoogleDriveFile {
+  id: string;
+  name: string;
+}
+
+class GoogleDriveService {
+  private accessToken: string | null = null;
+  private folderName = 'InjectionPipeline_Data';
+  private fileName = 'vms_data.json';
+  private targetFolderId: string | null = null;
+
+  setAccessToken(token: string) {
+    this.accessToken = token;
+  }
+
+  setTargetFolderId(id: string | null) {
+    this.targetFolderId = id;
+  }
+
+  get isLoggedIn() {
+    return !!this.accessToken;
+  }
+
+  private async fetchDrive(endpoint: string, options: RequestInit = {}) {
+    if (!this.accessToken) throw new Error('Not authenticated with Google');
+
+    const res = await fetch(`https://www.googleapis.com/drive/v3${endpoint}`, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      const message = error.error?.message || res.statusText;
+      if (res.status === 403 || res.status === 404) {
+        throw new Error(`Google Drive API 存取被拒 (${res.status}): 請確認該資料夾是否已共用給您，或權限是否正確。(${message})`);
+      }
+      throw new Error(`Google Drive API Error: ${message}`);
+    }
+
+    return res.json();
+  }
+
+  async findOrCreateFolder(): Promise<string> {
+    // 如果已有指定的 Target Folder ID，直接使用
+    if (this.targetFolderId) {
+      return this.targetFolderId;
+    }
+
+    const q = `name='${this.folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+    const data = await this.fetchDrive(`/files?q=${encodeURIComponent(q)}&fields=files(id, name)`);
+    
+    if (data.files && data.files.length > 0) {
+      return data.files[0].id;
+    }
+
+    const folder = await this.fetchDrive('/files', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: this.folderName,
+        mimeType: 'application/vnd.google-apps.folder',
+      }),
+    });
+
+    return folder.id;
+  }
+
+  async findOrCreateFile(folderId: string): Promise<string> {
+    const q = `name='${this.fileName}' and '${folderId}' in parents and trashed=false`;
+    const data = await this.fetchDrive(`/files?q=${encodeURIComponent(q)}&fields=files(id, name)`);
+
+    if (data.files && data.files.length > 0) {
+      return data.files[0].id;
+    }
+
+    const file = await this.fetchDrive('/files', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: this.fileName,
+        parents: [folderId],
+      }),
+    });
+
+    return file.id;
+  }
+
+  async getFileContent(fileId: string): Promise<any> {
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    });
+
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('Failed to fetch file content');
+    
+    return res.json();
+  }
+
+  async saveFileContent(fileId: string, content: any): Promise<void> {
+    const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(content),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(`Failed to save to Drive: ${error.error?.message || res.statusText}`);
+    }
+  }
+}
+
+export const googleDriveService = new GoogleDriveService();

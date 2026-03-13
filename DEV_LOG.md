@@ -1,3 +1,53 @@
+## [2026-03-13] Google Drive Backend & Team Collaboration Implementation
+
+### 背景 (Background)
+
+使用者要求將 Google Drive 作為應用程式的無伺服器後端 (Serverless Backend)，以解決 GitHub Pages 靜態部署無法持久化儲存資料的問題。此外，系統需支援「多人協作模式」，允許同仁在管理者授權下於同一份中央資料庫進行讀寫。
+
+### 核心變更 (Key Changes)
+
+- **Google API 服務層實作**:
+  - `googleDriveService.ts`: 實作資料夾定位、JSON 檔案讀寫邏輯，支援 `targetFolderId` 參數鎖定。
+  - `googleSheetsService.ts`: 實作數據映射邏輯，支援直接同步至指定試算表。
+- **混合存儲與同步邏輯 (v2.1)**:
+  - 更新 `projectService.ts`：當使用者連接 Google 帳戶後，系統會自動在每次保存/更新時將 LocalStorage 資料同步至雲端，達成跨裝置資料一致性。
+- **多人協作架構 (v2.2 - Shared Mode)**:
+  - **URL 參數定位**: 支援 `?folderId=...&sheetId=...`。當網址包含這些 ID 時，系統會自動切換為「Shared Team Mode」，所有同仁會讀寫同一個管理者分享的雲端目錄。
+  - **權限與錯誤處理**: 針對「存取被拒 (403/404)」加入詳細提示，引導同仁向管理者確認資料夾共用權限。
+- **UI/UX 雲端化**:
+  - Dashboard 整合 `GoogleAuthButton`：使用 Google Identity Services (GIS) 進行 OAuth2 認證，顯示使用者資訊並提供手動同步按鈕。
+  - 介面標示：當處於多人協作模式時，Header 會顯示 `Shared Team Mode` 標籤與 `Users` 圖示。
+  - **匯出功能升級**: 原本的「匯出總表」在連線狀態下會變更為「雲端同步總表」，一鍵將資料寫入 Google Sheets。
+
+### 成果 (Outcome)
+
+- [x] 成功將應用程式轉型為以 Google Drive 為後端的「雲端 Web App」。
+- [x] 成功通過 `npm run build` 驗證，完全符合 GitHub Pages 靜態導出標準。
+- [x] 實作了靈活的多人協作架構，降低了團隊部署複雜度。
+
+---
+
+## [2026-03-13] GitHub Synchronization Verification
+
+### 背景 (Background)
+
+執行例行性遠端同步檢查，確保本地開發環境與 GitHub 倉庫 (`chun-chieh-chang/ValidationPipeline`) 保持一致。
+
+### 核心變更 (Key Changes)
+
+- **同步狀態確認**: 執行 `git fetch` 與 `git status` 驗證。
+- **版本比對**: 
+  - 本地 HEAD: `028880d59dfc446f99b53d5c7ce2225eaf338527`
+  - 遠端 origin/main: `028880d59dfc446f99b53d5c7ce2225eaf338527`
+- **結論**: 系統已處於最新狀態，無須執行 `git pull`。
+
+### 成果 (Outcome)
+
+- [x] 成功驗證本地與遠端同步狀態。
+- [x] 確認系統穩定性與版本一致性。
+
+---
+
 ## [2026-03-06] Deep Sea Theme Consolidation & Readability Overhaul
 
 ### 背景 (Background)

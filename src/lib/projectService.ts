@@ -1,10 +1,4 @@
-// src/lib/projectService.ts
-
-/**
- * 這是一個「中介服務層」，設計目的是為了同時相容：
- * 1. 方案 B (GitHub Pages / LocalStorage): 用於目前靜態部署
- * 2. 方案 A (Vercel / Prisma API): 用於未來升級後的後端動態存取
- */
+import { googleDriveService } from './googleDriveService';
 
 export interface ProjectData {
   id: string;
@@ -100,11 +94,18 @@ export const projectService = {
       all.push(project);
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+
+    // 如果已登錄 Google Drive，則同步
+    if (googleDriveService.isLoggedIn) {
+      this.syncWithCloud();
+    }
   },
 
   // 更新專案狀態或任務
   async update(id: string, updates: Partial<ProjectData>): Promise<ProjectData | null> {
     if (!isClient) return null;
+
+    let updatedProject: ProjectData | null = null;
 
     if (USE_API) {
       try {
@@ -115,23 +116,31 @@ export const projectService = {
         });
         if (res.ok) {
           const data = await res.json();
-          return data.project || data;
+          updatedProject = data.project || data;
         }
       } catch (e) {
         // API 不可用
       }
     }
 
-    // 方案 B 機制
-    const all = await this.getAll();
-    const index = all.findIndex(p => p.id === id);
-    if (index >= 0) {
-      const updated = { ...all[index], ...updates };
-      all[index] = updated;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-      return updated;
+    if (!updatedProject) {
+      // 方案 B 機制
+      const all = await this.getAll();
+      const index = all.findIndex(p => p.id === id);
+      if (index >= 0) {
+        const updated = { ...all[index], ...updates };
+        all[index] = updated;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        updatedProject = updated;
+      }
     }
-    return null;
+
+    // 如果已登錄 Google Drive，則同步
+    if (updatedProject && googleDriveService.isLoggedIn) {
+      this.syncWithCloud();
+    }
+
+    return updatedProject;
   },
 
   // 一鍵清空所有資料與釋放記憶體
@@ -140,14 +149,17 @@ export const projectService = {
 
     if (USE_API) {
       try {
-        // 若未來後端支援一鍵清空 API，可在此實作
         await fetch('/api/projects', { method: 'DELETE' });
       } catch (e) {
-        // API 失敗仍繼續清理本地
+        // API 失敗
       }
     }
 
     localStorage.removeItem(STORAGE_KEY);
+    
+    if (googleDriveService.isLoggedIn) {
+      this.syncWithCloud();
+    }
   },
 
   // 導出所有資料 (JSON 備份)
@@ -164,12 +176,49 @@ export const projectService = {
       const data = JSON.parse(jsonContent);
       if (Array.isArray(data)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // 如果已登錄 Google Drive，則同步
+        if (googleDriveService.isLoggedIn) {
+          this.syncWithCloud();
+        }
       } else {
         throw new Error('格式錯誤：應為專案陣列');
       }
     } catch (e) {
       console.error('導入失敗', e);
       throw e;
+    }
+  },
+
+  /**
+   * 與 Google Drive 同步雲端資料
+   */
+  async syncWithCloud(): Promise<void> {
+    if (!googleDriveService.isLoggedIn) return;
+
+    try {
+      const folderId = await googleDriveService.findOrCreateFolder();
+      const fileId = await googleDriveService.findOrCreateFile(folderId);
+      
+      // 獲取本地資料
+      const localData = await this.getAll();
+      
+      // 獲取雲端資料
+      const cloudContent = await googleDriveService.getFileContent(fileId);
+      
+      // 這裡採用簡單的「合併」策略：如果有雲端資料且本地資料為空，則拉取雲端；否則以本地為準推送到雲端
+      // 更複雜的 Merge 邏輯可在此擴充
+      if (!localData || localData.length === 0) {
+        if (cloudContent && Array.isArray(cloudContent)) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudContent));
+          return;
+        }
+      }
+
+      // 將本地資料推送到雲端
+      await googleDriveService.saveFileContent(fileId, localData);
+      console.log('Cloud sync completed');
+    } catch (e) {
+      console.error('Cloud sync failed', e);
     }
   }
 };

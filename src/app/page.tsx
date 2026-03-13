@@ -1,22 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import GoogleAuthButton from "@/components/GoogleAuthButton";
+import { googleDriveService } from "@/lib/googleDriveService";
+import { googleSheetsService } from "@/lib/googleSheetsService";
 import ImportModal from "@/components/ImportModal";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { motion } from "framer-motion";
 import CreateProjectModal from "@/components/CreateProjectModal";
-import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2 } from "lucide-react";
+import { Plus, FileDown, Loader2, LayoutGrid, Table as TableIcon, CheckCircle, Circle, Trash2, Users } from "lucide-react";
 import { projectService } from "@/lib/projectService";
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [isImportModalOpen, setImportModalOpen] = useState(false);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+
+  // 初始化 Shared Mode 參數
+  useEffect(() => {
+    const fId = searchParams.get('folderId');
+    const sId = searchParams.get('sheetId');
+    if (fId) googleDriveService.setTargetFolderId(fId);
+    if (sId) googleSheetsService.setTargetSheetId(sId);
+  }, [searchParams]);
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -33,25 +45,47 @@ export default function Dashboard() {
   const handleGlobalExport = async () => {
     setExporting(true);
     try {
-      const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
-      if (!USE_API) {
-        alert("在免伺服器靜態部署模式下，暫不支援匯出總表功能。");
-        setExporting(false);
-        return;
+      // 如果已登入 Google Drive，則優先同步到 Google Sheets
+      if (googleDriveService.isLoggedIn) {
+        let cleanId = googleSheetsService.targetSheet;
+        
+        if (!cleanId) {
+          const spreadsheetId = window.prompt("請輸入目標 Google Sheets ID (或者貼上網址):");
+          if (!spreadsheetId) {
+            setExporting(false);
+            return;
+          }
+          cleanId = spreadsheetId;
+          if (spreadsheetId.includes('docs.google.com/spreadsheets')) {
+            const match = spreadsheetId.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (match && match[1]) cleanId = match[1];
+          }
+        }
+
+        await googleSheetsService.syncToSheet(cleanId!, projects);
+        alert("已成功同步至 Google Sheets！");
+      } else {
+        // 原有的方案 A/B 匯出邏輯
+        const USE_API = process.env.NEXT_PUBLIC_USE_API === 'true';
+        if (!USE_API) {
+          alert("在免伺服器靜態部署模式下且未連接 Google，暫不支援匯出總表功能。請點擊「連接 Google Drive」以直接同步至雲端表格。");
+          setExporting(false);
+          return;
+        }
+        const res = await fetch('/api/projects/export');
+        if (!res.ok) throw new Error("Export failed");
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Master_Inventory_Report_${new Date().toLocaleDateString()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       }
-      const res = await fetch('/api/projects/export');
-      if (!res.ok) throw new Error("Export failed");
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Master_Inventory_Report_${new Date().toLocaleDateString()}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
     } catch (err) {
       console.error(err);
-      alert("匯出失敗");
+      alert("匯出失敗: " + (err instanceof Error ? err.message : "未知錯誤"));
     } finally {
       setExporting(false);
     }
@@ -125,11 +159,18 @@ export default function Dashboard() {
             <h1 className="text-3xl font-black tracking-tight text-foreground mb-1">
               Injection <span className="text-pelagic">Pipeline</span>
             </h1>
-            <p className="text-muted font-bold tracking-tight">
-              射出成型確效管理系統 (v2.0 - FatPandaVision)
+            <p className="text-muted font-bold tracking-tight text-sm">
+              射出成型確效管理系統 (v2.2 - Team Collaboration)
             </p>
+            {googleSheetsService.hasTargetSheet && (
+              <div className="mt-1 flex items-center gap-1.5 text-[10px] font-black uppercase text-brand-accent tracking-widest">
+                <Users size={12} />
+                Shared Team Mode
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <GoogleAuthButton />
             <ThemeToggle />
             <div className="flex gap-2 bg-background p-1 rounded-xl shadow-inner border border-border">
           <button
@@ -169,9 +210,10 @@ export default function Dashboard() {
               onClick={handleGlobalExport}
               disabled={exporting || projects.length === 0}
               className="px-4 py-2.5 rounded-lg bg-surface border-2 border-border text-foreground hover:bg-foreground hover:text-background text-sm font-bold transition-all flex items-center gap-2 disabled:opacity-50"
+              title={googleDriveService.isLoggedIn ? "同步至 Google Sheets" : "匯出 Excel (需 API 支援)"}
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} />}
-              匯出總表
+              {googleDriveService.isLoggedIn ? "雲端同步總表" : "匯出總表"}
             </button>
             <button 
               onClick={handleExportJSON}
@@ -452,5 +494,17 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-pelagic" />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
