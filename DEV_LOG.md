@@ -19,6 +19,27 @@
 
 ---
 
+## [2026-03-13] Google Drive 存取範圍升級與 403 熱修復 (v2.9)
+
+### 背景 (Background)
+
+使用者反映在存取同仁分享的資料夾時出現 `403 Forbidden (Request had insufficient authentication scopes)`。經診斷，原先使用的 `drive.file` 權限限制過大，無法搜尋非本應用程式建立的外部共用資料夾。
+
+### 核心變更 (Key Changes)
+
+- **存取範圍升級**:
+  - `GoogleAuthButton.tsx`: 將 OAuth Scope 從 `drive.file` 升級為 `https://www.googleapis.com/auth/drive` (完整存取)。
+  - `googleDriveService.ts`: 同步更新內部 `SCOPES` 常量。
+- **引導文檔更新**:
+  - `Google/google_setup_guide.md`: 新增 403 錯誤診斷，引導使用者重新登入並勾選「存取所有檔案」權限。
+
+### 成果 (Outcome)
+
+- [x] 成功解決無法在他人分享的資料夾中搜尋/建立 `vms_data.json` 的權限瓶頸。
+- [x] 完成代碼打包並準備推送至 GitHub 觸發自動部署。
+
+---
+
 ## [2026-03-13] Google API 權限修復與「另存副本」功能實作 (v2.8)
 
 ### 背景 (Background)

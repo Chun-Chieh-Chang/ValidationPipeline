@@ -62,7 +62,7 @@ export default function GoogleAuthButton() {
     try {
       const client = window.google.accounts.oauth2.initTokenClient({
         client_id: clientId,
-        scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile',
+        scope: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile',
         callback: (response: any) => {
           if (response.access_token) {
             googleDriveService.setAccessToken(response.access_token);

@@ -1,7 +1,7 @@
 // src/lib/googleDriveService.ts
 
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const SCOPES = 'https://www.googleapis.com/auth/drive';
 
 export interface GoogleDriveFile {
   id: string;
