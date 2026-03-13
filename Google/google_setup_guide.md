@@ -68,13 +68,16 @@
 ---
 
 ### 發生「Cross-Origin-Opener-Policy」或「Popup window closed」錯誤
-這通常是由於瀏覽器的安全設定（如：無痕模式、廣告攔截器）阻止了 Google 登入視窗與主網頁之間的通訊。
+這通常是由於瀏覽器的安全設定（如：廣告攔截器、無痕模式、或是封鎖了第三方 Cookie）阻止了 Google 登入視窗與主網頁之間的通訊。
 
 **解決方法**：
-1.  **關閉廣告攔截器**：請暫時關閉 AdBlock、uBlock Origin 等擴充功能。
-2.  **避免使用無痕模式 (Incognito)**：無痕模式通常會封鎖第三方 Cookie，導致登入失敗。
-3.  **更換瀏覽器**：建議使用標準版的 Google Chrome 或 Microsoft Edge 進行嘗試。
-4.  **手動勾選隱私設定**：如果您使用 Brave 瀏覽器，請關閉該網頁的「Brave Shields (獅子圖示)」。
+1.  **允許第三方 Cookie (極重要)**：
+    *   在 Chrome 網址列右側，點擊「眼睛」圖示，確保沒有「封鎖第三方 Cookie」。
+    *   或至 `chrome://settings/cookies` 允許 `accounts.google.com` 的 Cookie。
+2.  **關閉廣告攔截器**：請暫時關閉 AdBlock、uBlock Origin 等擴充功能。
+3.  **避免使用無痕模式 (Incognito)**：無痕模式通常會封鎖第三方 Cookie。
+4.  **更換瀏覽器**：建議使用標準版的 Google Chrome 或 Microsoft Edge。
+5.  **Brave 使用者**：請關閉網址列右側之「Brave Shields」。
 
 ### 發生「403: access_denied」
 代表登入的帳號未被列入「測試使用者」名單。請回到第二階段新增名單。

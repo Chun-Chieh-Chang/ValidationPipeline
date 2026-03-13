@@ -19,6 +19,26 @@
 
 ---
 
+## [2026-03-13] Google Auth 初始化穩定性優化 (v3.1)
+
+### 背景 (Background)
+
+使用者反映 `Popup window closed` 錯誤持續發生。經診斷，原先在點擊時才初始化 Google Client 的做法不夠穩定，容易受到瀏覽器異步載入或安全策略干擾。
+
+### 核心變更 (Key Changes)
+
+- **初始化邏輯重構**:
+  - `GoogleAuthButton.tsx`: 改為在 `useEffect` 中僅初始化一次 `tokenClient`，點擊僅觸發 `requestAccessToken`。這符合 Google 官方最佳實踐，能顯著提升彈窗通訊的穩定性。
+- **錯誤引導精準化**:
+  - 更新錯誤訊息與 `google_setup_guide.md`，將「封鎖第三方 Cookie (Third-party Cookies)」列為優先排除項，這是導致 GIS 彈窗自動關閉的最常見原因。
+
+### 成果 (Outcome)
+
+- [x] 提升 Google 登入元件的強健度。
+- [x] 完成 v3.1 打包與推送。
+
+---
+
 ## [2026-03-13] Google Auth 彈窗攔截診斷與 COOP 優化 (v3.0)
 
 ### 背景 (Background)
