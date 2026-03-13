@@ -179,10 +179,16 @@ export const projectService = {
         // 這裡我們維持 LocalStorage 為主，但強迫同步到雲端
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         
-        // 如果已登錄 Google Drive，則強制覆蓋雲端 (因為還原是最高優先級的操作)
+        // 如果已登錄 Google Drive，則嘗試同步到雲端進行備份
         if (googleDriveService.isLoggedIn) {
-          console.log('JSON 還原成功，正在同步至雲端...');
-          await this.syncWithCloud(true); // 強制推送
+          console.log('JSON 還原成功，嘗試同步至雲端備份...');
+          try {
+            await this.syncWithCloud(true); 
+            console.log('雲端備份同步完成');
+          } catch (syncError) {
+            console.warn('雲端同步失敗，但本機資料已還原成功。', syncError);
+            // 不拋出錯誤，讓還原流程算成功
+          }
         }
       } else {
         throw new Error('格式錯誤：應為專案陣列');
