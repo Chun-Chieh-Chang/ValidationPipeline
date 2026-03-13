@@ -19,9 +19,15 @@ export default function GoogleAuthButton() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [syncing, setSyncing] = useState(false);
+  const [runtimeClientId, setRuntimeClientId] = useState<string | null>(null);
 
   useEffect(() => {
-    // 檢查 LocalStorage 是否已有 Token (雖然通常 Token 有時效性，這裡僅作示範)
+    // 優先從環境變數讀取，若無則從 LocalStorage 讀取手動設置的 ID
+    const envId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const storedId = localStorage.getItem('vms_google_client_id');
+    setRuntimeClientId(envId || storedId);
+
+    // 檢查 LocalStorage 是否已有 Token
     const savedToken = localStorage.getItem('google_access_token');
     if (savedToken) {
       googleDriveService.setAccessToken(savedToken);
@@ -46,23 +52,39 @@ export default function GoogleAuthButton() {
   };
 
   const handleLogin = () => {
-    const client = window.google.accounts.oauth2.initTokenClient({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile',
-      callback: (response: any) => {
-        if (response.access_token) {
-          googleDriveService.setAccessToken(response.access_token);
-          googleSheetsService.setAccessToken(response.access_token);
-          localStorage.setItem('google_access_token', response.access_token);
-          setIsLoggedIn(true);
-          fetchUserInfo(response.access_token);
-          
-          // 登入後即刻觸發一次雲端同步
-          handleSync();
+    let clientId = runtimeClientId;
+
+    if (!clientId) {
+      clientId = window.prompt("找不到 Google Client ID。請貼上您的 OAuth 2.0 Client ID:");
+      if (!clientId) return;
+      localStorage.setItem('vms_google_client_id', clientId);
+      setRuntimeClientId(clientId);
+    }
+
+    try {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile',
+        callback: (response: any) => {
+          if (response.access_token) {
+            googleDriveService.setAccessToken(response.access_token);
+            googleSheetsService.setAccessToken(response.access_token);
+            localStorage.setItem('google_access_token', response.access_token);
+            setIsLoggedIn(true);
+            fetchUserInfo(response.access_token);
+            handleSync();
+          }
+        },
+        error_callback: (err: any) => {
+          console.error('Google Auth Error:', err);
+          alert(`驗證失敗: ${err.message || '未知錯誤'}`);
         }
-      },
-    });
-    client.requestAccessToken();
+      });
+      client.requestAccessToken();
+    } catch (err) {
+      console.error('Failed to initialize Google Auth:', err);
+      alert('初始化 Google 驗證失敗。請確認您的 Client ID 是否正確，且已將此網址加入授權來源。');
+    }
   };
 
   const handleLogout = () => {
@@ -80,6 +102,15 @@ export default function GoogleAuthButton() {
       await projectService.syncWithCloud();
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleResetConfig = () => {
+    if (window.confirm("確定要重設 Google Client ID 設定嗎？")) {
+      localStorage.removeItem('vms_google_client_id');
+      setRuntimeClientId(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || null);
+      handleLogout();
+      alert("設定已重設。");
     }
   };
 
@@ -123,18 +154,29 @@ export default function GoogleAuthButton() {
           </button>
         </div>
       ) : (
-        <button 
-          onClick={handleLogin}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black font-black text-sm hover:bg-neutral-100 transition-all shadow-md border border-neutral-200"
-        >
-          <img 
-            src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
-            width={16} 
-            height={16} 
-            alt="Google" 
-          />
-          連接 Google Drive
-        </button>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={handleLogin}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-black font-black text-sm hover:bg-neutral-100 transition-all shadow-md border border-neutral-200"
+          >
+            <img 
+              src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
+              width={16} 
+              height={16} 
+              alt="Google" 
+            />
+            {runtimeClientId ? '連接 Google Drive' : '設定 Google 並連接'}
+          </button>
+          {runtimeClientId && (
+            <button 
+              onClick={handleResetConfig}
+              className="p-2 text-muted hover:text-foreground transition-all"
+              title="重設 Google Client ID"
+            >
+              <RefreshCw size={14} />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
