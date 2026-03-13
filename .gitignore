@@ -35,3 +35,7 @@ next-env.d.ts
 
 # BitFun snapshot data - auto managed
 .bitfun/
+
+# Google secrets
+/Google/*.json
+/Google/ID-*
