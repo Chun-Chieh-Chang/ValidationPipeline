@@ -1,3 +1,24 @@
+## [2026-03-13] Google Auth Client ID Hotfix (v2.3)
+
+### 背景 (Background)
+
+在 GitHub Pages 部署後，發現因環境變數 `NEXT_PUBLIC_GOOGLE_CLIENT_ID` 未在建置時嵌入，導致 Google Identity Services 初始化時報錯 `Missing required parameter client_id`。
+
+### 核心變更 (Key Changes)
+
+- **動態設定機制實作**:
+  - `GoogleAuthButton.tsx`: 新增執行時提示 (Runtime Prompt)。若偵測不到環境變數，則主動請求使用者輸入 Client ID 並儲存於 `LocalStorage`。
+  - **持久化配置**: 支援跨頁面重新整理保留 Client ID，並提供重設按鈕以便更換 Project。
+- **錯誤防禦**:
+  - 增加 `initTokenClient` 的 try-catch 與自定義錯誤回報，防止全站崩潰。
+
+### 成果 (Outcome)
+
+- [x] 解決靜態部署環境下的環境變數缺失問題。
+- [x] 提升系統在不同 Google Cloud Project 間切換的靈活性。
+
+---
+
 ## [2026-03-13] Google Drive Backend & Team Collaboration Implementation
 
 ### 背景 (Background)
