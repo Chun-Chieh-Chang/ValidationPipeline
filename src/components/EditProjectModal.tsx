@@ -34,7 +34,8 @@ export default function EditProjectModal({ isOpen, onClose, onSuccess, project }
         ecn_date: project.ecn_date || "",
         start_date: project.start_date || "",
         cloud_link: project.cloud_link || "",
-        priority: project.priority || 3
+        priority: project.priority || 3,
+        status: project.status || "IN_PROGRESS"
       });
       setStatus('idle');
       setErrorMessage(null);
@@ -182,6 +183,18 @@ export default function EditProjectModal({ isOpen, onClose, onSuccess, project }
                       {Object.entries(PRIORITY_LABELS).map(([val, label]) => (
                         <option key={val} value={val}>{label}</option>
                       ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">狀態</label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                    >
+                      <option value="IN_PROGRESS">進行中</option>
+                      <option value="CLOSED">已結案</option>
                     </select>
                   </div>
                   <div>

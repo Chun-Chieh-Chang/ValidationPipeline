@@ -1,3 +1,24 @@
+## [2026-03-14] 進度邏輯修正與 WBS 視覺化強化 (Progress Correction v4.5)
+
+### 背景 (Background)
+根據使用者回饋，原有的「完成比例 (Completed/Total)」無法真實反映實體工作的進展量（計畫進度不等於實體進度）。
+
+### 矯正措施 (Final Adjustments)
+- **邏輯重構**：廢止二元占比計算。專案總體進度改採「所有子任務實體進度百分比 (`progress`) 之平均數」，以反映真實質感。
+- **WBS 視覺化**：在 WBS 表格中新增「圓形進度環 (Progress Ring)」，顯著提升 physical progress 的直觀感受。
+- **Dashboard 同步**：同步更新 Dashboard 卡片上的進度顯示邏輯與標籤（更名為「實體進度」）。
+- **Gantt 優化**：調整甘特圖 Bar 內部圖示佈局，維持高資訊密度下的視覺整潔。
+
+## [2026-03-14] 「狀態」欄位全域同步補全 (Status Synchronization v4.4)
+
+### 背景 (Background)
+完成 v4.3 數據鏈重構後，針對「狀態 (Status)」欄位進行深度審計。發現專案層級的狀態在 Modal 編輯器中缺失，且部分標籤存在細微不一致。
+
+### 矯正措施 (Final Adjustments)
+- **Modals 補全**：在 `CreateProjectModal` 與 `EditProjectModal` 補足「狀態」選擇器，預設為「進行中 (IN_PROGRESS)」。
+- **術語對齊**：將所有 UI 標籤由「專案狀態」或「工作狀態」統一簡化為「狀態」，與 WBS 表格標頭與專案清單完全對齊（Single Source of Truth）。
+- **同步驗證**：確認 Google Sheets Service 與 LocalStorage 之間的「狀態」欄位雙向映射邏輯無誤。
+
 ## [2026-03-14] 全域術語統一與數據鏈條完整性重構 (Logic & Data Chain v4.3)
 
 ### 背景 (Background)

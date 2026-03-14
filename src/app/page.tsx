@@ -385,12 +385,16 @@ function DashboardContent() {
 
                   <div className="flex flex-col items-end gap-2 w-full md:w-auto relative z-10">
                     <div className="bg-surface px-6 py-4 rounded-3xl border-2 border-border text-center min-w-[140px] shadow-lg">
-                      <div className="text-sm font-black text-muted uppercase tracking-[0.2em] mb-2 text-center">任務進度</div>
+                      <div className="text-sm font-black text-muted uppercase tracking-[0.2em] mb-2 text-center">實體進度</div>
                       <div className="text-4xl font-black text-foreground leading-none tabular-nums">
-                        {Math.round(((project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0) / (project.tasks?.length || 1)) * 100)}%
+                        {(() => {
+                          const totalTasks = project.tasks?.length || 0;
+                          const progressSum = project.tasks?.reduce((sum: number, t: any) => sum + (Number(t.progress) || 0), 0) || 0;
+                          return totalTasks > 0 ? Math.round(progressSum / totalTasks) : 0;
+                        })()}%
                       </div>
-                      <div className="text-sm font-black text-muted mt-3 border-t border-border/50 pt-2 tabular-nums">
-                        {project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0} / {project.tasks?.length || 0}
+                      <div className="text-xs font-black text-muted mt-3 border-t border-border/50 pt-2 tabular-nums flex flex-col gap-1">
+                        <div>已完: {project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0} / {project.tasks?.length || 0}</div>
                       </div>
                     </div>
                   </div>

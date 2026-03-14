@@ -720,9 +720,30 @@ function ProjectDetailContent() {
                                     </div>
                                   )
                                 })() : null}
-                                {task.progress && task.progress !== 'null' && task.progress !== '0' ? (
-                                  <div className="flex items-center gap-1.5 text-sm text-brand-secondary ml-1 font-black uppercase tracking-tighter">
-                                    進度: {task.progress}%
+                                {task.progress !== undefined && task.progress !== null ? (
+                                  <div className="flex items-center gap-3 mt-1 ml-1 group/progress">
+                                    <div className="relative w-10 h-10 flex items-center justify-center">
+                                      <svg className="w-full h-full -rotate-90">
+                                        <circle
+                                          cx="20" cy="20" r="16"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="4"
+                                          className="text-border"
+                                        />
+                                        <circle
+                                          cx="20" cy="20" r="16"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="4"
+                                          strokeDasharray={100}
+                                          strokeDashoffset={100 - (Number(task.progress) || 0)}
+                                          className={`${isCompleted ? 'text-success' : 'text-brand-secondary'} transition-all duration-500`}
+                                        />
+                                      </svg>
+                                      <span className="absolute text-[10px] font-black tabular-nums">{task.progress}%</span>
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted group-hover/progress:text-brand-secondary transition-colors">實體進度</span>
                                   </div>
                                 ) : null}
                                 {blocked && <span className="text-[10px] font-black text-danger uppercase tracking-widest mt-1 bg-danger/10 px-2 py-0.5 rounded-md">🔒 Locked by {lockedBy}</span>}
@@ -838,7 +859,9 @@ function ProjectDetailContent() {
                                         {task.actual_date && <div className="flex justify-between gap-12 text-success font-black text-base"><span>實際完成:</span> <span className="tabular-nums">{new Date(task.actual_date).toLocaleDateString()}</span></div>}
                                       </div>
                                     </div>
-                                    {width > 3 && (isCompleted ? <CheckCircle size={16} /> : isCritical && <Zap size={14} />)}
+                                      <div className="ml-auto">
+                                        {width > 3 && (isCompleted ? <CheckCircle size={14} /> : isCritical && <Zap size={12} />)}
+                                      </div>
                                   </div>
                                 </div>
                               </div>

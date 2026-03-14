@@ -64,9 +64,9 @@ class GoogleSheetsService {
    * 將專案資料轉換為 Google Sheets 的列格式
    */
   private mapProjectToRow(project: ProjectData) {
-    const completedTasks = project.tasks?.filter((t: any) => t.status === 'COMPLETED').length || 0;
     const totalTasks = project.tasks?.length || 0;
-    const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    const progressSum = project.tasks?.reduce((sum: number, t: any) => sum + (Number(t.progress) || 0), 0) || 0;
+    const progressAvg = totalTasks > 0 ? Math.round(progressSum / totalTasks) : 0;
 
     return [
       project.priority || 3,
@@ -79,7 +79,7 @@ class GoogleSheetsService {
       StatusMapper.toLabel(project.status),
       project.dept || '',
       project.owner || '',
-      `${progress}%`,
+      `${progressAvg}%`,
       project.ecr_no || '',
       project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '',
       project.ecn_no || '',

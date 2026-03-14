@@ -84,7 +84,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
         id: crypto.randomUUID(),
         ...formData,
         priority: 3,
-        status: "IN_PROGRESS",
+        status: (formData as any).status || "IN_PROGRESS",
         created_at: new Date().toISOString(),
         phases: [],
         tasks: [],
@@ -251,6 +251,18 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     onChange={handleChange}
                     className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">狀態</label>
+                  <select
+                    name="status"
+                    value={(formData as any).status || "IN_PROGRESS"}
+                    onChange={handleChange}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                  >
+                    <option value="IN_PROGRESS">進行中</option>
+                    <option value="CLOSED">已結案</option>
+                  </select>
                 </div>
 
                 <div className="col-span-2">
