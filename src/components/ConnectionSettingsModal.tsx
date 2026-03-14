@@ -28,6 +28,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [currentFolder, setCurrentFolder] = useState<{ id: string; name: string }>({ id: 'root', name: '我的雲端硬碟' });
   const [breadcrumbs, setBreadcrumbs] = useState<{ id: string; name: string }[]>([]);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -36,6 +37,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
       setSheetId(localStorage.getItem('vms_google_sheet_id') || "");
       setIsSaved(false);
       setIsBrowsing(false);
+      setShowHelp(false);
     }
   }, [isOpen]);
 
@@ -203,15 +205,55 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               <X size={24} />
             </button>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-brand-accent/10 text-brand-accent rounded-xl flex items-center justify-center border border-brand-accent/20">
-                <Settings size={20} />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-brand-accent/10 text-brand-accent rounded-xl flex items-center justify-center border border-brand-accent/20">
+                  <Settings size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-foreground">連線設定</h2>
+                  <p className="text-xs text-muted font-bold">管理 Google Drive 與 Master Sheet 路徑</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-black text-foreground">連線設定</h2>
-                <p className="text-xs text-muted font-bold">管理 Google Drive 與 Master Sheet 路徑</p>
-              </div>
+              <button 
+                onClick={() => setShowHelp(!showHelp)}
+                className={`p-2 rounded-lg transition-all ${showHelp ? 'bg-brand-accent text-white' : 'bg-background border border-border text-muted hover:text-brand-accent'}`}
+                title="說明手冊"
+              >
+                <Info size={20} />
+              </button>
             </div>
+
+            <AnimatePresence>
+              {showHelp && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden mb-6"
+                >
+                  <div className="bg-brand-accent/5 border border-brand-accent/20 rounded-xl p-4 space-y-3">
+                    <h3 className="text-sm font-black text-brand-accent flex items-center gap-2">
+                      <Search size={14} /> 操作導引：
+                    </h3>
+                    <ul className="text-sm text-foreground/80 space-y-2 font-bold leading-relaxed">
+                      <li className="flex gap-2">
+                        <span className="text-brand-accent">•</span>
+                        <span>使用 <strong className="text-pelagic">挑選</strong> 按鈕可以直接從雲端挑選目前的資料夾或試算表。</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-brand-accent">•</span>
+                        <span>若沒有權限同步總表，請點擊 <strong className="text-pelagic">另存副本</strong> 建立您自己的版本。</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-brand-accent">•</span>
+                        <span>點擊 <strong className="text-seafoam">建立我的</strong> 可自動在您的雲端建立專屬儲存空間。</span>
+                      </li>
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div className="space-y-4">
               {/* Google Client ID */}
