@@ -85,7 +85,7 @@ function ProjectDetailContent() {
     const reminderWindowDays = 3;
 
     for (const task of currentProject.tasks) {
-      if (task.status === 'COMPLETED' || !task.planned_date || !task.dept) continue;
+      if (task.status === '已完成' || !task.planned_date || !task.dept) continue;
 
       const plannedDate = new Date(task.planned_date);
       const diffTime = plannedDate.getTime() - today.getTime();
@@ -138,9 +138,9 @@ function ProjectDetailContent() {
     let nextStatus = "IN_PROGRESS";
     let actualDate: string | null = null;
 
-    if (currentStatus === "NOT_STARTED") nextStatus = "IN_PROGRESS";
-    if (currentStatus === "IN_PROGRESS") {
-      nextStatus = "COMPLETED";
+    if (currentStatus === "尚未開始") nextStatus = "進行中";
+    if (currentStatus === "進行中") {
+      nextStatus = "已完成";
       actualDate = new Date().toISOString();
     }
 
@@ -154,7 +154,7 @@ function ProjectDetailContent() {
       
       let updatedNotifications = [...(project.notifications || [])];
 
-      if (nextStatus === 'COMPLETED') {
+      if (nextStatus === '已完成') {
         let nextTasks = updatedTasks.filter((t: any) => t.depends_on && t.depends_on.split(',').map((s: string) => s.trim()).includes(currentTask.wbs_code));
 
         if (nextTasks.length === 0) {
@@ -176,11 +176,11 @@ function ProjectDetailContent() {
           let readyToNotify = true;
           if (nextTask.depends_on) {
             const deps = nextTask.depends_on.split(',').map((s: string) => s.trim());
-            const uncompletedDeps = updatedTasks.filter((t: any) => deps.includes(t.wbs_code) && t.status !== 'COMPLETED');
+            const uncompletedDeps = updatedTasks.filter((t: any) => deps.includes(t.wbs_code) && t.status !== '已完成');
             if (uncompletedDeps.length > 0) readyToNotify = false;
           }
 
-          if (readyToNotify && nextTask.status !== 'COMPLETED') {
+          if (readyToNotify && nextTask.status !== '已完成') {
             const plannedDateStr = nextTask.planned_date && !isNaN(new Date(nextTask.planned_date).getTime())
                 ? new Date(nextTask.planned_date).toLocaleDateString() 
                 : '未定';
@@ -354,7 +354,7 @@ function ProjectDetailContent() {
   const isTaskBlocked = (task: any) => {
     if (!task.depends_on) return { blocked: false, lockedBy: "" };
     const deps = task.depends_on.split(',').map((s: string) => s.trim());
-    const uncompletedDeps = project.tasks?.filter((t: any) => deps.includes(t.wbs_code) && t.status !== "COMPLETED") || [];
+    const uncompletedDeps = project.tasks?.filter((t: any) => deps.includes(t.wbs_code) && t.status !== "已完成") || [];
     return {
       blocked: uncompletedDeps.length > 0,
       lockedBy: uncompletedDeps.map((t: any) => t.wbs_code).join(", ")

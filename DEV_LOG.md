@@ -6,8 +6,11 @@
 
 ### 核心變更 (Key Changes)
 
+- **Master Sheet 數據定義對齊 (Field Alignment v3.7)**:
+  - **權責部門規範化**: 更新 `TaskModal.tsx` 的負責部門選單，同步總表定義（G.M., 業務部, 工程部, 製造部, 品保部, 品管部, 各單位主管）。
+  - **工作狀態中文化**: 將 WBS 任務狀態從英文 (NOT_STARTED, IN_PROGRESS, COMPLETED) 全面轉換為與總表一致的中文（尚未開始, 進行中, 已完成）。
+  - **邏輯引擎適配**: 同步更新 `page.tsx` 中的狀態切換邏輯、自動提醒 (`refreshAutoReminders`) 與接手通知邏輯，確保在中文狀態碼下運作無誤。
 - **Master Sheet 實時連動引擎 (Sync Engine v3.6)**:
-  - `googleSheetsService.ts`: 實作 `fetchMasterRows` 邏輯，支援從雲端試算表實時撈取最新的模具、品號、版次等定義。
   - `projectService.ts`: 升級 `findByProjectNo` 邏輯。現在當使用者在「新增專案」輸入模具號碼時，系統會優先穿透至雲端總表進行資料預填 (Pre-fill)，確保數據一致性。
 - **全功能編輯套件 (Editing Suite)**:
   - **`EditProjectModal.tsx`**: 實作專案基本屬性編輯，包含：模具號碼、品號、版次、負責人、ECR/ECN 資訊及雲端連結。

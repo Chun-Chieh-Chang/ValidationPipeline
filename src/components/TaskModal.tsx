@@ -9,7 +9,7 @@ export interface TaskData {
   wbs_code: string;
   task_name: string;
   dept: string;
-  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+  status: "尚未開始" | "進行中" | "已完成";
   planned_date?: string;
   actual_date?: string;
   start_date?: string;
@@ -30,8 +30,8 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
   const [formData, setFormData] = useState<Partial<TaskData>>({
     wbs_code: "",
     task_name: "",
-    dept: "PD",
-    status: "NOT_STARTED",
+    dept: "工程部",
+    status: "尚未開始",
     planned_date: "",
     start_date: "",
     deliverable: "",
@@ -50,8 +50,8 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
           id: crypto.randomUUID(),
           wbs_code: "",
           task_name: "",
-          dept: "PD",
-          status: "NOT_STARTED",
+          dept: "工程部",
+          status: "尚未開始",
           planned_date: "",
           start_date: "",
           deliverable: "",
@@ -141,14 +141,13 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
                   onChange={handleChange}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none"
                 >
-                  <option value="PD">PD (產品開發)</option>
-                  <option value="FA">FA (分析)</option>
-                  <option value="CQ">CQ (量測)</option>
-                  <option value="PQ">PQ (品質工具)</option>
-                  <option value="EC">EC (電子)</option>
-                  <option value="MFG">MFG (製造)</option>
-                  <option value="MOLD">MOLD (模具)</option>
-                  <option value="PUR">PUR (採購)</option>
+                  <option value="G.M.">G.M.</option>
+                  <option value="業務部">業務部</option>
+                  <option value="工程部">工程部</option>
+                  <option value="製造部">製造部</option>
+                  <option value="品保部">品保部</option>
+                  <option value="品管部">品管部</option>
+                  <option value="各單位主管">各單位主管</option>
                 </select>
               </div>
               <div className="col-span-2">
@@ -175,6 +174,22 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
                   onChange={handleChange}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold"
                 />
+              </div>
+
+              <div className="col-span-1">
+                <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
+                  工作狀態
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none"
+                >
+                  <option value="尚未開始">尚未開始</option>
+                  <option value="進行中">進行中</option>
+                  <option value="已完成">已完成</option>
+                </select>
               </div>
               <div className="col-span-1">
                 <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
