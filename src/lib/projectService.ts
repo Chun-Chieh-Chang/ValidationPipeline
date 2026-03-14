@@ -18,6 +18,8 @@ export interface ProjectData {
   start_date?: string;
   created_at?: string;
   updated_at?: string;
+  master_sheet_id?: string;
+  last_master_sync?: string;
   phases: any[];
   tasks: any[];
   notifications: any[];
@@ -250,9 +252,38 @@ export const projectService = {
   },
   
   /**
-   * 根據模具號碼搜尋現有專案 (用於建立新專案時從 Master 資料預填)
+   * 根據模具號碼搜尋現有專案 (優先從 Master Sheet 獲取)
    */
   async findByProjectNo(projectNo: string): Promise<ProjectData | null> {
+    if (!isClient) return null;
+
+    // 1. 優先嘗試從 Google Master Sheet 獲取 (即時資料)
+    const { googleSheetsService } = await import('./googleSheetsService');
+    if (googleSheetsService.hasTargetSheet) {
+      try {
+        const spreadsheetId = localStorage.getItem('vms_google_sheet_id');
+        if (spreadsheetId) {
+          const rows = await googleSheetsService.fetchMasterRows(spreadsheetId);
+          const match = rows.find(r => r.project_no?.trim() === projectNo.trim());
+          if (match) {
+            return {
+              id: "proj_" + Math.random().toString(36).substring(2, 9),
+              ...match,
+              status: match.status_text === '已結案' ? 'CLOSED' : 'IN_PROGRESS',
+              master_sheet_id: spreadsheetId,
+              last_master_sync: new Date().toISOString(),
+              phases: [],
+              tasks: [],
+              notifications: []
+            } as any;
+          }
+        }
+      } catch (e) {
+        console.warn('從 Master Sheet 獲取資料失敗，切換至本地搜尋', e);
+      }
+    }
+
+    // 2. 回退至搜尋已存檔專案
     const projects = await this.getAll();
     return projects.find(p => p.project_no?.trim() === projectNo.trim()) || null;
   }

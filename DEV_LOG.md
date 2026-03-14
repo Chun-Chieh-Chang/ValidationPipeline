@@ -1,3 +1,35 @@
+## [2026-03-14] 專案詳情編輯與 Master Sheet 實時同步強化 (v3.6)
+
+### 背景 (Background)
+
+使用者指出系統核心本質為「多專案管理工具」，需要更強大的編輯與數據同步能力。先前版本中，專案細節與 WBS 任務一旦建立即難以更改，且與雲端「總表 (Master Sheet)」的連動僅限於初次匯入。
+
+### 核心變更 (Key Changes)
+
+- **Master Sheet 實時連動引擎 (Sync Engine v3.6)**:
+  - `googleSheetsService.ts`: 實作 `fetchMasterRows` 邏輯，支援從雲端試算表實時撈取最新的模具、品號、版次等定義。
+  - `projectService.ts`: 升級 `findByProjectNo` 邏輯。現在當使用者在「新增專案」輸入模具號碼時，系統會優先穿透至雲端總表進行資料預填 (Pre-fill)，確保數據一致性。
+- **全功能編輯套件 (Editing Suite)**:
+  - **`EditProjectModal.tsx`**: 實作專案基本屬性編輯，包含：模具號碼、品號、版次、負責人、ECR/ECN 資訊及雲端連結。
+  - **`TaskModal.tsx`**: 實作 WBS 任務管理，支援「新增任務」與「修改現有任務」，包含權責單位、計畫日期、開始日期、交付物與進度百分比。
+  - **詳情頁整合 (`page.tsx`)**: 完整對接上述 Modal，並復原了因工具操作失誤導致的代碼損壞（處理了 401 Session 與 403 權限防禦邏輯）。
+- **多專案管理與數據鍊條 (Data Integrity & Logical Chain)**:
+  - **數據可追溯性**: 在 `ProjectData` Schema 中標準化 `master_sheet_id` 與 `last_master_sync` 欄位，確保每筆資料皆具備清晰的來源證明。
+  - **詳情頁「Source Chain」指示器**: 在專案細節頁面 header 增加 Master Sheet 直連圖標與同步時間顯示，實作「邏輯鍊條」的可視化。
+  - **建立流程鎖定**: 強化 `CreateProjectModal.tsx`，確保在自動預填 (Auto-fill) 時同步鎖定來源 ID，防止數據鍊條在中途斷裂。
+- **UI/UX 魯棒性強化**:
+  - 全面清理 `TaskModal` 與 `EditProjectModal` 中的 Tailwind Lint 錯誤（修復 `flex`/`block` 渲染衝突）。
+  - 修復 `page.tsx` 因佈局重構導致的 JSX 結構損壞，確保在 4k 與手機螢幕下皆具備極致的穩定性。
+
+### 成果 (Outcome)
+
+- [x] 成功將系統從「唯讀/有限編輯」轉型為「全生命週期多專案管理工具」。
+- [x] **建立即還原 (Create-as-Restore)**：升級 `CreateProjectModal.tsx`，在輸入案號時自動觸發 `onBlur` 查詢，補完所有 Master Sheet 欄位 (ECR/ECN Date, Cloud Link, Start Date)，實現「總表數據實時恢復」。
+- [x] 解決了 401/403 等 Google API 穩定性問題，確保 Session 過期時能自動引導重新授權。
+- [x] 完成 WBS 任務的實時更新邏輯，支援進度回報與狀態切換。
+
+---
+
 ## [2026-03-14] Google Drive Browser 實作與 UI 閱讀體感優化 (v3.5)
 
 ### 背景 (Background)

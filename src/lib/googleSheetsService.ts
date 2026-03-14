@@ -105,6 +105,49 @@ class GoogleSheetsService {
   }
 
   /**
+   * 從 Google Sheets 獲取 Master Sheet 的資料列
+   */
+  async fetchMasterRows(spreadsheetId: string): Promise<any[]> {
+    const data = await this.fetchSheets(spreadsheetId, '/values/A1:Z5000');
+    if (!data.values || data.values.length < 2) return [];
+
+    const rows = data.values;
+    const header = rows[0];
+    const headerMap = new Map<string, number>();
+    
+    header.forEach((h: string, i: number) => {
+      if (h) headerMap.set(h.trim().replace(/\s/g, ''), i);
+    });
+
+    return rows.slice(1).map((row: any[]) => {
+      const getVal = (keys: string[]) => {
+        for (const key of keys) {
+          const idx = headerMap.get(key);
+          if (idx !== undefined) return row[idx];
+        }
+        return '';
+      };
+
+      return {
+        priority: parseInt(getVal(['優先度'])) || 3,
+        start_date: getVal(['起始日期', '專案起始日期', '開始日', 'Start Date']),
+        type: getVal(['專案類型', 'Type']),
+        project_no: getVal(['模具號碼', 'ProjectNo', 'No.']),
+        part_no: getVal(['品號', 'PartNo']),
+        rev: getVal(['版次', '工程圖面版次', 'Rev']),
+        purpose: getVal(['目的', 'Purpose']),
+        status_text: getVal(['狀態']),
+        owner: getVal(['負責人', '發出者', 'Owner']),
+        ecr_no: getVal(['ECR', 'ECR編號']),
+        ecr_date: getVal(['ECR日期', 'ECR Date']),
+        ecn_no: getVal(['ECN', 'ECN編號']),
+        ecn_date: getVal(['ECN日期', 'ECN Date']),
+        cloud_link: getVal(['雲端資料', '連結', '雲端資料連結'])
+      };
+    }).filter((p: any) => p.project_no);
+  }
+
+  /**
    * 獲取試算表標題（驗證連結是否有效）
    */
   async getSpreadsheetTitle(spreadsheetId: string): Promise<string> {
