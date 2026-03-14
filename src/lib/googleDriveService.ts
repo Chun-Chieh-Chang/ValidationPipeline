@@ -121,7 +121,15 @@ class GoogleDriveService {
     if (res.status === 404) return null;
     if (!res.ok) throw new Error('Failed to fetch file content');
     
-    return res.json();
+    const text = await res.text();
+    if (!text || text.trim() === '') return null;
+    
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      console.error('Failed to parse Drive file content:', e);
+      return null;
+    }
   }
 
   async saveFileContent(fileId: string, content: any): Promise<void> {
