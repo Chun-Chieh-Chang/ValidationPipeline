@@ -1,3 +1,35 @@
+## [2026-03-14] 全局一致性與雙向同步強化 (Horizontal Expansion v4.2)
+
+### 背景 (Background)
+為確保全系統具備最高等級的邏輯嚴密性，執行了「水平展開檢查」。發現部分欄位（如 ECR/ECN Date, Cloud Link）雖可匯入且在 UI 呈現，但在「編輯屬性」後無法正確推送到雲端，且 UI 層級仍存有魔術字串。
+
+### 核心變更 (Key Changes)
+- **雙向數據完整性 (Bidirectional Integrity)**:
+  - 修正 `googleSheetsService.ts`。現在「ECR 日期」、「ECN 日期」與「雲端資料連結」在寫回 Master Sheet 時均具備完整的索引對應。
+- **全局選單常數化 (Menu SSoT)**:
+  - **專案類型**: 統一使用 `PROJECT_TYPES` (設變、新模、移模、修模)。
+  - **優先度**: 統一使用 `PRIORITY_LABELS` (1~4 映射至文字)。
+  - **模態視窗重構**: 徹底移除 `CreateProjectModal` 與 `EditProjectModal` 中的硬編碼 `<option>`，確保未來類型增減只需修改 `constants.ts` 一處。
+- **強健性修復 (Robustness)**:
+  - 修復了重構過程中導致的數個 JSX 結構損壞 (Redundant Div) 與型別初始化錯誤。
+
+---
+
+## [2026-03-14] 權責部門不連動修復與數據鏈條建立 (v4.1)
+
+### 背景 (Background)
+使用者回報「權責部門」在大數據流轉中發生斷裂，建案與編輯視窗的欄位定義不一致，導致數據無法跨層級連動。
+
+### 核心變更 (Key Changes)
+- **架構擴展**:
+  - 在 `ProjectData` 中新增 `dept` (權責部門) 核心欄位。
+  - `googleSheetsService.ts`: 實作「權責部門」的雙向映射，支援從總表抓取與回傳。
+- **UI 對齊**:
+  - `CreateProjectModal`: 偵測到案號時自動抓取總表部門資訊並預填。
+  - `EditProjectModal` & `TaskModal`: 清理所有硬編碼部門文字，改為引用全域常數。
+
+---
+
 ## [2026-03-14] 全局邏輯架構與單一事實來源 (SSoT) 優化 (v4.0)
 
 ### 背景 (Background)
