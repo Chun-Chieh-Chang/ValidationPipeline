@@ -198,13 +198,6 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
         >
           {/* Main View */}
           <div className={`transition-all duration-300 ${isBrowsing ? '-translate-x-full opacity-0 pointer-events-none absolute' : 'translate-x-0 opacity-100'}`}>
-            <button
-              onClick={onClose}
-              className="absolute top-0 right-0 text-muted hover:text-foreground transition-colors"
-            >
-              <X size={24} />
-            </button>
-
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-brand-accent/10 text-brand-accent rounded-xl flex items-center justify-center border border-brand-accent/20">
@@ -215,13 +208,22 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
                   <p className="text-xs text-muted font-bold">管理 Google Drive 與 Master Sheet 路徑</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setShowHelp(!showHelp)}
-                className={`p-2 rounded-lg transition-all ${showHelp ? 'bg-brand-accent text-white' : 'bg-background border border-border text-muted hover:text-brand-accent'}`}
-                title="說明手冊"
-              >
-                <Info size={20} />
-              </button>
+              
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowHelp(!showHelp)}
+                  className={`p-2 rounded-lg transition-all ${showHelp ? 'bg-brand-accent text-white' : 'bg-background border border-border text-muted hover:text-brand-accent'}`}
+                  title="說明手冊"
+                >
+                  <Info size={20} />
+                </button>
+                <button
+                  onClick={onClose}
+                  className="p-2 text-muted hover:text-danger transition-colors rounded-lg hover:bg-danger/10"
+                >
+                  <X size={24} />
+                </button>
+              </div>
             </div>
 
             <AnimatePresence>
