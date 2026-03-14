@@ -1,11 +1,15 @@
-## [2026-03-14] Google Drive Browser 實作與 403 錯誤導引優化 (v3.5)
+## [2026-03-14] Google Drive Browser 實作與 UI 閱讀體感優化 (v3.5)
 
 ### 背景 (Background)
 
-使用者反映在同步至唯讀 Master Sheet 時出現 `403 Forbidden` 錯誤，且希望能有更直覺的方式「另存/選擇路徑」而不需要手動複製貼上 ID。
+使用者反映在同步至唯讀 Master Sheet 時出現 `403 Forbidden` 錯誤，且希望能有更直覺的方式「另存/選擇路徑」。同時指出「連線設定」介面部分字體過小（10px/12px），在深色背景下難以識別。
 
 ### 核心變更 (Key Changes)
 
+- **UI 閱讀性全面提升 (Typography standard)**:
+  - 根據全域規範，將 `ConnectionSettingsModal` 中所有低於 14px 的字體提升至 `text-sm` (14px) 或 `text-xs` (12px, 用於次要標籤)。
+  - 放大 Icon 尺寸（從 14px 提升至 16px/18px），增加觸控與視覺焦點。
+  - 優化按鈕內距，確保文字放大後佈局依然平衡。
 - **Google Drive 瀏覽器實作**:
   - `googleDriveService.ts`: 新增 `listFiles` 與 `getFileMetadata`，支援遞迴列出資料夾內容與檔案類型過濾。
   - `ConnectionSettingsModal.tsx`: 深度重構，整合「雲端瀏覽器」介面。

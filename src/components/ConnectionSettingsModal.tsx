@@ -48,7 +48,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
     try {
       const filter = browserType === "folder" 
         ? "application/vnd.google-apps.folder" 
-        : undefined; // sheets filter is harder due to multiple types, we'll list all for now or filter in UI
+        : undefined;
       
       const files = await googleDriveService.listFiles(parentId, filter);
       setDriveFiles(files);
@@ -185,7 +185,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-background/90"
+          className="absolute inset-0 bg-background/90 backdrop-blur-sm"
         />
 
         <motion.div
@@ -200,7 +200,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               onClick={onClose}
               className="absolute top-0 right-0 text-muted hover:text-foreground transition-colors"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
             <div className="flex items-center gap-3 mb-6">
@@ -213,11 +213,11 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               </div>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
               {/* Google Client ID */}
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs font-black text-foreground uppercase tracking-wider">
-                  <Key size={14} className="text-brand-accent" />
+                <label className="flex items-center gap-2 text-sm font-black text-foreground uppercase tracking-wider">
+                  <Key size={16} className="text-brand-accent" />
                   Google Client ID
                 </label>
                 <input
@@ -231,25 +231,25 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
 
               {/* Folder ID */}
               <div className="space-y-2">
-                <label className="flex items-center justify-between text-xs font-black text-foreground uppercase tracking-wider">
+                <label className="flex items-center justify-between text-sm font-black text-foreground uppercase tracking-wider">
                   <span className="flex items-center gap-2">
-                    <Database size={14} className="text-brand-accent" />
+                    <Database size={16} className="text-brand-accent" />
                     專案儲存資料夾 ID
                   </span>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleOpenBrowser("folder")}
-                      className="text-[10px] flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-0.5 rounded-md border border-pelagic/20"
+                      className="text-xs flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-1 rounded-md border border-pelagic/20 font-black"
                     >
-                      <Search size={10} /> 挑選資料夾
+                      <Search size={12} /> 挑選
                     </button>
                     <button
                       onClick={handleCreateFolder}
                       disabled={isCreatingFolder}
-                      className="text-[10px] flex items-center gap-1 text-seafoam hover:text-emerald-400 transition-colors bg-seafoam/10 px-2 py-0.5 rounded-md border border-seafoam/20"
+                      className="text-xs flex items-center gap-1 text-seafoam hover:text-emerald-400 transition-colors bg-seafoam/10 px-2 py-1 rounded-md border border-seafoam/20 font-black"
                     >
-                      {isCreatingFolder ? <RefreshCw size={10} className="animate-spin" /> : <Database size={10} />}
-                      {isCreatingFolder ? '建立中...' : '建立我的存檔'}
+                      {isCreatingFolder ? <RefreshCw size={12} className="animate-spin" /> : <Database size={12} />}
+                      {isCreatingFolder ? '建立我的' : '建立我的'}
                     </button>
                   </div>
                 </label>
@@ -264,25 +264,25 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
 
               {/* Master Sheet ID */}
               <div className="space-y-2">
-                <label className="flex items-center justify-between text-xs font-black text-foreground uppercase tracking-wider">
+                <label className="flex items-center justify-between text-sm font-black text-foreground uppercase tracking-wider">
                   <span className="flex items-center gap-2">
-                    <FileSpreadsheet size={14} className="text-brand-accent" />
+                    <FileSpreadsheet size={16} className="text-brand-accent" />
                     Master Sheet ID
                   </span>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleOpenBrowser("sheet")}
-                      className="text-[10px] flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-0.5 rounded-md border border-pelagic/20"
+                      className="text-xs flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-1 rounded-md border border-pelagic/20 font-black"
                     >
-                      <Search size={10} /> 挑選試算表
+                      <Search size={12} /> 挑選
                     </button>
                     <button
                       onClick={handleCreateBackup}
                       disabled={isCopying}
-                      className="text-[10px] flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-0.5 rounded-md border border-pelagic/20"
+                      className="text-xs flex items-center gap-1 text-pelagic hover:text-seafoam transition-colors bg-pelagic/10 px-2 py-1 rounded-md border border-pelagic/20 font-black"
                     >
-                      {isCopying ? <RefreshCw size={10} className="animate-spin" /> : <Copy size={10} />}
-                      {isCopying ? '備份中...' : '另存我的副本'}
+                      {isCopying ? <RefreshCw size={12} className="animate-spin" /> : <Copy size={12} />}
+                      {isCopying ? '備份中...' : '另存副本'}
                     </button>
                   </div>
                 </label>
@@ -295,27 +295,27 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-between gap-4">
+              <div className="pt-6 flex items-center justify-between gap-4">
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 text-xs font-black text-muted hover:text-danger transition-all uppercase tracking-widest"
+                  className="flex items-center gap-2 text-sm font-black text-muted hover:text-danger transition-all uppercase tracking-widest"
                 >
-                  <RefreshCw size={14} />
+                  <RefreshCw size={16} />
                   重設預設
                 </button>
 
                 <div className="flex gap-2">
                   <button
                     onClick={onClose}
-                    className="px-4 py-2 rounded-lg border border-border text-sm font-black hover:bg-background transition-all"
+                    className="px-4 py-2 rounded-xl border border-border text-sm font-black hover:bg-background transition-all"
                   >
                     取消
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={isSaved}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-black text-sm transition-all ${
-                      isSaved ? 'bg-success text-white' : 'bg-brand-accent text-white hover:opacity-90'
+                    className={`flex items-center gap-2 px-6 py-2 rounded-xl font-black text-sm transition-all ${
+                      isSaved ? 'bg-success text-white' : 'bg-brand-accent text-white hover:opacity-90 shadow-lg shadow-brand-accent/20'
                     }`}
                   >
                     {isSaved ? <RefreshCw className="animate-spin" size={16} /> : <Save size={16} />}
@@ -337,7 +337,7 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               </button>
               <div>
                 <h2 className="text-lg font-black text-foreground">選擇{browserType === "folder" ? "資料夾" : "試算表"}</h2>
-                <p className="text-[10px] text-muted font-bold truncate max-w-[200px]">{currentFolder.name}</p>
+                <p className="text-xs text-muted font-bold truncate max-w-[200px]">{currentFolder.name}</p>
               </div>
             </div>
 
@@ -345,22 +345,19 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               {isLoadingFiles ? (
                 <div className="flex flex-col items-center justify-center h-full py-20 text-muted gap-3">
                   <RefreshCw size={24} className="animate-spin" />
-                  <span className="text-xs font-bold">讀取雲端資料中...</span>
+                  <span className="text-sm font-bold">讀取雲端資料中...</span>
                 </div>
               ) : driveFiles.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full py-20 text-muted">
                   <Folder size={32} className="opacity-20 mb-2" />
-                  <span className="text-xs font-bold">此目錄下無相符項目</span>
+                  <span className="text-sm font-bold">此目錄下無相符項目</span>
                 </div>
               ) : (
                 <div className="space-y-1">
                   {driveFiles.map((file) => {
                     const isFolder = file.mimeType === 'application/vnd.google-apps.folder';
                     const isSheet = file.mimeType === 'application/vnd.google-apps.spreadsheet';
-                    
-                    // In sheet mode, only allow selecting sheets. In folder mode, only allow folders.
                     const isSelectable = (browserType === "folder" && isFolder) || (browserType === "sheet" && isSheet);
-                    // Always allow entering folders
                     
                     return (
                       <div 
@@ -373,9 +370,9 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           {isFolder ? (
-                            <Folder size={18} className="text-pelagic shrink-0" />
+                            <Folder size={20} className="text-pelagic shrink-0" />
                           ) : (
-                            <FileText size={18} className="text-seafoam shrink-0" />
+                            <FileSpreadsheet size={20} className="text-seafoam shrink-0" />
                           )}
                           <span className="text-sm font-bold text-foreground truncate">{file.name}</span>
                         </div>
@@ -387,12 +384,12 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
                                 e.stopPropagation();
                                 handleSelectFile(file);
                               }}
-                              className="px-2 py-1 bg-brand-accent text-white rounded text-[10px] font-black opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="px-3 py-1 bg-brand-accent text-white rounded text-xs font-black opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               選取
                             </button>
                           )}
-                          {isFolder && <ChevronRight size={14} className="text-muted group-hover:translate-x-1 transition-transform" />}
+                          {isFolder && <ChevronRight size={18} className="text-muted group-hover:translate-x-1 transition-transform" />}
                         </div>
                       </div>
                     );
@@ -401,9 +398,9 @@ export default function ConnectionSettingsModal({ isOpen, onClose, onSuccess }: 
               )}
             </div>
 
-            <div className="flex justify-between items-center text-[10px] text-muted px-1">
+            <div className="flex justify-between items-center text-xs text-muted px-1 mt-auto pt-2">
               <span>* 僅列出您有權限存取的項目</span>
-              <button onClick={() => setIsBrowsing(false)} className="text-brand-accent font-black">取消選取</button>
+              <button onClick={() => setIsBrowsing(false)} className="text-brand-accent font-black hover:underline px-2 py-1">取消</button>
             </div>
           </div>
         </motion.div>
