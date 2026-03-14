@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, X, Plus, AlertCircle, Calendar, Hash, Tag, Briefcase, Link as LinkIcon, GitBranch } from "lucide-react";
+import { TASK_STATUS, DEPARTMENTS } from "@/lib/constants";
+import { ProjectData } from "@/lib/projectService";
 
 export interface TaskData {
   id: string;
   wbs_code: string;
   task_name: string;
   dept: string;
-  status: "尚未開始" | "進行中" | "已完成";
+  status: string;
   planned_date?: string;
   actual_date?: string;
   start_date?: string;
@@ -30,8 +32,8 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
   const [formData, setFormData] = useState<Partial<TaskData>>({
     wbs_code: "",
     task_name: "",
-    dept: "工程部",
-    status: "尚未開始",
+    dept: DEPARTMENTS[2], // 工程部
+    status: TASK_STATUS.NOT_STARTED,
     planned_date: "",
     start_date: "",
     deliverable: "",
@@ -186,9 +188,9 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
                   onChange={handleChange}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none"
                 >
-                  <option value="尚未開始">尚未開始</option>
-                  <option value="進行中">進行中</option>
-                  <option value="已完成">已完成</option>
+                  {Object.entries(TASK_STATUS).map(([key, label]) => (
+                    <option key={key} value={label}>{label}</option>
+                  ))}
                 </select>
               </div>
               <div className="col-span-1">

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink, PlusCircle, Edit3 } from "lucide-react";
 import { projectService, ProjectData } from "@/lib/projectService";
+import { TASK_STATUS } from "@/lib/constants";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import EditProjectModal from "@/components/EditProjectModal";
 import TaskModal, { TaskData } from "@/components/TaskModal";
@@ -76,95 +77,46 @@ function ProjectDetailContent() {
     }
   };
 
-  const refreshAutoReminders = useCallback(async (currentProject: ProjectData) => {
-    if (!currentProject || !currentProject.tasks) return;
+  // 1. 衍生數據模式 (Derived Data Pattern): 即時計算通知，不依賴存儲
+  const derivedNotifications = useMemo(() => {
+    if (!project || !project.tasks) return [];
     
-    let needsUpdate = false;
-    let updatedNotifications = [...(currentProject.notifications || [])];
+    const notifications: any[] = [];
     const today = new Date();
     const reminderWindowDays = 3;
 
-    for (const task of currentProject.tasks) {
-      // 1. 如果任務已完成，應刪除相關的「提醒」或「逾期」通知
-      if (task.status === '已完成') {
-        const initialLen = updatedNotifications.length;
-        updatedNotifications = updatedNotifications.filter(n => 
-          !(n.task_id === task.id && (n.message.includes('提醒：任務') || n.message.includes('逾期提醒：任務')))
-        );
-        if (updatedNotifications.length !== initialLen) needsUpdate = true;
-        continue;
-      }
-
-      if (!task.planned_date || !task.dept) continue;
+    for (const task of project.tasks) {
+      if (task.status === TASK_STATUS.COMPLETED || !task.planned_date || !task.dept) continue;
 
       const plannedDate = new Date(task.planned_date);
       const diffTime = plannedDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      // 產生預期的訊息內容
-      let expectedMsg = "";
-      if (diffDays < 0) {
-        expectedMsg = `🚨 逾期提醒：任務「${task.task_name}」已逾期 ${Math.abs(diffDays)} 天 (預定 ${plannedDate.toLocaleDateString()})，請 ${task.dept} 盡速推進。`;
-      } else if (diffDays <= reminderWindowDays) {
-        expectedMsg = `提醒：任務「${task.task_name}」預計於 ${plannedDate.toLocaleDateString()} 完成，請 ${task.dept} 相關人員準備接手。`;
-      }
-
-      if (!expectedMsg) {
-        // 如果不再符合提醒條件（例如日期延後），移除現有提醒
-        const initialLen = updatedNotifications.length;
-        updatedNotifications = updatedNotifications.filter(n => 
-          !(n.task_id === task.id && (n.message.includes('提醒：任務') || n.message.includes('逾期提醒：任務')))
-        );
-        if (updatedNotifications.length !== initialLen) needsUpdate = true;
-        continue;
-      }
-
-      // 檢查是否已有完全相同的通知
-      const existingNotifIdx = updatedNotifications.findIndex(n => 
-        n.task_id === task.id && (n.message.includes('提醒：任務') || n.message.includes('逾期提醒：任務'))
-      );
-      
-      if (existingNotifIdx !== -1) {
-        // 如果訊息內容不同（例如任務改名、更換部門），則更新
-        if (updatedNotifications[existingNotifIdx].message !== expectedMsg) {
-          updatedNotifications[existingNotifIdx] = {
-            ...updatedNotifications[existingNotifIdx],
-            message: expectedMsg,
-            target_dept: task.dept,
-            created_at: new Date().toISOString() // 更新時間戳
-          };
-          needsUpdate = true;
+      if (diffDays <= reminderWindowDays) {
+        let msg = "";
+        if (diffDays < 0) {
+          msg = `🚨 逾期提醒：任務「${task.task_name}」已逾期 ${Math.abs(diffDays)} 天 (預定 ${plannedDate.toLocaleDateString()})，請 ${task.dept} 盡速推進。`;
+        } else {
+          msg = `提醒：任務「${task.task_name}」預計於 ${plannedDate.toLocaleDateString()} 完成，請 ${task.dept} 相關人員準備接手。`;
         }
-      } else {
-        // 新增通知
-        updatedNotifications.push({
-          id: "notif_auto_" + Math.random().toString(36).substring(2, 9),
-          project_id: currentProject.id,
+
+        notifications.push({
+          id: `notif_auto_${task.id}`,
+          project_id: project.id,
           task_id: task.id,
           target_dept: task.dept,
-          message: expectedMsg,
+          message: msg,
           is_read: false,
           created_at: new Date().toISOString()
         });
-        needsUpdate = true;
       }
     }
-
-    if (needsUpdate) {
-      const res = await projectService.update(currentProject.id, { notifications: updatedNotifications });
-      if (res) setProject(res as ProjectData);
-    }
-  }, []);
+    return notifications;
+  }, [project]);
 
   useEffect(() => {
     fetchProject();
   }, [fetchProject]);
-
-  useEffect(() => {
-    if (project && !loading) {
-      refreshAutoReminders(project);
-    }
-  }, [project, loading, refreshAutoReminders]);
 
   const handleUpdateStatus = async (taskId: string, currentStatus: string) => {
     if (!project) return;

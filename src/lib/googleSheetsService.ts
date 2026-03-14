@@ -1,6 +1,7 @@
 // src/lib/googleSheetsService.ts
 
 import { ProjectData } from './projectService';
+import { StatusMapper } from './constants';
 
 class GoogleSheetsService {
   private accessToken: string | null = null;
@@ -75,7 +76,7 @@ class GoogleSheetsService {
       project.part_no || '',
       project.rev || '',
       project.purpose || '',
-      project.status === 'CLOSED' ? '已結案' : '進行中',
+      StatusMapper.toLabel(project.status),
       project.owner || '',
       `${progress}%`,
       project.ecr_no || '',
@@ -136,7 +137,7 @@ class GoogleSheetsService {
         part_no: getVal(['品號', 'PartNo']),
         rev: getVal(['版次', '工程圖面版次', 'Rev']),
         purpose: getVal(['目的', 'Purpose']),
-        status_text: getVal(['狀態']),
+        status: StatusMapper.fromMasterSheet(getVal(['狀態'])),
         owner: getVal(['負責人', '發出者', 'Owner']),
         ecr_no: getVal(['ECR', 'ECR編號']),
         ecr_date: getVal(['ECR日期', 'ECR Date']),
