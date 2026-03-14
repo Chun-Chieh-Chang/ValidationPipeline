@@ -1,3 +1,29 @@
+## [2026-03-14] Google Drive Browser 實作與 403 錯誤導引優化 (v3.5)
+
+### 背景 (Background)
+
+使用者反映在同步至唯讀 Master Sheet 時出現 `403 Forbidden` 錯誤，且希望能有更直覺的方式「另存/選擇路徑」而不需要手動複製貼上 ID。
+
+### 核心變更 (Key Changes)
+
+- **Google Drive 瀏覽器實作**:
+  - `googleDriveService.ts`: 新增 `listFiles` 與 `getFileMetadata`，支援遞迴列出資料夾內容與檔案類型過濾。
+  - `ConnectionSettingsModal.tsx`: 深度重構，整合「雲端瀏覽器」介面。
+    - 支援多層級資料夾導航、麵包屑路徑顯示。
+    - 針對「資料夾 ID」與「試算表 ID」分別提供專屬的挑選器，自動填入所選 ID。
+- **403 錯誤引導強化**:
+  - `googleSheetsService.ts`: 針對 403 錯誤新增具體中文導引，提示使用者 Master Sheet 權限不足，並引導使用「另存副本」功能。
+- **類型系統優化**:
+  - 修正 `GoogleDriveFile` 介面，補齊 `mimeType` 定義，消除 IDE 型別報錯。
+
+### 成果 (Outcome)
+
+- [x] 成功實作 GUI 挑選雲端路徑功能，大幅降低配置難度。
+- [x] 為 403 權限問題提供明確的解決路徑，減少用戶挫折感。
+- [x] 保持與 Deep Sea 主題的高一致性視覺體驗。
+
+---
+
 ## [2026-03-13] Remote Sync & Update (v2.7)
 
 ### 背景 (Background)

@@ -46,7 +46,11 @@ class GoogleSheetsService {
 
     if (!res.ok) {
       const error = await res.json();
-      throw new Error(`Google Sheets API Error: ${error.error?.message || res.statusText}`);
+      const message = error.error?.message || res.statusText;
+      if (res.status === 403) {
+        throw new Error(`Google Sheets API 存取被拒 (403): 您可能沒有該試算表的編輯權限。如果是讀取他人分享的 Master Sheet，請點擊「另存我的副本」建立您自己的連線路徑。(${message})`);
+      }
+      throw new Error(`Google Sheets API Error: ${message}`);
     }
 
     return res.json();

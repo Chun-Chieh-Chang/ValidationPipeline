@@ -6,6 +6,7 @@ const SCOPES = 'https://www.googleapis.com/auth/drive';
 export interface GoogleDriveFile {
   id: string;
   name: string;
+  mimeType: string;
 }
 
 class GoogleDriveService {
@@ -165,6 +166,26 @@ class GoogleDriveService {
     });
 
     return folder.id;
+  }
+
+  /**
+   * 列出資料夾內容 (用於 Drive Browser)
+   */
+  async listFiles(parentId: string = 'root', mimeTypeFilter?: string): Promise<GoogleDriveFile[]> {
+    let q = `'${parentId}' in parents and trashed = false`;
+    if (mimeTypeFilter) {
+      q += ` and mimeType = '${mimeTypeFilter}'`;
+    }
+    
+    const data = await this.fetchDrive(`/files?q=${encodeURIComponent(q)}&fields=files(id, name, mimeType)&orderBy=folder,name`);
+    return data.files || [];
+  }
+
+  /**
+   * 獲取單一檔案/資料夾詳情 (包含路徑)
+   */
+  async getFileMetadata(fileId: string): Promise<any> {
+    return this.fetchDrive(`/files/${fileId}?fields=id, name, mimeType, parents`);
   }
 }
 
