@@ -9,8 +9,9 @@
 - **UI 閱讀性與導引強化 (UX Optimization)**:
   - 根據全域規範，將 `ConnectionSettingsModal` 中所有低於 14px 的字體提升至 `text-sm` (14px) 或 `text-xs` (12px, 用於次要標籤)。
   - 放大 Icon 尺寸（從 14px 提升至 16px/18px/24px），增加點擊精確度。
-  - **新增「如何使用？」導引按鈕**：在設定標題旁加入 `Info` 圖標，點擊後會展開互動式操作教學，引導使用者如何正確配置 Client ID、挑選路徑與建立副本。
-  - **佈局防呆 (Layout Protection)**：修正「說明按鈕」與「關閉按鈕」位置衝突重疊的問題，改用 Flex 佈局統一管理右上角控制項。
+  - **新增「如何使用？」導引按鈕**：在設定標題旁加入 `Info` 圖標，點擊後會展開互動式操作教學。
+  - **體系化結構導引 (Structured Logic)**：將「連線設定」重構為 3 個邏輯步驟：1. 基礎認證、2. 個人存檔空間、3. 團隊報表匯出，並加入數字指標與視覺卡片區隔。
+  - **佈局防呆 (Layout Protection)**：修正「說明按鈕」與「關閉按鈕」位置衝突重疊的問題。
 - **Google Drive 瀏覽器實作**:
   - `googleDriveService.ts`: 新增 `listFiles` 與 `getFileMetadata`，支援遞迴列出資料夾內容與檔案類型過濾。
   - `ConnectionSettingsModal.tsx`: 深度重構，整合「雲端瀏覽器」介面。

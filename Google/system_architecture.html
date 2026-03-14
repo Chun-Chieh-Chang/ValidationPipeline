@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統資料流與同步機制說明</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #F9FAFB;
+            --surface: #FFFFFF;
+            --primary-text: #111827;
+            --secondary-text: #6B7280;
+            --accent: #3B82F6;
+            --success: #10B981;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--primary-text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--primary-text);
+        }
+
+        .subtitle {
+            color: var(--secondary-text);
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-left: 4px solid var(--accent);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .diagram-card {
+            background: #fcfcfc;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #F3F4F6;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-sync {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .tag-sheet {
+            color: var(--success);
+            font-weight: 800;
+        }
+
+        .info-box {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .container { padding: 1.5rem; }
+            th, td { padding: 0.5rem; font-size: 0.875rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>系統架構與資料流向</h1>
+        <p class="subtitle">解說內容：手動同步、總表同步與連線設定的互動關係</p>
+
+        <section>
+            <h2>1. 資料流向圖 (Data Interaction)</h2>
+            <div class="diagram-card">
+                <div class="mermaid">
+                graph TD
+                    Browser["🌐 瀏覽器 (LocalStorage)<br/>操作中資料"]
+                    CloudSync(("☁️ 手動同步<br/>(Cloud Sync)"))
+                    SheetSync(("📊 同步至總表<br/>(Sheet Sync)"))
+                    
+                    GDrive[("📁 Google Drive<br/>vms_data.json")]
+                    GSheet[("📗 Master Sheet<br/>試算表分頁")]
+
+                    Browser <-->|完整資料庫| CloudSync
+                    CloudSync <-->|讀取/寫入| GDrive
+                    
+                    Browser -->|特定欄位匯出| SheetSync
+                    SheetSync -->|寫入分頁| GSheet
+
+                    style Browser fill:#fff,stroke:#3b82f6,stroke-width:2px
+                    style GDrive fill:#e0f2fe,stroke:#0369a1
+                    style GSheet fill:#f0fdf4,stroke:#15803d
+                    style CloudSync fill:#3b82f6,color:#fff
+                    style SheetSync fill:#10b981,color:#fff
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. 功能差異詳解 (Comparison)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>比較項目</th>
+                        <th class="tag-sync">☁️ 手動同步</th>
+                        <th class="tag-sheet">📊 同步至總表</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>存放位置</strong></td>
+                        <td>Google Drive 檔案夾</td>
+                        <td>Google Sheets 試算表</td>
+                    </tr>
+                    <tr>
+                        <td><strong>主要目的</strong></td>
+                        <td>備份、跨裝置工作</td>
+                        <td>製作進度報告、呈報</td>
+                    </tr>
+                    <tr>
+                        <td><strong>資料完整度</strong></td>
+                        <td>100% (含階層與細節)</td>
+                        <td>30% (僅關鍵狀態)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>核心檔案</strong></td>
+                        <td>vms_data.json</td>
+                        <td>Excel 分頁列名</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. 快速上手指南</h2>
+            <div class="info-box">
+                <p><strong>第一步：</strong> 點擊 ⚙️ 連線設定，填入 Client ID 並挑選資料夾。</p>
+                <p><strong>第二步：</strong> 操作後隨時點擊 ☁️ 手動同步，確保雲端有最新備份。</p>
+                <p><strong>第三步：</strong> 需要交週報時，才點擊 📊 同步至總表產出報告。</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+</body>
+</html>
