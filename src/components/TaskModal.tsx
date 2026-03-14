@@ -4,21 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, X, Plus, AlertCircle, Calendar, Hash, Tag, Briefcase, Link as LinkIcon, GitBranch } from "lucide-react";
 import { TASK_STATUS, DEPARTMENTS } from "@/lib/constants";
-import { ProjectData } from "@/lib/projectService";
-
-export interface TaskData {
-  id: string;
-  wbs_code: string;
-  task_name: string;
-  dept: string;
-  status: string;
-  planned_date?: string;
-  actual_date?: string;
-  start_date?: string;
-  deliverable?: string;
-  depends_on?: string;
-  progress?: number;
-}
+import { ProjectData, TaskData } from "@/lib/projectService";
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -77,8 +63,43 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const value = e.target.type === 'number' ? parseInt(e.target.value) : e.target.value;
-    setFormData({ ...formData, [e.target.name]: value });
+    const { name, value } = e.target;
+    let newValue: any = e.target.type === 'number' ? parseInt(value) : value;
+    const today = new Date().toISOString().split('T')[0];
+
+    let updatedData = { ...formData, [name]: newValue };
+
+    // Data Chain Logic
+    if (name === 'status') {
+      if (newValue === TASK_STATUS.COMPLETED) {
+        updatedData.progress = 100;
+        if (!updatedData.actual_date) updatedData.actual_date = today;
+      } else if (newValue === TASK_STATUS.IN_PROGRESS) {
+        if (!updatedData.progress || updatedData.progress === 0 || updatedData.progress === 100) {
+          updatedData.progress = 10; // Default to 10% if starting
+        }
+        if (!updatedData.start_date) updatedData.start_date = today;
+      } else if (newValue === TASK_STATUS.NOT_STARTED) {
+        updatedData.progress = 0;
+        updatedData.actual_date = "";
+      }
+    }
+
+    if (name === 'progress') {
+      const p = parseInt(value);
+      if (p === 100) {
+        updatedData.status = TASK_STATUS.COMPLETED;
+        if (!updatedData.actual_date) updatedData.actual_date = today;
+      } else if (p > 0) {
+        updatedData.status = TASK_STATUS.IN_PROGRESS;
+        if (!updatedData.start_date) updatedData.start_date = today;
+      } else {
+        updatedData.status = TASK_STATUS.NOT_STARTED;
+        updatedData.actual_date = "";
+      }
+    }
+
+    setFormData(updatedData);
   };
 
   if (!isOpen) return null;
@@ -135,7 +156,7 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
               </div>
               <div className="col-span-1">
                 <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
-                  <Briefcase size={14} /> 負責部門
+                  <Briefcase size={14} /> 權責部門
                 </label>
                 <select
                   name="dept"
@@ -163,20 +184,7 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
 
               <div className="col-span-1">
                 <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
-                  <Calendar size={14} /> 預計完成日期
-                </label>
-                <input
-                  type="date"
-                  name="planned_date"
-                  value={formData.planned_date ? new Date(formData.planned_date).toISOString().split('T')[0] : ""}
-                  onChange={handleChange}
-                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold"
-                />
-              </div>
-
-              <div className="col-span-1">
-                <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
-                  工作狀態
+                  狀態
                 </label>
                 <select
                   name="status"
@@ -189,9 +197,64 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
                   ))}
                 </select>
               </div>
+
               <div className="col-span-1">
                 <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
-                   開始日期
+                  進度 ({formData.progress || 0}%)
+                </label>
+                <div className="flex items-center gap-4 py-2">
+                  <input
+                    type="range"
+                    name="progress"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={formData.progress || 0}
+                    onChange={handleChange}
+                    className="flex-1 h-2 bg-border rounded-lg appearance-none cursor-pointer accent-brand-accent"
+                  />
+                  <input
+                    type="number"
+                    name="progress"
+                    min="0"
+                    max="100"
+                    value={formData.progress || 0}
+                    onChange={handleChange}
+                    className="w-16 bg-background border border-border rounded-lg px-2 py-1 text-center font-bold text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="col-span-1">
+                <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
+                  <Calendar size={14} /> 預計完成日
+                </label>
+                <input
+                  type="date"
+                  name="planned_date"
+                  value={formData.planned_date ? new Date(formData.planned_date).toISOString().split('T')[0] : ""}
+                  onChange={handleChange}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold"
+                />
+              </div>
+
+              <div className="col-span-1">
+                <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
+                  實際完成日
+                </label>
+                <input
+                  type="date"
+                  name="actual_date"
+                  value={formData.actual_date ? new Date(formData.actual_date).toISOString().split('T')[0] : ""}
+                  onChange={handleChange}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold disabled:opacity-50"
+                  disabled={formData.status !== TASK_STATUS.COMPLETED}
+                />
+              </div>
+
+              <div className="col-span-1">
+                <label className="text-xs font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-2">
+                  開始日
                 </label>
                 <input
                   type="date"

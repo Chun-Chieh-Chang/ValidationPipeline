@@ -1,5 +1,19 @@
 import { googleDriveService } from './googleDriveService';
 
+export interface TaskData {
+  id: string;
+  wbs_code: string;
+  task_name: string;
+  dept: string;
+  status: string;
+  progress?: number;
+  planned_date?: string;
+  actual_date?: string;
+  start_date?: string;
+  deliverable?: string;
+  depends_on?: string;
+}
+
 export interface ProjectData {
   id: string;
   project_no: string;
@@ -22,7 +36,7 @@ export interface ProjectData {
   last_master_sync?: string;
   dept?: string;
   phases: any[];
-  tasks: any[];
+  tasks: TaskData[];
   notifications: any[];
 }
 

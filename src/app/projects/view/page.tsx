@@ -3,11 +3,11 @@
 import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, Circle, ArrowRightCircle, Bell, Loader2, Zap, FileDown, BarChart2, Table as TableIcon, ExternalLink, PlusCircle, Edit3 } from "lucide-react";
-import { projectService, ProjectData } from "@/lib/projectService";
-import { TASK_STATUS } from "@/lib/constants";
+import TaskModal from "@/components/TaskModal";
+import { projectService, ProjectData, TaskData } from "@/lib/projectService";
+import { TASK_STATUS, TaskStatusType } from "@/lib/constants";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import EditProjectModal from "@/components/EditProjectModal";
-import TaskModal, { TaskData } from "@/components/TaskModal";
 
 export default function ProjectDetailContainer() {
   return (
@@ -118,71 +118,100 @@ function ProjectDetailContent() {
     fetchProject();
   }, [fetchProject]);
 
+  const triggerNextTaskNotifications = (
+    currentTaskId: string,
+    updatedTasks: TaskData[],
+    currentNotifications: any[]
+  ) => {
+    const currentTask = updatedTasks.find(t => t.id === currentTaskId);
+    if (!currentTask || currentTask.status !== TASK_STATUS.COMPLETED) return currentNotifications;
+
+    let newNotifications = [...currentNotifications];
+    
+    // 找出所有依賴於此任務的後續任務
+    let nextTasks = updatedTasks.filter(t => 
+      t.depends_on && t.depends_on.split(',').map((s: string) => s.trim()).includes(currentTask.wbs_code)
+    );
+
+    // 如果沒有顯式依賴，則依 WBS 排序找下一個
+    if (nextTasks.length === 0) {
+      const sortedTasks = [...updatedTasks].sort((a, b) => {
+        const aParts = a.wbs_code.split('.').map(Number);
+        const bParts = b.wbs_code.split('.').map(Number);
+        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+          if ((aParts[i] || 0) !== (bParts[i] || 0)) return (aParts[i] || 0) - (bParts[i] || 0);
+        }
+        return 0;
+      });
+      const idx = sortedTasks.findIndex(t => t.id === currentTaskId);
+      if (idx !== -1 && idx + 1 < sortedTasks.length) {
+        nextTasks = [sortedTasks[idx + 1]];
+      }
+    }
+
+    for (const nextTask of nextTasks) {
+      if (nextTask.status === TASK_STATUS.COMPLETED || !nextTask.dept) continue;
+
+      let readyToNotify = true;
+      if (nextTask.depends_on) {
+        const deps = nextTask.depends_on.split(',').map((s: string) => s.trim());
+        const uncompletedDeps = updatedTasks.filter(t => deps.includes(t.wbs_code) && t.status !== TASK_STATUS.COMPLETED);
+        if (uncompletedDeps.length > 0) readyToNotify = false;
+      }
+
+      if (readyToNotify) {
+        const plannedDateStr = nextTask.planned_date && !isNaN(new Date(nextTask.planned_date).getTime())
+            ? new Date(nextTask.planned_date).toLocaleDateString() 
+            : '未定';
+        
+        // 避免重複發送同一天的通知
+        const todayStr = new Date().toISOString().split('T')[0];
+        const isDuplicate = newNotifications.some(n => n.task_id === nextTask.id && n.created_at.startsWith(todayStr));
+
+        if (!isDuplicate) {
+          newNotifications.push({
+            id: "notif_" + Math.random().toString(36).substring(2, 9),
+            project_id: project!.id,
+            task_id: nextTask.id,
+            target_dept: nextTask.dept,
+            message: `前置任務「${currentTask.task_name}」已完成。請準備接手「${nextTask.task_name}」(預計: ${plannedDateStr})。`,
+            is_read: false,
+            created_at: new Date().toISOString()
+          });
+        }
+      }
+    }
+    return newNotifications;
+  };
+
   const handleUpdateStatus = async (taskId: string, currentStatus: string) => {
     if (!project) return;
     setUpdating(taskId);
-    let nextStatus = "IN_PROGRESS";
-    let actualDate: string | null = null;
+    let nextStatus: TaskStatusType = TASK_STATUS.IN_PROGRESS;
+    let actualDate = "";
+    let progress = 10;
 
-    if (currentStatus === "尚未開始") nextStatus = "進行中";
-    if (currentStatus === "進行中") {
-      nextStatus = "已完成";
-      actualDate = new Date().toISOString();
+    if (currentStatus === TASK_STATUS.NOT_STARTED) {
+      nextStatus = TASK_STATUS.IN_PROGRESS;
+      progress = 10;
+    } else if (currentStatus === TASK_STATUS.IN_PROGRESS) {
+      nextStatus = TASK_STATUS.COMPLETED;
+      actualDate = new Date().toISOString().split('T')[0];
+      progress = 100;
     }
 
     try {
-      const currentTask = project.tasks.find((t: any) => t.id === taskId);
-      if (!currentTask) return;
-
       const updatedTasks = project.tasks.map((t: any) => 
-        t.id === taskId ? { ...t, status: nextStatus, actual_date: actualDate } : t
+        t.id === taskId ? { 
+          ...t, 
+          status: nextStatus, 
+          actual_date: actualDate || t.actual_date,
+          progress: progress,
+          start_date: (nextStatus === TASK_STATUS.IN_PROGRESS && !t.start_date) ? new Date().toISOString().split('T')[0] : t.start_date
+        } : t
       );
       
-      let updatedNotifications = [...(project.notifications || [])];
-
-      if (nextStatus === '已完成') {
-        let nextTasks = updatedTasks.filter((t: any) => t.depends_on && t.depends_on.split(',').map((s: string) => s.trim()).includes(currentTask.wbs_code));
-
-        if (nextTasks.length === 0) {
-          const sortedTasks = [...updatedTasks].sort((a: any, b: any) => {
-              const aParts = a.wbs_code.split('.').map(Number);
-              const bParts = b.wbs_code.split('.').map(Number);
-              for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-                if ((aParts[i] || 0) !== (bParts[i] || 0)) return (aParts[i] || 0) - (bParts[i] || 0);
-              }
-              return 0;
-          });
-          const idx = sortedTasks.findIndex((t: any) => t.id === taskId);
-          if (idx !== -1 && idx + 1 < sortedTasks.length) {
-            nextTasks = [sortedTasks[idx + 1]];
-          }
-        }
-
-        for (const nextTask of nextTasks) {
-          let readyToNotify = true;
-          if (nextTask.depends_on) {
-            const deps = nextTask.depends_on.split(',').map((s: string) => s.trim());
-            const uncompletedDeps = updatedTasks.filter((t: any) => deps.includes(t.wbs_code) && t.status !== '已完成');
-            if (uncompletedDeps.length > 0) readyToNotify = false;
-          }
-
-          if (readyToNotify && nextTask.status !== '已完成') {
-            const plannedDateStr = nextTask.planned_date && !isNaN(new Date(nextTask.planned_date).getTime())
-                ? new Date(nextTask.planned_date).toLocaleDateString() 
-                : '未定';
-            
-            updatedNotifications.push({
-              id: "notif_" + Math.random().toString(36).substring(2, 9),
-              project_id: project.id,
-              task_id: nextTask.id,
-              target_dept: nextTask.dept,
-              message: `前置任務「${currentTask.task_name}」已完成。請準備接手「${nextTask.task_name}」(預計: ${plannedDateStr})。`,
-              is_read: false,
-              created_at: new Date().toISOString()
-            });
-          }
-        }
-      }
+      const updatedNotifications = triggerNextTaskNotifications(taskId, updatedTasks, project.notifications || []);
 
       const res = await projectService.update(project.id, { 
         tasks: updatedTasks,
@@ -238,7 +267,11 @@ function ProjectDetailContent() {
     }
 
     try {
-      const res = await projectService.update(project.id, { tasks: updatedTasks });
+      const updatedNotifications = triggerNextTaskNotifications(taskData.id, updatedTasks, project.notifications || []);
+      const res = await projectService.update(project.id, { 
+        tasks: updatedTasks,
+        notifications: updatedNotifications
+      });
       if (res) setProject(res as ProjectData);
       setIsTaskModalOpen(false);
     } catch (err) {
@@ -583,7 +616,7 @@ function ProjectDetailContent() {
                     <tr className="bg-surface text-foreground text-sm font-black uppercase tracking-[0.1em]">
                       <th className="px-4 py-5 w-16 text-center border-b border-r border-border">工作序</th>
                       <th className="px-4 py-5 min-w-[200px] border-b border-r border-border">工作項目</th>
-                      <th className="px-4 py-5 w-44 text-center border-b border-r border-border">權責</th>
+                      <th className="px-4 py-5 w-44 text-center border-b border-r border-border">權責部門</th>
                       <th className="px-4 py-5 w-36 text-center border-b border-r border-border">狀態</th>
                       <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">預計完成</th>
                       <th className="px-4 py-5 w-36 text-center border-b border-r border-border tracking-tighter">開始日</th>
@@ -799,6 +832,7 @@ function ProjectDetailContent() {
                                     <div className="opacity-0 group-hover/bar:opacity-100 absolute top-full mt-4 left-1/2 -translate-x-1/2 bg-surface border-2 border-border text-sm p-6 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.4)] z-[110] pointer-events-none whitespace-nowrap transition-all transform -translate-y-2 group-hover/bar:translate-y-0 min-w-[320px]">
                                       <div className="font-black border-b border-border/10 mb-5 pb-2 text-abyss text-lg uppercase tracking-tight">{task.task_name}</div>
                                       <div className="space-y-4">
+                                        <div className="flex justify-between gap-12"><span className="text-muted font-bold">進度:</span> <span className="text-brand-secondary font-black tabular-nums text-base">{task.progress || 0}%</span></div>
                                         <div className="flex justify-between gap-12"><span className="text-muted font-bold">計畫開始:</span> <span className="text-foreground font-black tabular-nums text-base">{new Date(tStart).toLocaleDateString()}</span></div>
                                         <div className="flex justify-between gap-12"><span className="text-muted font-bold">預計完成:</span> <span className="text-foreground font-black tabular-nums text-base">{task.planned_date ? new Date(task.planned_date).toLocaleDateString() : '-'}</span></div>
                                         {task.actual_date && <div className="flex justify-between gap-12 text-success font-black text-base"><span>實際完成:</span> <span className="tabular-nums">{new Date(task.actual_date).toLocaleDateString()}</span></div>}
