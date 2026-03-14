@@ -56,6 +56,9 @@ class GoogleDriveService {
     if (!res.ok) {
       const error = await res.json();
       const message = error.error?.message || res.statusText;
+      if (res.status === 401) {
+        throw new Error(`Google 登入工作階段已過期 (401)，請重新登入以執行此操作。`);
+      }
       if (res.status === 403 || res.status === 404) {
         throw new Error(`Google Drive API 存取被拒 (${res.status}): 請確認該資料夾是否已共用給您，或權限是否正確。(${message})`);
       }

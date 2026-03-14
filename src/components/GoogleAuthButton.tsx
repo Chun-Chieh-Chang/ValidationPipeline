@@ -41,6 +41,9 @@ export default function GoogleAuthButton() {
       if (res.ok) {
         const data = await res.json();
         setUser(data);
+      } else if (res.status === 401) {
+        console.warn('Google Access Token expired, logging out...');
+        handleLogout();
       }
     } catch (e) {
       console.error('Failed to fetch user info', e);
