@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, X, Loader2, AlertCircle, FileText, Calendar, Link as LinkIcon, User, Layers, Zap, Database, History } from "lucide-react";
 import { projectService, ProjectData } from "@/lib/projectService";
+import { DEPARTMENTS, PROJECT_TYPES, PRIORITY_LABELS } from "@/lib/constants";
 
 interface EditProjectModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function EditProjectModal({ isOpen, onClose, onSuccess, project }
         part_no: project.part_no || "",
         rev: project.rev || "",
         type: project.type || "設變",
+        dept: project.dept || DEPARTMENTS[2],
         purpose: project.purpose || "",
         owner: project.owner || "",
         ecr_no: project.ecr_no || "",
@@ -144,17 +146,42 @@ export default function EditProjectModal({ isOpen, onClose, onSuccess, project }
                     />
                   </div>
                   <div>
+                    <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">權責部門</label>
+                    <select
+                      name="dept"
+                      value={formData.dept}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                    >
+                      {DEPARTMENTS.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">專案類型</label>
                     <select
                       name="type"
                       value={formData.type}
                       onChange={handleChange}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
                     >
-                      <option value="設變">設變</option>
-                      <option value="新模">新模</option>
-                      <option value="移模">移模</option>
-                      <option value="修模">修模</option>
+                      {PROJECT_TYPES.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">優先度</label>
+                    <select
+                      name="priority"
+                      value={formData.priority}
+                      onChange={handleChange}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                    >
+                      {Object.entries(PRIORITY_LABELS).map(([val, label]) => (
+                        <option key={val} value={val}>{label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>

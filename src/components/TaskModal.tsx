@@ -52,8 +52,8 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
           id: crypto.randomUUID(),
           wbs_code: "",
           task_name: "",
-          dept: "工程部",
-          status: "尚未開始",
+          dept: DEPARTMENTS[2],
+          status: TASK_STATUS.NOT_STARTED,
           planned_date: "",
           start_date: "",
           deliverable: "",
@@ -141,15 +141,11 @@ export default function TaskModal({ isOpen, onClose, onSave, task, mode }: TaskM
                   name="dept"
                   value={formData.dept}
                   onChange={handleChange}
-                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
                 >
-                  <option value="G.M.">G.M.</option>
-                  <option value="業務部">業務部</option>
-                  <option value="工程部">工程部</option>
-                  <option value="製造部">製造部</option>
-                  <option value="品保部">品保部</option>
-                  <option value="品管部">品管部</option>
-                  <option value="各單位主管">各單位主管</option>
+                  {DEPARTMENTS.map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
                 </select>
               </div>
               <div className="col-span-2">

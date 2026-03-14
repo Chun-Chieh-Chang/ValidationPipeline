@@ -38,13 +38,23 @@ export const DEPARTMENTS = [
 
 export type DepartmentType = typeof DEPARTMENTS[number];
 
-// 4. 優先度定義 (Priority)
-export const PRIORITY_LABELS = {
+// 4. 專案類型 (Project Types)
+export const PROJECT_TYPES = [
+  '設變',
+  '新模',
+  '移模',
+  '修模'
+] as const;
+
+export type ProjectType = typeof PROJECT_TYPES[number];
+
+// 5. 優先度定義 (Priority)
+export const PRIORITY_LABELS: Record<number, string> = {
   1: '緊急',
   2: '重要',
   3: '一般',
   4: '低'
-} as const;
+};
 
 // 5. 映射函式 (Mapping Helpers)
 export const StatusMapper = {

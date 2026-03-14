@@ -20,6 +20,7 @@ export interface ProjectData {
   updated_at?: string;
   master_sheet_id?: string;
   last_master_sync?: string;
+  dept?: string;
   phases: any[];
   tasks: any[];
   notifications: any[];

@@ -77,10 +77,14 @@ class GoogleSheetsService {
       project.rev || '',
       project.purpose || '',
       StatusMapper.toLabel(project.status),
+      project.dept || '',
       project.owner || '',
       `${progress}%`,
       project.ecr_no || '',
-      project.ecn_no || ''
+      project.ecr_date ? new Date(project.ecr_date).toLocaleDateString() : '',
+      project.ecn_no || '',
+      project.ecn_date ? new Date(project.ecn_date).toLocaleDateString() : '',
+      project.cloud_link || ''
     ];
   }
 
@@ -89,7 +93,7 @@ class GoogleSheetsService {
     
     // 加上標題列
     const header = [
-      '優先度', '起始日期', '專案類型', '模具號碼', '品號', '版次', '目的', '狀態', '負責人', '進度', 'ECR', 'ECN'
+      '優先度', '起始日期', '專案類型', '模具號碼', '品號', '版次', '目的', '狀態', '權責部門', '負責人', '進度', 'ECR', 'ECR日期', 'ECN', 'ECN日期', '雲端資料'
     ];
     
     const values = [header, ...rows];
@@ -138,6 +142,7 @@ class GoogleSheetsService {
         rev: getVal(['版次', '工程圖面版次', 'Rev']),
         purpose: getVal(['目的', 'Purpose']),
         status: StatusMapper.fromMasterSheet(getVal(['狀態'])),
+        dept: getVal(['權責部門', '權責單位', 'Dept']),
         owner: getVal(['負責人', '發出者', 'Owner']),
         ecr_no: getVal(['ECR', 'ECR編號']),
         ecr_date: getVal(['ECR日期', 'ECR Date']),

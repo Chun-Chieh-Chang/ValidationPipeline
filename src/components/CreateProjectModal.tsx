@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, Loader2, AlertCircle, FileText, Search, Zap } from "lucide-react";
-import { projectService } from "@/lib/projectService";
+import { projectService, ProjectData } from "@/lib/projectService";
+import { DEPARTMENTS, PROJECT_TYPES, PRIORITY_LABELS } from "@/lib/constants";
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -25,6 +26,8 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
     ecn_date: "",
     start_date: "",
     cloud_link: "",
+    dept: DEPARTMENTS[2], // 工程部
+    priority: 3,
     master_sheet_id: "",
     last_master_sync: ""
   });
@@ -53,6 +56,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
           ecn_date: existing.ecn_date ? new Date(existing.ecn_date).toISOString().split('T')[0] : "",
           start_date: existing.start_date ? new Date(existing.start_date).toISOString().split('T')[0] : "",
           cloud_link: existing.cloud_link || "",
+          dept: (existing as any).dept || DEPARTMENTS[2],
           master_sheet_id: existing.master_sheet_id || "",
           last_master_sync: existing.last_master_sync || ""
         });
@@ -92,6 +96,8 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
       setFormData({
         project_no: "", part_no: "", rev: "", type: "設變", purpose: "", owner: "", 
         ecr_no: "", ecr_date: "", ecn_no: "", ecn_date: "", start_date: "", cloud_link: "",
+        dept: DEPARTMENTS[2],
+        priority: 3,
         master_sheet_id: "", last_master_sync: ""
       });
       setStatus('idle');
@@ -198,6 +204,19 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                 </div>
 
                 <div>
+                  <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">權責部門</label>
+                  <select
+                    name="dept"
+                    value={formData.dept}
+                    onChange={handleChange}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                  >
+                    {DEPARTMENTS.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">專案類型</label>
                   <select
                     name="type"
@@ -205,10 +224,22 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
                     onChange={handleChange}
                     className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
                   >
-                    <option value="設變">設變</option>
-                    <option value="新模">新模</option>
-                    <option value="移模">移模</option>
-                    <option value="修模">修模</option>
+                    {PROJECT_TYPES.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-black uppercase tracking-widest text-muted mb-2">優先度</label>
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleChange}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-foreground focus:outline-none focus:border-brand-accent transition-all font-bold appearance-none cursor-pointer"
+                  >
+                    {Object.entries(PRIORITY_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
